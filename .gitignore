@@ -20,6 +20,8 @@ grandprixrealty.agency/resources/
 .env.local
 .env.*.local
 *.env
+seller-portal/.env.production
+buyer-search-app/.env.production
 
 # IDE
 .idea/
