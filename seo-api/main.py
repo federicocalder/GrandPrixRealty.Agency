@@ -170,7 +170,24 @@ async def get_dashboard(supabase: Client = Depends(get_supabase)):
 
         if result.data and len(result.data) > 0:
             data = result.data[0]
-            return DashboardSummary(**data)
+            # Handle None values from the view when there's no data
+            sanitized = {
+                'total_posts': data.get('total_posts') or 0,
+                'published_posts': data.get('published_posts') or 0,
+                'draft_posts': data.get('draft_posts') or 0,
+                'avg_score': data.get('avg_score') or 0.0,
+                'excellent_posts': data.get('excellent_posts') or 0,
+                'good_posts': data.get('good_posts') or 0,
+                'needs_work_posts': data.get('needs_work_posts') or 0,
+                'poor_posts': data.get('poor_posts') or 0,
+                'total_words': data.get('total_words') or 0,
+                'avg_word_count': data.get('avg_word_count') or 0,
+                'total_internal_links': data.get('total_internal_links') or 0,
+                'orphan_pages': data.get('orphan_pages') or 0,
+                'open_issues': data.get('open_issues') or 0,
+                'critical_issues': data.get('critical_issues') or 0,
+            }
+            return DashboardSummary(**sanitized)
 
         # Fallback: calculate manually
         posts = seo_table(supabase, 'posts').select('*').execute()
