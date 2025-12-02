@@ -141,11 +141,17 @@ class LinkData(BaseModel):
     anchor_text: Optional[str]
 
 
-# Dependency: Get Supabase client
+# Dependency: Get Supabase client with SEO schema
 def get_supabase() -> Client:
     if not SUPABASE_SERVICE_KEY:
         raise HTTPException(status_code=500, detail="Supabase not configured")
-    return create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+    client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+    return client
+
+# Helper to query SEO schema tables
+def seo_table(supabase: Client, table_name: str):
+    """Query a table in the seo schema."""
+    return supabase.schema('seo').table(table_name)
 
 
 # Health check
@@ -160,15 +166,15 @@ async def get_dashboard(supabase: Client = Depends(get_supabase)):
     """Get dashboard summary statistics."""
     try:
         # Query the dashboard view
-        result = supabase.table('seo.dashboard_summary').select('*').execute()
+        result = seo_table(supabase, 'dashboard_summary').select('*').execute()
 
         if result.data and len(result.data) > 0:
             data = result.data[0]
             return DashboardSummary(**data)
 
         # Fallback: calculate manually
-        posts = supabase.table('seo.posts').select('*').execute()
-        issues = supabase.table('seo.issues').select('*').eq('resolved', False).execute()
+        posts = seo_table(supabase, 'posts').select('*').execute()
+        issues = seo_table(supabase, 'issues').select('*').eq('resolved', False).execute()
 
         if not posts.data:
             return DashboardSummary(
@@ -216,7 +222,7 @@ async def get_dashboard(supabase: Client = Depends(get_supabase)):
 async def get_category_stats(supabase: Client = Depends(get_supabase)):
     """Get statistics by category."""
     try:
-        result = supabase.table('seo.category_stats').select('*').execute()
+        result = seo_table(supabase, 'category_stats').select('*').execute()
         return [CategoryStats(**row) for row in (result.data or [])]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -238,7 +244,7 @@ async def list_posts(
 ):
     """List posts with optional filtering and sorting."""
     try:
-        query = supabase.table('seo.posts').select(
+        query = seo_table(supabase, 'posts').select(
             'id, slug, url, title, description, categories, word_count, '
             'internal_links_out, internal_links_in, overall_score, is_draft, '
             'has_wordpress_images, published_at, last_analyzed_at'
@@ -278,7 +284,7 @@ async def get_post(slug: str, supabase: Client = Depends(get_supabase)):
     """Get detailed SEO data for a single post."""
     try:
         # Get post
-        post_result = supabase.table('seo.posts').select('*').eq('slug', slug).execute()
+        post_result = seo_table(supabase, 'posts').select('*').eq('slug', slug).execute()
 
         if not post_result.data:
             raise HTTPException(status_code=404, detail="Post not found")
@@ -286,13 +292,13 @@ async def get_post(slug: str, supabase: Client = Depends(get_supabase)):
         post = post_result.data[0]
 
         # Get issues
-        issues_result = supabase.table('seo.issues').select('*').eq('post_slug', slug).execute()
+        issues_result = seo_table(supabase, 'issues').select('*').eq('post_slug', slug).execute()
 
         # Get outbound links
-        outbound_result = supabase.table('seo.internal_links').select('*').eq('source_slug', slug).execute()
+        outbound_result = seo_table(supabase, 'internal_links').select('*').eq('source_slug', slug).execute()
 
         # Get inbound links
-        inbound_result = supabase.table('seo.internal_links').select('*').eq('target_slug', slug).execute()
+        inbound_result = seo_table(supabase, 'internal_links').select('*').eq('target_slug', slug).execute()
 
         return PostDetail(
             **post,
@@ -318,7 +324,7 @@ async def list_issues(
 ):
     """List SEO issues across all posts."""
     try:
-        query = supabase.table('seo.issues').select(
+        query = seo_table(supabase, 'issues').select(
             'id, post_slug, issue_type, severity, message, suggestion, resolved, created_at'
         )
 
@@ -339,7 +345,7 @@ async def list_issues(
         issues = result.data or []
         if issues:
             slugs = list(set(i['post_slug'] for i in issues))
-            posts_result = supabase.table('seo.posts').select('slug, title').in_('slug', slugs).execute()
+            posts_result = seo_table(supabase, 'posts').select('slug, title').in_('slug', slugs).execute()
             slug_to_title = {p['slug']: p['title'] for p in (posts_result.data or [])}
 
             for issue in issues:
@@ -356,7 +362,7 @@ async def list_issues(
 async def get_issue_types(supabase: Client = Depends(get_supabase)):
     """Get summary of issue types and counts."""
     try:
-        result = supabase.table('seo.issues').select('issue_type, severity').eq('resolved', False).execute()
+        result = seo_table(supabase, 'issues').select('issue_type, severity').eq('resolved', False).execute()
 
         if not result.data:
             return []
@@ -381,12 +387,12 @@ async def get_links_graph(supabase: Client = Depends(get_supabase)):
     """Get internal links data for graph visualization."""
     try:
         # Get all posts (nodes)
-        posts = supabase.table('seo.posts').select(
+        posts = seo_table(supabase, 'posts').select(
             'slug, title, overall_score, internal_links_in, internal_links_out, categories'
         ).eq('is_draft', False).execute()
 
         # Get all links (edges)
-        links = supabase.table('seo.internal_links').select('*').execute()
+        links = seo_table(supabase, 'internal_links').select('*').execute()
 
         return {
             "nodes": posts.data or [],
@@ -406,12 +412,12 @@ async def get_posts_needing_attention(
     """Get posts that need the most attention."""
     try:
         # Get posts with low scores or critical issues
-        posts = supabase.table('seo.posts').select(
+        posts = seo_table(supabase, 'posts').select(
             'slug, title, url, overall_score, categories'
         ).eq('is_draft', False).lt('overall_score', 60).order('overall_score', desc=False).limit(limit).execute()
 
         # Get critical issues count per post
-        issues = supabase.table('seo.issues').select(
+        issues = seo_table(supabase, 'issues').select(
             'post_slug'
         ).eq('resolved', False).eq('severity', 'critical').execute()
 
@@ -440,7 +446,7 @@ async def get_posts_needing_attention(
 async def resolve_issue(issue_id: str, supabase: Client = Depends(get_supabase)):
     """Mark an issue as resolved."""
     try:
-        result = supabase.table('seo.issues').update({
+        result = seo_table(supabase, 'issues').update({
             'resolved': True,
             'resolved_at': datetime.utcnow().isoformat()
         }).eq('id', issue_id).execute()
@@ -462,7 +468,7 @@ async def trigger_analysis(supabase: Client = Depends(get_supabase)):
     """Trigger a re-analysis of all posts."""
     try:
         # Create analysis run record
-        run = supabase.table('seo.analysis_runs').insert({
+        run = seo_table(supabase, 'analysis_runs').insert({
             'started_at': datetime.utcnow().isoformat(),
             'status': 'running'
         }).execute()
