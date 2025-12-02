@@ -1,10 +1,10 @@
 # GPR Production Stack
-# Hugo + React frontend + AVM API
+# Hugo + React frontend + AVM API + Buyer Search API
 
 version: '3.8'
 
 services:
-  # Combined Frontend (Hugo + React)
+  # Combined Frontend (Hugo + React seller-portal + React buyer-search)
   gpr-website:
     build:
       context: .
@@ -15,6 +15,7 @@ services:
       - "8080:80"
     depends_on:
       - gpr-avm-api
+      - gpr-buyer-api
     networks:
       - gpr-network
       - n8n-postgres-nginx_default
@@ -24,7 +25,7 @@ services:
       timeout: 10s
       retries: 3
 
-  # AVM API Backend
+  # AVM API Backend (Python/FastAPI)
   gpr-avm-api:
     build:
       context: ./avm-api
@@ -46,6 +47,27 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+  # Buyer Search API Backend (Node.js/Express)
+  gpr-buyer-api:
+    build:
+      context: ./buyer-search-app
+      dockerfile: Dockerfile
+    container_name: gpr-buyer-api
+    restart: unless-stopped
+    environment:
+      - TRESTLE_CLIENT_ID=${TRESTLE_CLIENT_ID}
+      - TRESTLE_CLIENT_SECRET=${TRESTLE_CLIENT_SECRET}
+      - TRESTLE_TOKEN_URL=${TRESTLE_TOKEN_URL}
+      - TRESTLE_ODATA_URL=${TRESTLE_ODATA_URL}
+    networks:
+      - gpr-network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
 networks:
   gpr-network:

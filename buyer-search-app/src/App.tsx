@@ -5,6 +5,7 @@ import { PropertyCard } from './components/PropertyCard';
 import { FilterOverlay, type FilterState } from './components/FilterOverlay';
 import { FeaturedRows, type FeaturedRowConfig } from './components/FeaturedRows';
 import type { Property } from './types/index';
+import { getApiUrl } from './config/api';
 
 interface TrestleListing {
   ListingKey: string;
@@ -143,7 +144,7 @@ function App() {
       const queryString = buildQueryString(filters);
       console.log('Fetching with query:', queryString);
 
-      const res = await fetch(`/api/listings?${queryString}`);
+      const res = await fetch(getApiUrl(`/listings?${queryString}`));
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
@@ -195,7 +196,7 @@ function App() {
     // Fetch with new filters after state update
     setTimeout(async () => {
       try {
-        const res = await fetch(`/api/listings?${config.queryParams}`);
+        const res = await fetch(getApiUrl(`/listings?${config.queryParams}`));
         if (!res.ok) throw new Error('Failed to fetch');
         const data: TrestleListing[] = await res.json();
         setProperties(data.map(mapTrestleToProperty));

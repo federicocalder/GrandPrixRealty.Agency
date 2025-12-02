@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Heart, Bed, Bath, Flame, ChevronLeft, ChevronRight, TrendingDown } from 'lucide-react';
 import { formatPrice } from '../lib/utils';
+import { getApiUrl } from '../config/api';
 
 interface TrestleListing {
   ListingKey: string;
@@ -78,7 +79,7 @@ const FEATURED_ROWS: FeaturedRowConfig[] = [
     title: 'Price Reduced',
     subtitle: 'Motivated sellers and exceptional value',
     queryParams: '', // Uses dedicated endpoint
-    endpoint: '/api/listings/price-reduced',
+    endpoint: '/listings/price-reduced',
     showDiscount: true,
   },
 ];
@@ -237,7 +238,7 @@ const FeaturedRow = ({
       try {
         setLoading(true);
         // Use custom endpoint if provided, otherwise use standard listings endpoint
-        const url = config.endpoint || `/api/listings?${config.queryParams}`;
+        const url = getApiUrl(config.endpoint || `/listings?${config.queryParams}`);
         const res = await fetch(url);
         if (!res.ok) throw new Error('Failed to fetch');
         const data: TrestleListing[] = await res.json();

@@ -245,6 +245,14 @@ app.get('/api/listing/:id', async (req, res) => {
   }
 });
 
+/**
+ * GET /health
+ * Health check endpoint for Docker/container orchestration
+ */
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok', service: 'buyer-search-api' });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 API server running on http://localhost:${PORT}`);
   console.log(`📍 Listings endpoint: http://localhost:${PORT}/api/listings`);
