@@ -1,3 +1,4 @@
+/// <reference types="@types/google.maps" />
 import { useState, useRef, useEffect } from 'react'
 import { Search, MapPin, Loader2 } from 'lucide-react'
 
@@ -5,14 +6,6 @@ interface AddressInputProps {
   onAddressSelect: (address: string, placeId?: string) => void
   isLoading?: boolean
   placeholder?: string
-}
-
-// Declare google types
-declare global {
-  interface Window {
-    google: typeof google
-    initGoogleMaps: () => void
-  }
 }
 
 export default function AddressInput({
