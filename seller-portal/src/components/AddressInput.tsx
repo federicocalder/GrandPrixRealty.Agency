@@ -65,13 +65,8 @@ export default function AddressInput({
         input: value,
         componentRestrictions: { country: 'us' },
         types: ['address'],
-        // Bias towards Las Vegas area
-        locationBias: {
-          center: { lat: 36.1699, lng: -115.1398 },
-          radius: 80467, // 50 miles in meters
-        } as google.maps.LocationBias,
       },
-      (results, status) => {
+      (results: google.maps.places.AutocompletePrediction[] | null, status: google.maps.places.PlacesServiceStatus) => {
         if (status === google.maps.places.PlacesServiceStatus.OK && results) {
           setPredictions(results)
           setShowPredictions(true)
