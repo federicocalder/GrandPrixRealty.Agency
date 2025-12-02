@@ -1,118 +1,195 @@
-# Grand Prix Realty - Complete Project Structure
+# Grand Prix Realty - Project Architecture
 
-## 🚨 IMPORTANT: Project Architecture
+## Overview
 
-This is a **LOCAL DEVELOPMENT PROJECT** with TWO separate applications:
+Complete real estate website for **Grand Prix Realty**, a Las Vegas brokerage. Includes marketing landing pages, an AI-powered home valuation tool, and a live MLS property search.
+
+**Live Site**: https://grandprixrealty.agency
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    grandprixrealty.agency                       │
+│                    (Nginx Proxy Manager)                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │              gpr-website (nginx:alpine)                  │   │
+│  │                     Port 8080                            │   │
+│  ├─────────────────────────────────────────────────────────┤   │
+│  │  /                  → Hugo static site                   │   │
+│  │  /seller-portal/    → React seller AVM app               │   │
+│  │  /buyer-search/     → React buyer search app             │   │
+│  │  /api/              → proxy to gpr-avm-api               │   │
+│  │  /buyer-api/        → proxy to gpr-buyer-api             │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                           │                                     │
+│         ┌─────────────────┴─────────────────┐                   │
+│         ▼                                   ▼                   │
+│  ┌──────────────────┐            ┌──────────────────┐          │
+│  │  gpr-avm-api     │            │  gpr-buyer-api   │          │
+│  │  (Python/FastAPI)│            │  (Node/Express)  │          │
+│  │  Port 8000       │            │  Port 4000       │          │
+│  └────────┬─────────┘            └────────┬─────────┘          │
+│           │                               │                     │
+│           ▼                               ▼                     │
+│  ┌──────────────────┐            ┌──────────────────┐          │
+│  │  Supabase        │            │  Trestle MLS     │          │
+│  │  (PostgreSQL)    │            │  (Cotality API)  │          │
+│  └──────────────────┘            └──────────────────┘          │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Components
 
 ### 1. Hugo Static Site (Main Website)
-**Location**: `/Users/federicocalderon/grandprixrealty.agency/grandprixrealty.agency/`
-- **Dev Server**: `http://localhost:1313`
-- **Command**: `hugo server`
-- **Purpose**: Main company website with blog, property management, about, careers pages
-- **Navigation**: Uses relative paths (e.g., `/about/`, `/propertymanagement/`)
+**Location**: `/grandprixrealty.agency/`
 
-### 2. React Buyer Search App (Standalone)
-**Location**: `/Users/federicocalderon/grandprixrealty.agency/buyer-search-app/`
-- **Frontend**: `http://localhost:5173` (Vite dev server)
-- **Backend API**: `http://localhost:4000` (Express server)
-- **Command**: `npm run dev` (frontend), `npm run dev:api` (backend)
-- **Purpose**: Property search tool for homebuyers
-- **Navigation**: Should use relative paths to link to Hugo pages
+Marketing landing pages:
+- `/` - Homepage
+- `/homebuyer/` - Buyer services landing page
+- `/homeseller/` - Seller services landing page
+- `/propertymanagement/` - Property management
+- `/realtors/` - Careers/recruitment
+- `/about/` - Company information
 
-## ⚠️ Critical Navigation Rules
+**Tech**: Hugo static site generator with custom theme
 
-**DO NOT use external URLs** like `https://grandprixrealty.agency/` in navigation!
-**DO NOT use localhost URLs** like `http://localhost:1313/` - these will fail!
+### 2. Seller Portal (AVM Tool)
+**Location**: `/seller-portal/`
+**URL**: https://grandprixrealty.agency/seller-portal/
 
-**Use RELATIVE paths that match the Hugo site structure:**
-```javascript
-// In buyer-search-app/src/components/Navbar.tsx (same as Hugo header.html)
-<a href="/">Home/Logo</a>                    // Homepage
-<a href="/homebuyer/">Buy</a>                // Buyer landing page
-<a href="/homeseller/">Sell</a>              // Seller page
-<a href="/propertymanagement/">Manage</a>    // Property management
-<a href="/about/">About Us</a>               // About page
-<a href="/careers/">Careers</a>              // Careers page
+AI-powered home valuation tool:
+- Enter property address
+- Get instant ML-powered value estimate
+- View comparable sales and value factors
+- CTA to list property with GPR
+
+**Tech**: React 19 + TypeScript + Vite
+
+### 3. Buyer Search App
+**Location**: `/buyer-search-app/`
+**URL**: https://grandprixrealty.agency/buyer-search/
+
+Live MLS property search:
+- Search Las Vegas listings
+- Filter by price, beds, baths, property type
+- Featured rows (luxury, new listings, price reduced)
+- Property cards with MLS photos
+
+**Tech**: React 19 + TypeScript + Vite
+
+### 4. AVM API Backend
+**Location**: `/avm-api/`
+
+Property valuation API:
+- LightGBM ML model (trained on 500K+ sales)
+- Geocoding via Google Maps API
+- Comparable sales matching
+- Value factor analysis
+
+**Tech**: Python 3.12 + FastAPI + LightGBM
+
+### 5. Buyer Search API Backend
+**Location**: `/buyer-search-app/server/`
+
+MLS listings API:
+- Real-time Trestle MLS integration
+- OData query builder
+- Property filtering
+- OAuth token management
+
+**Tech**: Node.js + Express + TypeScript
+
+## Infrastructure
+
+### Production (Hetzner VPS)
+- **Host**: 5.78.131.81
+- **Proxy**: Nginx Proxy Manager (SSL)
+- **Containers**: Docker Compose
+
+### Docker Services
+| Service | Image | Port | Purpose |
+|---------|-------|------|---------|
+| gpr-website | nginx:alpine | 8080 | Static files + reverse proxy |
+| gpr-avm-api | python:3.12-slim | 8000 | Valuation API |
+| gpr-buyer-api | node:22-alpine | 4000 | MLS listings API |
+
+### External Services
+| Service | Purpose |
+|---------|---------|
+| Supabase (self-hosted) | PostgreSQL database with PostGIS |
+| Trestle/Cotality | MLS API (Las Vegas REALTORS) |
+| Google Maps | Geocoding API |
+
+## Repository Structure
+
+```
+/grandprixrealty.agency/
+├── grandprixrealty.agency/    # Hugo static site source
+│   ├── content/               # Page content
+│   └── themes/grandprix/      # Custom theme
+├── seller-portal/             # React seller AVM app
+│   └── src/
+├── buyer-search-app/          # React buyer search app
+│   ├── src/                   # Frontend
+│   └── server/                # Express API
+├── avm-api/                   # Python FastAPI
+│   ├── app/                   # Application code
+│   └── models/                # ML models
+├── deploy/                    # Deployment config
+│   ├── Dockerfile             # Multi-stage build
+│   └── nginx.conf             # Routing config
+├── docker-compose.prod.yml    # Production stack
+└── .env                       # Environment variables (server)
 ```
 
-This matches the Hugo site header at:
-`/grandprixrealty.agency/themes/grandprix/layouts/partials/header.html`
+## Development
 
-## 🎯 Project Overview
-React-based property search application for Grand Prix Realty's homebuyer landing page, running as standalone app during development. Connects to Trestle MLS API for Las Vegas REALTORS data and uses self-hosted Supabase for data storage.
-
-## ✅ Environment Setup Complete
-- **Environment File**: `buyer-search-app/.env` - ✅ Configured with all API keys
-- **Trestle MLS API**: ✅ Tested and authenticated  
-- **Supabase Database**: ✅ Running on Hetzner server
-- **Development Stack**: ✅ Ready (Vite + React + TypeScript + Tailwind)
-
-## 🔑 Key Configuration Details
-
-### Trestle MLS API (Las Vegas REALTORS)
-- **Status**: ✅ Active and tested
-- **Base URL**: `https://api.cotality.com/trestle/odata`
-- **Feed Type**: IDX Plus WebAPI
-- **Data Source**: Las Vegas REALTORS (GLVAR)
-- **Quota**: 7,200 queries/hour, 180/minute
-
-### Supabase Database (Hetzner Server)
-- **Status**: ✅ Running and configured
-- **URL**: `http://5.78.131.81:8001`
-- **PostGIS**: ✅ Available for geospatial queries
-- **Tables**: ✅ Already created
-
-### Tech Stack
-- **Frontend**: React 19.2.0 + TypeScript + Vite
-- **Styling**: Tailwind CSS 4.1.17
-- **Mapping**: MapLibre GL JS 5.12.0
-- **Icons**: Lucide React 0.553.0
-- **Database**: Supabase (self-hosted)
-- **API**: Trestle MLS WebAPI
-
-## 🎯 Next Development Steps
-
-### Immediate Tasks
-1. **Activate Supabase Client** - Uncomment and configure the Supabase client in `src/lib/supabaseClient.ts`
-2. **Implement Trestle API Service** - Create service for property data fetching
-3. **Build Property Search UI** - Implement search forms and filters
-4. **Add Map Integration** - Configure MapLibre for property locations
-5. **Create Property Cards** - Display search results with images and details
-6. **Implement User Favorites** - Connect to Supabase for saved properties
-
-### Key Features to Build
-- Property search with filters (price, beds, baths, location)
-- Interactive map with property markers
-- Property detail modals with photo galleries
-- User favorites and saved searches
-- Contact forms for property inquiries
-- Responsive design for mobile/desktop
-
-### Integration Points
-- **Hugo Site**: Embed React app in homebuyer landing page
-- **Contact System**: Connect to Grand Prix Realty contact forms
-- **Lead Generation**: Capture buyer information and preferences
-
-## 📁 Project Structure
-```
-buyer-search-app/
-├── .env                    # ✅ Environment configuration
-├── src/
-│   ├── components/         # React components
-│   ├── lib/               # API services and utilities
-│   ├── types/             # TypeScript definitions
-│   └── data/              # Static data/constants
-└── package.json           # Dependencies configured
-```
-
-## 🚀 Development Commands
+### Local Development
 ```bash
-cd /Users/federicocalderon/grandprixrealty.agency/buyer-search-app
-npm run dev     # Start development server
-npm run build   # Build for production
-npm run lint    # Run ESLint
+# Hugo site (localhost:1313)
+cd grandprixrealty.agency && hugo server
+
+# Seller portal (localhost:5174)
+cd seller-portal && npm run dev
+
+# Buyer search (localhost:5173 + API on 4000)
+cd buyer-search-app && npm run dev      # Frontend
+cd buyer-search-app && npm run dev:api  # Backend
+
+# AVM API (localhost:8000)
+cd avm-api && uvicorn app.main:app --reload
+```
+
+### Deployment
+```bash
+# Push to GitHub
+git add -A && git commit -m "message" && git push origin main
+
+# On server
+cd /root/GrandPrixRealty.Agency
+git pull origin main
+docker compose -f docker-compose.prod.yml down
+docker compose -f docker-compose.prod.yml build --no-cache
+docker compose -f docker-compose.prod.yml up -d
+docker network connect supabase_default gpr-avm-api
+```
+
+## Environment Variables
+
+### Production (.env on server)
+```
+DATABASE_URL=postgresql+asyncpg://...@supabase-pooler:6543/postgres
+GOOGLE_MAPS_API_KEY=...
+TRESTLE_CLIENT_ID=...
+TRESTLE_CLIENT_SECRET=...
+TRESTLE_TOKEN_URL=https://api.cotality.com/trestle/oidc/connect/token
+TRESTLE_ODATA_URL=https://api.cotality.com/trestle/odata/Property
 ```
 
 ---
-**Status**: 🟢 Ready for Claude Code development
-**Last Updated**: November 13, 2025
+**GitHub**: https://github.com/federicocalder/GrandPrixRealty.Agency
+**Last Updated**: December 2, 2025
