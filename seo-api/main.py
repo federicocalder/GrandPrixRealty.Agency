@@ -14,7 +14,7 @@ Endpoints:
 import os
 from datetime import datetime
 from typing import Optional, List
-from fastapi import FastAPI, HTTPException, Query, Depends
+from fastapi import FastAPI, HTTPException, Query, Depends, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from supabase import create_client, Client
@@ -479,25 +479,64 @@ async def resolve_issue(issue_id: str, supabase: Client = Depends(get_supabase))
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Trigger analysis (would call the analyzer script)
+# Trigger analysis - runs the analyzer script
 @app.post("/seo/analyze")
-async def trigger_analysis(supabase: Client = Depends(get_supabase)):
+async def trigger_analysis(
+    background_tasks: BackgroundTasks,
+    supabase: Client = Depends(get_supabase)
+):
     """Trigger a re-analysis of all posts."""
-    try:
-        # Create analysis run record
-        run = seo_table(supabase, 'analysis_runs').insert({
-            'started_at': datetime.utcnow().isoformat(),
-            'status': 'running'
-        }).execute()
+    import subprocess
+    from pathlib import Path
 
-        # In a real setup, this would trigger the analyzer script
-        # For now, return the run ID
+    content_path = Path(os.environ.get('CONTENT_PATH', '/content/blog'))
+
+    if not content_path.exists():
+        raise HTTPException(
+            status_code=500,
+            detail=f"Content path not found: {content_path}. Ensure the Hugo content directory is mounted."
+        )
+
+    # Count markdown files
+    md_files = list(content_path.glob("*.md"))
+    md_files = [f for f in md_files if f.name != "_index.md"]
+
+    if not md_files:
+        raise HTTPException(
+            status_code=404,
+            detail="No blog posts found to analyze"
+        )
+
+    try:
+        # Run the analyzer script in subprocess
+        result = subprocess.run(
+            ["python", "/app/analyzer.py"],
+            capture_output=True,
+            text=True,
+            timeout=300,  # 5 minute timeout
+            env={
+                **os.environ,
+                'CONTENT_PATH': str(content_path),
+                'SUPABASE_URL': SUPABASE_URL,
+                'SUPABASE_SERVICE_KEY': SUPABASE_SERVICE_KEY
+            }
+        )
+
+        if result.returncode != 0:
+            return {
+                "status": "error",
+                "message": f"Analyzer completed with errors",
+                "details": result.stderr or result.stdout
+            }
+
         return {
-            "status": "started",
-            "run_id": run.data[0]['id'] if run.data else None,
-            "message": "Analysis started. Run the analyzer.py script to complete."
+            "status": "completed",
+            "message": f"Successfully analyzed {len(md_files)} blog posts",
+            "details": result.stdout[-1000:] if len(result.stdout) > 1000 else result.stdout
         }
 
+    except subprocess.TimeoutExpired:
+        raise HTTPException(status_code=504, detail="Analysis timed out after 5 minutes")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -28,8 +28,8 @@ except ImportError:
     SUPABASE_AVAILABLE = False
     print("Warning: supabase package not installed. Use --dry-run mode.")
 
-# Configuration
-CONTENT_PATH = Path(__file__).parent.parent / "grandprixrealty.agency" / "content" / "blog"
+# Configuration - use environment variable or fallback to mounted path
+CONTENT_PATH = Path(os.environ.get('CONTENT_PATH', '/content/blog'))
 
 # Landing pages for internal link analysis
 PRIORITY_PAGES = {
