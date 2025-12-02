@@ -298,6 +298,12 @@
                                 placeholder="Enter your property address..."
                                 class="address-input flex-1 px-6 py-5 rounded-xl text-white placeholder-gray-400 text-lg"
                             />
+                            <input
+                                type="text"
+                                placeholder="Unit #"
+                                class="unit-input w-24 px-4 py-5 rounded-xl text-white placeholder-gray-400 text-lg address-input"
+                                style="flex: 0 0 auto;"
+                            />
                             <button class="bg-white text-black px-8 py-5 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 whitespace-nowrap">
                                 Get My Value
                             </button>
@@ -829,6 +835,12 @@
                                 placeholder="Enter your address..."
                                 class="address-input flex-1 px-6 py-5 rounded-xl text-white placeholder-gray-400 text-lg"
                             />
+                            <input
+                                type="text"
+                                placeholder="Unit #"
+                                class="unit-input w-24 px-4 py-5 rounded-xl text-white placeholder-gray-400 text-lg address-input"
+                                style="flex: 0 0 auto;"
+                            />
                             <button class="bg-white text-black px-8 py-5 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 whitespace-nowrap">
                                 Get My Value
                             </button>
@@ -919,9 +931,10 @@ window.addEventListener('load', function() {
     // Store selected place data
     let selectedPlaces = {};
 
-    // Initialize Google Places Autocomplete for all address inputs
+    // Initialize Google Places Autocomplete for address inputs (NOT unit inputs)
     function initAutocomplete() {
-        const addressInputs = document.querySelectorAll('.address-input');
+        // Only select address inputs that are NOT unit inputs
+        const addressInputs = document.querySelectorAll('.address-input:not(.unit-input)');
 
         addressInputs.forEach((input, index) => {
             if (typeof google !== 'undefined' && google.maps && google.maps.places) {
@@ -954,21 +967,38 @@ window.addEventListener('load', function() {
 
     // Setup submit button click handlers
     function setupSubmitButtons() {
-        const submitButtons = document.querySelectorAll('.glass-card button');
-        const addressInputs = document.querySelectorAll('.address-input');
+        const glassCards = document.querySelectorAll('.glass-card');
 
-        submitButtons.forEach((button, index) => {
+        glassCards.forEach((card, index) => {
+            const button = card.querySelector('button');
+            const addressInput = card.querySelector('.address-input:not(.unit-input)');
+            const unitInput = card.querySelector('.unit-input');
+
+            if (!button || !addressInput) return;
+
             button.addEventListener('click', async function(e) {
                 e.preventDefault();
 
-                // Get the corresponding input
-                const input = addressInputs[index] || addressInputs[0];
                 // Prefer selected place address, fall back to input value
-                const address = (selectedPlaces[index]?.address) || input.value.trim();
+                let address = (selectedPlaces[index]?.address) || addressInput.value.trim();
 
                 if (!address) {
-                    showError(input, 'Please enter a property address');
+                    showError(addressInput, 'Please enter a property address');
                     return;
+                }
+
+                // Append unit number if provided
+                const unit = unitInput ? unitInput.value.trim() : '';
+                if (unit) {
+                    // Insert unit after the street address (before city/state)
+                    const parts = address.split(',');
+                    if (parts.length >= 2) {
+                        parts[0] = `${parts[0].trim()} #${unit}`;
+                        address = parts.join(',');
+                    } else {
+                        address = `${address} #${unit}`;
+                    }
+                    console.log('Address with unit:', address);
                 }
 
                 // Show loading state
@@ -1007,7 +1037,7 @@ window.addEventListener('load', function() {
 
                 } catch (error) {
                     console.error('Valuation error:', error);
-                    showError(input, error.message || 'Unable to get valuation. Please try again.');
+                    showError(addressInput, error.message || 'Unable to get valuation. Please try again.');
 
                     // Reset button
                     button.disabled = false;
