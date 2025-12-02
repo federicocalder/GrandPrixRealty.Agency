@@ -8,7 +8,7 @@ import { LoginPage } from './pages/portal/LoginPage'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename="/buyer-search">
       <Routes>
         {/* Main search app */}
         <Route path="/" element={<App />} />
