@@ -1,10 +1,10 @@
 # GPR Production Stack
-# Hugo + React frontend + AVM API + Buyer Search API
+# Hugo + React frontend + AVM API + Buyer Search API + SEO Lab
 
 version: '3.8'
 
 services:
-  # Combined Frontend (Hugo + React seller-portal + React buyer-search)
+  # Combined Frontend (Hugo + React seller-portal + React buyer-search + SEO Lab)
   gpr-website:
     build:
       context: .
@@ -16,6 +16,7 @@ services:
     depends_on:
       - gpr-avm-api
       - gpr-buyer-api
+      - gpr-seo-api
     networks:
       - gpr-network
       - n8n-postgres-nginx_default
@@ -64,6 +65,25 @@ services:
       - gpr-network
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # SEO Lab API Backend (Python/FastAPI)
+  gpr-seo-api:
+    build:
+      context: ./seo-api
+      dockerfile: Dockerfile
+    container_name: gpr-seo-api
+    restart: unless-stopped
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+    networks:
+      - gpr-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8001/health').raise_for_status()"]
       interval: 30s
       timeout: 10s
       retries: 3
