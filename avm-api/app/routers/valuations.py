@@ -67,6 +67,7 @@ async def create_valuation(
         geo_result.latitude,
         geo_result.longitude,
         geo_result.formatted_address,
+        geo_result.unit_number,
     )
 
     if not property_data:
@@ -150,14 +151,28 @@ async def _lookup_property(
     latitude: float,
     longitude: float,
     address: str,
+    unit_number: Optional[str] = None,
 ) -> Optional[PropertyBase]:
     """
     Look up property in database by location or address.
 
     Tries to find a matching property within 50 meters of the given coordinates.
+    If a unit number is provided, filters to match the specific unit.
     """
+    # Build query with optional unit number filter
+    unit_filter = ""
+    params = {"lat": latitude, "lng": longitude}
+
+    if unit_number:
+        # Match unit number in address (case-insensitive)
+        # Handles formats like "#A", "#B", "Unit A", etc.
+        unit_filter = "AND address_full ~* :unit_pattern"
+        # Pattern matches #A or Unit A followed by non-alphanumeric or end of string
+        params["unit_pattern"] = f"(#|Unit\\s+){unit_number}([^a-zA-Z0-9]|$)"
+        logger.info("lookup_with_unit", unit=unit_number, pattern=params["unit_pattern"])
+
     # Search for property within 50 meters
-    query = text("""
+    query = text(f"""
         SELECT
             address_full,
             latitude,
@@ -182,6 +197,7 @@ async def _lookup_property(
             ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography,
             50  -- 50 meters
         )
+        {unit_filter}
         ORDER BY ST_Distance(
             location,
             ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography
@@ -189,7 +205,7 @@ async def _lookup_property(
         LIMIT 1
     """)
 
-    result = await db.execute(query, {"lat": latitude, "lng": longitude})
+    result = await db.execute(query, params)
     row = result.fetchone()
 
     if row:
