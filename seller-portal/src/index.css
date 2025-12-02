@@ -1,14 +1,15 @@
 @import "tailwindcss";
 
-/* GPR Seller Portal - Dark Theme */
+/* GPR Seller Portal - Matching Main Site Theme */
 :root {
-  --gpr-dark: #0a0a0b;
-  --gpr-dark-card: #141416;
-  --gpr-dark-border: #27272a;
+  --gpr-dark: #0a0a0a;
+  --gpr-darker: #050505;
+  --gpr-charcoal: #1a1a1a;
+  --gpr-steel: #2a2a2a;
+  --gpr-silver: #e5e5e5;
+  --gpr-white: #ffffff;
   --gpr-gold: #d4af37;
   --gpr-gold-light: #f4d03f;
-  --gpr-text: #fafafa;
-  --gpr-text-muted: #a1a1aa;
 }
 
 * {
@@ -17,18 +18,155 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--gpr-dark);
-  color: var(--gpr-text);
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #000;
+  color: var(--gpr-silver);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body.menu-open {
+  overflow: hidden;
 }
 
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Cinzel font for headings */
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+/* Hamburger menu styles matching main site */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 8px;
+  position: relative;
+  z-index: 70;
+}
+
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 3px;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(7px, 7px);
+  background: #fff;
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+  background: #fff;
+}
+
+/* Mobile menu */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  z-index: 50;
+}
+
+.mobile-menu.active {
+  display: block;
+}
+
+/* Glass card matching main site */
+.glass-card {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(2.5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 32px;
+  transition: all 0.3s ease;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  pointer-events: none;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px) scale(1.01);
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Feature card */
+.feature-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Carbon fiber background */
+.carbon-fiber-bg {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+.carbon-fiber-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.5) 100%),
+    repeating-linear-gradient(45deg, transparent 0, transparent 19px, rgba(200, 200, 200, 0.15) 19px, rgba(200, 200, 200, 0.15) 20px, transparent 20px, transparent 21px, rgba(255, 255, 255, 0.08) 21px, rgba(255, 255, 255, 0.08) 22px);
+  z-index: 0;
+}
+
+.carbon-fiber-bg > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Shimmer text effect */
+@keyframes shimmer-letters {
+  0% { background-position: -100%; }
+  100% { background-position: 100%; }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    to right,
+    rgba(229, 229, 229, 0.5) 0%,
+    rgba(229, 229, 229, 0.5) 30%,
+    #fff 50%,
+    rgba(229, 229, 229, 0.5) 70%,
+    rgba(229, 229, 229, 0.5) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-letters 3s ease-in-out infinite;
 }
 
 /* Custom scrollbar for dark theme */
@@ -42,7 +180,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--gpr-dark-border);
+  background: var(--gpr-steel);
   border-radius: 4px;
 }
 
@@ -63,18 +201,20 @@ body {
   box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
 }
 
-/* Card style */
-.card-dark {
-  background: var(--gpr-dark-card);
-  border: 1px solid var(--gpr-dark-border);
-  border-radius: 12px;
+/* White button matching main site */
+.btn-white {
+  background: rgba(255, 255, 255, 0.9);
+  color: #0f172a;
+  font-weight: 500;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 }
 
-/* Glassmorphism effect */
-.glass {
-  background: rgba(20, 20, 22, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.btn-white:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 /* Gradient text */
@@ -118,8 +258,8 @@ input[type="tel"],
 textarea,
 select {
   background: var(--gpr-dark);
-  border: 1px solid var(--gpr-dark-border);
-  color: var(--gpr-text);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--gpr-silver);
   border-radius: 8px;
   padding: 12px 16px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -134,5 +274,5 @@ select:focus {
 }
 
 input::placeholder {
-  color: var(--gpr-text-muted);
+  color: rgba(255, 255, 255, 0.4);
 }

@@ -1,88 +1,96 @@
-import { Link, useLocation } from 'react-router-dom'
-import { Home, TrendingUp, User } from 'lucide-react'
+import { useState } from 'react'
 
 export default function Navbar() {
-  const location = useLocation()
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen)
+    document.body.classList.toggle('menu-open', !menuOpen)
+  }
+
+  const closeMenu = () => {
+    setMenuOpen(false)
+    document.body.classList.remove('menu-open')
+  }
 
   return (
-    <nav className="sticky top-0 z-50 glass border-b border-zinc-800/50">
-      <div className="max-w-7xl mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#d4af37] to-[#f4d03f] flex items-center justify-center">
-              <span className="text-black font-bold text-lg">G</span>
+    <>
+      <header style={{ backgroundColor: '#000' }} className="fixed top-0 left-0 right-0 z-[60]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo */}
+            <div className="flex items-center space-x-3">
+              <a href="/" className="flex items-center space-x-3">
+                <div className="w-16 h-16 flex items-center justify-center">
+                  <img
+                    src="/images/logo.webp"
+                    alt="Grand Prix Realty Logo"
+                    className="w-16 h-16 object-contain"
+                  />
+                </div>
+                <div>
+                  <h2 className="font-cinzel font-bold text-white text-2xl">Grand Prix Realty</h2>
+                </div>
+              </a>
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-bold text-white group-hover:text-[#d4af37] transition-colors">
-                Grand Prix Realty
-              </span>
-              <span className="text-xs text-zinc-500">Seller Portal</span>
-            </div>
-          </Link>
 
-          {/* Navigation Tabs */}
-          <div className="hidden md:flex items-center gap-1 bg-zinc-900/50 rounded-full p-1">
-            <NavTab
-              to="/"
-              icon={<Home size={16} />}
-              label="Home Value"
-              active={location.pathname === '/'}
-            />
-            <NavTab
-              to="/portal/seller"
-              icon={<TrendingUp size={16} />}
-              label="Seller Portal"
-              active={location.pathname.startsWith('/portal/seller')}
-            />
-            <NavTab
-              to="/portal/buyer"
-              icon={<User size={16} />}
-              label="Buyer Portal"
-              active={location.pathname.startsWith('/portal/buyer')}
-            />
-          </div>
-
-          {/* CTA */}
-          <div className="flex items-center gap-4">
-            <a
-              href="tel:+17029001000"
-              className="hidden sm:block text-sm text-zinc-400 hover:text-white transition-colors"
+            {/* Hamburger Menu Button */}
+            <button
+              onClick={toggleMenu}
+              className={`hamburger ${menuOpen ? 'active' : ''}`}
+              aria-label="Menu"
             >
-              (702) 900-1000
-            </a>
-            <button className="btn-gold px-4 py-2 rounded-full text-sm">
-              List Your Home
+              <span></span>
+              <span></span>
+              <span></span>
             </button>
           </div>
         </div>
-      </div>
-    </nav>
-  )
-}
 
-function NavTab({
-  to,
-  icon,
-  label,
-  active
-}: {
-  to: string
-  icon: React.ReactNode
-  label: string
-  active: boolean
-}) {
-  return (
-    <Link
-      to={to}
-      className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-        active
-          ? 'bg-[#d4af37] text-black'
-          : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-      }`}
-    >
-      {icon}
-      {label}
-    </Link>
+        {/* Mobile Menu */}
+        <div className={`mobile-menu ${menuOpen ? 'active' : ''}`}>
+          <div className="w-full h-full flex flex-col items-end justify-center space-y-6 px-8">
+            <a
+              href="/homebuyer/"
+              onClick={closeMenu}
+              className="text-white hover:text-gray-300 font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300"
+            >
+              Buy
+            </a>
+            <a
+              href="/homeseller/"
+              onClick={closeMenu}
+              className="text-white hover:text-gray-300 font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300"
+            >
+              Sell
+            </a>
+            <a
+              href="/propertymanagement/"
+              onClick={closeMenu}
+              className="text-white hover:text-gray-300 font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300"
+            >
+              Manage
+            </a>
+            <a
+              href="/about/"
+              onClick={closeMenu}
+              className="text-white hover:text-gray-300 font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300"
+            >
+              About Us
+            </a>
+            <a
+              href="/realtors/"
+              onClick={closeMenu}
+              className="text-white hover:text-gray-300 font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300"
+            >
+              Join Us
+            </a>
+          </div>
+        </div>
+      </header>
+
+      {/* Spacer for fixed header */}
+      <div className="h-20"></div>
+    </>
   )
 }
