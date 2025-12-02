@@ -1,0 +1,80 @@
+/* Main CSS File for Grand Prix Realty */
+
+/* Custom styles that complement TailwindCSS */
+.hero-gradient {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #f59e0b 100%);
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Custom hover effects */
+.hover-lift:hover {
+    transform: translateY(-2px);
+    transition: transform 0.3s ease;
+}
+
+/* Custom prose styles for content */
+.prose-custom {
+    color: #374151;
+    line-height: 1.75;
+}
+
+.prose-custom h1 {
+    color: #1e40af;
+    font-weight: 700;
+}
+
+.prose-custom h2 {
+    color: #1e40af;
+    font-weight: 600;
+}
+
+.prose-custom a {
+    color: #1e40af;
+    text-decoration: none;
+}
+
+.prose-custom a:hover {
+    color: #f59e0b;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+    .mobile-stack {
+        flex-direction: column;
+    }
+}
+
+/* Loading animation */
+.loading-spinner {
+    border: 2px solid #f3f4f6;
+    border-top: 2px solid #1e40af;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

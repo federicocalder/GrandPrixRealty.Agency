@@ -1,0 +1,705 @@
+{{ define "main" }}
+<style>
+    /* Metallic shimmer effect - only visible on text */
+    .specular-sweep {
+        position: relative;
+        display: inline-block;
+        background: linear-gradient(to right,
+                #ffffff 0%,
+                #ffffff 38%,
+                #f0f0f0 43%,
+                #d0d0d0 48%,
+                #c0c0c0 50%,
+                #d0d0d0 52%,
+                #f0f0f0 57%,
+                #ffffff 62%,
+                #ffffff 100%);
+        background-size: 200% 100%;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: metallic-shimmer 8s linear infinite;
+    }
+
+    @keyframes metallic-shimmer {
+        0% {
+            background-position: -100% center;
+        }
+
+        100% {
+            background-position: 200% center;
+        }
+    }
+
+    /* Luxury Depth Background - Cinematic Float for Section 3 */
+    .carbon-fiber-bg {
+        position: relative;
+        overflow: hidden;
+        background: #000000;
+    }
+
+    /* Brushed metal pattern */
+    .carbon-fiber-bg::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            /* Vignette gradient for depth */
+            linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.5) 100%),
+            /* Brushed metal diagonal pattern */
+            repeating-linear-gradient(45deg,
+                transparent 0px,
+                transparent 19px,
+                rgba(200, 200, 200, 0.15) 19px,
+                rgba(200, 200, 200, 0.15) 20px,
+                transparent 20px,
+                transparent 21px,
+                rgba(255, 255, 255, 0.08) 21px,
+                rgba(255, 255, 255, 0.08) 22px);
+        z-index: 0;
+    }
+
+    .carbon-fiber-bg>* {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Geometric Lines */
+    .geometric-line {
+        position: absolute;
+        height: 2px;
+        width: 100%;
+        opacity: 0.8;
+    }
+
+    /* Glass Card Effects */
+    .glass-card {
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(2.5px);
+        -webkit-backdrop-filter: blur(2.5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        pointer-events: none;
+    }
+
+    .glass-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        pointer-events: none;
+    }
+
+    /* Sheen hover effect */
+    .sheen {
+        position: absolute;
+        top: -50%;
+        left: -100%;
+        width: 100%;
+        height: 200%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: rotate(25deg);
+        transition: left 0.6s ease;
+        pointer-events: none;
+    }
+
+    .glass-card:hover .sheen {
+        left: 100%;
+    }
+</style>
+
+<div class="min-h-screen bg-black pt-20">
+
+    <!-- Hero Section -->
+    <section class="hero-section relative min-h-screen flex items-center overflow-hidden">
+        <!-- Animated background gradient -->
+        <div class="absolute inset-0 bg-black"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 relative z-10">
+            <div class="hero-content text-center space-y-6 max-w-5xl mx-auto">
+
+                <!-- Main Heading -->
+                <div class="space-y-6">
+                    <h2 class="font-cinzel font-bold text-6xl lg:text-7xl xl:text-8xl leading-tight whitespace-nowrap"
+                        style="color: #ffffff;">
+                        Your Breakthrough
+                        <br />
+                        Begins Now
+                    </h2>
+                    <h1 class="text-2xl lg:text-3xl font-light shimmer-text">
+                        Pick your move... before the market makes it for you.
+                        <br />
+                        Buy smart. Manage smooth. Sell strong. That's the Grand Prix way.
+                    </h1>
+                </div>
+
+                <!-- Scroll indicator -->
+                <div class="pt-16 animate-bounce">
+                    <svg class="w-8 h-8 mx-auto text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Cinematic Fade & Scale on Hero Section
+        gsap.to(".hero-content", {
+            scrollTrigger: {
+                trigger: ".hero-section",
+                start: "top top",
+                end: "bottom top",
+                scrub: 1,
+            },
+            opacity: 0,
+            scale: 0.95,
+            y: -50
+        });
+    </script>
+
+    <!-- Letter Section -->
+    <section class="py-20 lg:py-32 relative">
+        <div class="geometric-line home-divider"
+            style="top: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent); box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);">
+        </div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Letter Content -->
+            <div class="space-y-6 text-2xl lg:text-3xl text-white font-light leading-relaxed">
+
+                <p>Dear Friend,</p>
+
+                <p>I know.</p>
+
+                <p>It's been freakin' crazy out here.</p>
+
+                <p>Like when your ex calls you from a new number kinda crazy.</p>
+
+                <p>And trust me,</p>
+
+                <p>It's about to get crazier.</p>
+
+                <p>Rates? Higher than your neighbor's drone.</p>
+
+                <p>Property prices? Somewhere near Mars, hitching a ride on Elon's rocket.</p>
+
+                <p>Insurance? Don't even ask, it's doing its own moonwalk.</p>
+
+                <p>And rent? Man, rent's acting like it's got a record deal.</p>
+
+                <p>Inflation? Straight up freeloading on everyone's paycheck.</p>
+
+                <p>Oh lawd the math ain't mathin'!</p>
+
+                <p>Are we on another bubble?
+
+                <p>Bruh, I ain't even recovered from the last one!</p>
+
+                <p>Real talk? Nobody knows.</p>
+
+                <p>I wish I had a crystal ball, but predicting this market is like asking your drunk uncle for stock
+                    tips. Funny story, bad outcome.</p>
+
+                <p>Here's what I do know:</p>
+
+                <p>COVID didn't crash it.</p>
+
+                <p>Inflation didn't crash it.</p>
+
+                <p>The Fed raised rates like they were on a mission,
+
+                <p>And prices still strutted up like Lana at the Grammys.</p>
+
+                <p>Now Trump tweeting rates must drop back to 1%? WTH!!!</p>
+
+                <p>it's like the DJ keeps changing the beat mid-song.</p>
+
+                <p>But you?</p>
+
+                <p>You're still standing.</p>
+
+                <p>Still thinking.</p>
+
+                <p>Still plotting.</p>
+
+                <p>Still smooth with it.</p>
+
+                <p>Wondering:</p>
+
+                <p>Is now the right time to buy?</p>
+
+                <p>Should I sell before it crashes?</p>
+
+                <p>Should I remodel and rent it out?</p>
+
+                <p>OMG can I even make a move right now without misaligning my chakras?</p>
+
+                <p>You're not alone.</p>
+
+                <p>Everyone's waiting for that "perfect" time</p>
+
+                <p>But waiting for a perfect market is like waiting for gas prices to drop back to $1.50.</p>
+
+                <p>Ain't gonna happen playa.</p>
+
+                <p>But here's the truth:</p>
+
+                <p>There's no perfect market.</p>
+
+                <p>Only perfect timing for people who make moves.</p>
+
+                <p>And the right strategy beats the right timing,</p>
+
+                <p>Every single time.</p>
+
+                <p>And that's where we roll in.</p>
+
+                <p>Grand Prix Realty wasn't built for the easy cruise.</p>
+
+                <p>We were built for the fast lane.</p>
+
+                <p>The bumps, the heat, the whole ride.</p>
+
+                <p>We know how to navigate when the road gets wild.</p>
+
+                <p>We help you steer, shift, and accelerate when everyone else is slamming the brakes.</p>
+
+                <p>But let's be real,</p>
+
+                <p>This isn't just about rates, prices, or timing.</p>
+
+                <p>It's about you.</p>
+
+                <p>The dream that keeps you scrolling listings at midnight. Your thumb’s tired, but your hope ain’t.</p>
+
+                <p>The vision of a front porch where your mornings finally slow down.</p>
+
+                <p>A backyard where your kids — or your peace — can run free.</p>
+
+                <p>That kitchen where you finally host the people who matter.</p>
+
+                <p>Even if DoorDash did most of the cooking.</p>
+
+                <p>Or maybe it's even bigger — maybe it's legacy.</p>
+
+                <p>A portfolio that works while you sleep.</p>
+
+                <p>Cash flow that lets you breathe again.</p>
+
+                <p>Equity that feels like freedom.</p>
+
+                <p>The kind that lets you drop everything and go stargazing in Hawaii with the one who never stopped
+                    believing in you.</p>
+
+                <p>That's what this is about.</p>
+
+                <p>Not the chaos — the control.</p>
+
+                <p>Not the noise — the next move.</p>
+
+                <p>This isn't the time to freeze.</p>
+
+                <p>It's the time to act — cool, calm, and calculated.</p>
+
+                <p>And it all starts right here…</p>
+
+                <p>Four paths. One future. Pick your lane — we’re going wide-open.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section - Crystal Clear Buttons -->
+    <section class="py-20 lg:py-32 relative carbon-fiber-bg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Section Header -->
+            <div class="text-center mb-16 lg:mb-20">
+                <h1 class="font-cinzel text-6xl lg:text-7xl xl:text-8xl font-bold text-white mb-6 leading-tight">
+                    Your Future Is Built From This Moment Forward.
+                </h1>
+                <div class="space-y-2 text-2xl lg:text-3xl font-light text-white/80">
+                    <p>Because nothing else exists.</p>
+                    <p>Not yesterday. And definitely not "someday."</p>
+                    <p>Only Right Now... and the move you choose to make next:</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+
+                <!-- Buy Button -->
+                <a href="/homebuyer/" aria-label="Buy - Enter with confidence and strategy"
+                    class="glass-card bg-white/5 rounded-[32px] p-8 md:p-10 transition-all duration-300 will-change-transform group focus:outline-none focus:ring-2 focus:ring-white/30">
+                    <!-- Sheen layer -->
+                    <div class="sheen"></div>
+
+                    <!-- Card content -->
+                    <div class="relative z-10">
+                        <!-- Content -->
+                        <h3 class="font-cinzel text-4xl md:text-5xl font-semibold text-white mb-4 tracking-wide">
+                            Buy
+                        </h3>
+                        <p class="text-white/70 text-xl md:text-2xl font-light mb-6 leading-relaxed">
+                            Enter the market like you mean it.<br />
+                            Secure the asset. Build the foundation.
+                        </p>
+
+                        <!-- CTA -->
+                        <div class="flex items-center text-white font-medium">
+                            <span class="cta-link">Explore →</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Listing / Sell Button -->
+                <a href="/homeseller/" aria-label="Listing or Sell - Exit smart and cash in while it's hot"
+                    class="glass-card bg-white/5 rounded-[32px] p-8 md:p-10 transition-all duration-300 will-change-transform group focus:outline-none focus:ring-2 focus:ring-white/30">
+                    <!-- Sheen layer -->
+                    <div class="sheen"></div>
+
+                    <!-- Card content -->
+                    <div class="relative z-10">
+                        <!-- Content -->
+                        <h3 class="font-cinzel text-4xl md:text-5xl font-semibold text-white mb-4 tracking-wide">
+                            Sell
+                        </h3>
+                        <p class="text-white/70 text-xl md:text-2xl font-light mb-6 leading-relaxed">
+                            Cash out with precision — not panic.<br />
+                            Exit on your terms, not the market's mood.
+                        </p>
+
+                        <!-- CTA -->
+                        <div class="flex items-center text-white font-medium">
+                            <span class="cta-link">Explore →</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Management Button -->
+                <a href="/propertymanagement/" aria-label="Property Management - Get your time back and stress handled"
+                    class="glass-card bg-white/5 rounded-[32px] p-8 md:p-10 transition-all duration-300 will-change-transform group focus:outline-none focus:ring-2 focus:ring-white/30">
+                    <!-- Sheen layer -->
+                    <div class="sheen"></div>
+
+                    <!-- Card content -->
+                    <div class="relative z-10">
+                        <!-- Content -->
+                        <h3 class="font-cinzel text-4xl md:text-5xl font-semibold text-white mb-4 tracking-wide">
+                            Manage
+                        </h3>
+                        <p class="text-white/70 text-xl md:text-2xl font-light mb-6 leading-relaxed">
+                            Own the property. Not the headaches.<br />
+                            We take the keys, you keep the cash flow.
+                        </p>
+
+                        <!-- CTA -->
+                        <div class="flex items-center text-white font-medium">
+                            <span class="cta-link">Explore →</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Join Us Button -->
+                <a href="/realtors/" aria-label="Join Us - Join the team changing the game"
+                    class="glass-card bg-white/5 rounded-[32px] p-8 md:p-10 transition-all duration-300 will-change-transform group focus:outline-none focus:ring-2 focus:ring-white/30">
+                    <!-- Sheen layer -->
+                    <div class="sheen"></div>
+
+                    <!-- Card content -->
+                    <div class="relative z-10">
+                        <!-- Content -->
+                        <h3 class="font-cinzel text-4xl md:text-5xl font-semibold text-white mb-4 tracking-wide">
+                            Join Us
+                        </h3>
+                        <p class="text-white/70 text-xl md:text-2xl font-light mb-6 leading-relaxed">
+                            Realtors, step into the fast lane.<br />
+                            No more chasing crumbs — build an empire.
+                        </p>
+
+                        <!-- CTA -->
+                        <div class="flex items-center text-white font-medium">
+                            <span class="cta-link">Explore →</span>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Section #4: Buy, Manage, Sell on Your Terms -->
+    <section class="py-20 lg:py-32 relative">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <h1 class="font-cinzel text-6xl lg:text-7xl xl:text-8xl font-bold text-white mb-16 leading-tight">
+                    Buy, Manage, Sell on Your Terms.<br />
+                    This Is Where Your Deals Begin to Multiply.
+                </h1>
+            </div>
+
+            <!-- Body Copy -->
+            <div class="text-2xl lg:text-3xl text-white font-light text-center leading-[1.5]">
+                <p>No scrambling. No guessing. No "hope this works." Each step becomes clear. Each decision feels
+                    lighter. You move through the process steady, informed, and in control — with a strategy that
+                    removes the stress.</p>
+            </div>
+
+            <!-- Secondary CTA Strip -->
+            <div class="mt-16 pt-10 border-t border-white/10">
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="/homebuyer/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Buy</a>
+                    <a href="/homeseller/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Sell</a>
+                    <a href="/propertymanagement/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Manage</a>
+                    <a href="/realtors/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Join
+                        Us</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Section #5: We Are the Ones You Call -->
+    <section class="py-20 lg:py-32 relative carbon-fiber-bg">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h1 class="font-cinzel text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
+                    We Are The Brokers You Call When the Market Turns Violent.<br />
+                    When rates spike. When buyers panic. When sellers flinch.
+                </h1>
+            </div>
+            <div class="text-2xl lg:text-3xl text-white font-light text-center leading-[1.5]">
+                <p>When every "nice" agent loses their voice and their courage, we step into the arena — helmets on,
+                    shields up, blood warm and unafraid. We are Grand Prix Realty. Not influencers. Not "I just got my
+                    license last summer" agents. Not the "open house selfie" crowd. Every year, we negotiate millions in
+                    real estate transactions — in markets that have broken other brokers in half. We negotiate deals
+                    with the economy on fire and lenders praying for daylight. Because when everyone else is waiting for
+                    permission… we execute.</p>
+            </div>
+
+            <!-- Secondary CTA Strip -->
+            <div class="mt-16 pt-10 border-t border-white/10">
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="/homebuyer/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Buy</a>
+                    <a href="/homeseller/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Sell</a>
+                    <a href="/propertymanagement/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Manage</a>
+                    <a href="/realtors/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Join
+                        Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section #6: Backed by Bold Guarantees -->
+    <section class="py-20 lg:py-32 relative bg-black">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <h1 class="font-cinzel text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-16 leading-tight">
+                    How to Win in Any Market Without Breaking Your Soul. Where Guarantees Aren't Words. They're Promises
+                    Made in Steel.
+                </h1>
+            </div>
+
+            <!-- Intro Copy -->
+            <div class="text-2xl lg:text-3xl text-white font-light text-center mb-16 leading-[1.5]">
+                <p>We don't make promises we can't measure.<br />
+                    Every move, every call, every result is part of a system built on precision, discipline, and
+                    delivery.<br />
+                    This is how we operate — and why our clients stay in pole position.</p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="space-y-8">
+
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white/5 rounded-[32px] p-8 md:p-10 border border-white/10">
+                    <div class="text-2xl lg:text-3xl text-white font-light leading-[1.5]">
+                        <p class="mb-4"><strong>✅ Clear Communication. Always.</strong></p>
+                        <p>You'll never chase updates or wonder what's next.<br />
+                            Our communication system keeps you informed — fast, factual, and crystal-clear at every
+                            turn.</p>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card bg-white/5 rounded-[32px] p-8 md:p-10 border border-white/10">
+                    <div class="text-2xl lg:text-3xl text-white font-light leading-[1.5]">
+                        <p class="mb-4"><strong>🏡 Local Market Mastery.</strong></p>
+                        <p>We know this terrain — every neighborhood, every lender, every micro-trend.<br />
+                            When we speak, it's not theory. It's real-time intelligence that drives real-world results.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white/5 rounded-[32px] p-8 md:p-10 border border-white/10">
+                    <div class="text-2xl lg:text-3xl text-white font-light leading-[1.5]">
+                        <p class="mb-4"><strong>💼 Negotiation with Intent.</strong></p>
+                        <p>Our agents don't "hope" for better terms — they engineer them.<br />
+                            Years of experience. Tactical precision. Every deal optimized for your gain.</p>
+                    </div>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card bg-white/5 rounded-[32px] p-8 md:p-10 border border-white/10">
+                    <div class="text-2xl lg:text-3xl text-white font-light leading-[1.5]">
+                        <p class="mb-4"><strong>🎯 Custom-Built Strategy.</strong></p>
+                        <p>You're not a lead. You're a mission.<br />
+                            We tailor the approach to your exact goals — because cookie-cutter doesn't close in this
+                            market.</p>
+                    </div>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card bg-white/5 rounded-[32px] p-8 md:p-10 border border-white/10">
+                    <div class="text-2xl lg:text-3xl text-white font-light leading-[1.5]">
+                        <p class="mb-4"><strong>🔧 Proactive Problem-Solving.</strong></p>
+                        <p>We don't wait for issues to explode.<br />
+                            We see them coming — and handle them before they hit your radar.</p>
+                    </div>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card bg-white/5 rounded-[32px] p-8 md:p-10 border border-white/10">
+                    <div class="text-2xl lg:text-3xl text-white font-light leading-[1.5]">
+                        <p class="mb-4"><strong>🤝 Integrity Without Compromise.</strong></p>
+                        <p>Transparency isn't a selling point. It's policy.<br />
+                            Every decision is made in daylight — because your trust is our highest currency.</p>
+                    </div>
+                </div>
+
+                <!-- Feature 7 -->
+                <div class="feature-card bg-white/5 rounded-[32px] p-8 md:p-10 border border-white/10">
+                    <div class="text-2xl lg:text-3xl text-white font-light leading-[1.5]">
+                        <p class="mb-4"><strong>📈 Support That Doesn't End at Closing.</strong></p>
+                        <p>Once the ink dries, we don't disappear.<br />
+                            We keep you informed, protected, and growing — with property insights, management support,
+                            and next-move strategies that keep your wealth compounding.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Closing Statement -->
+            <div class="text-2xl lg:text-3xl text-white font-light text-center mt-16 leading-[1.5]">
+                <p>We don't react to markets. We outperform them.<br />
+                    And that's just how we roll.</p>
+            </div>
+
+            <!-- Secondary CTA Strip -->
+            <div class="mt-16 pt-10 border-t border-white/10">
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="/homebuyer/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Buy</a>
+                    <a href="/homeseller/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Sell</a>
+                    <a href="/propertymanagement/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Manage</a>
+                    <a href="/realtors/"
+                        class="font-cinzel bg-white/90 text-slate-900 font-medium text-sm md:text-base px-6 py-2.5 rounded-full border border-white/10 hover:bg-white hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300">Join
+                        Us</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        // Wait for GSAP to be fully loaded
+        window.addEventListener('load', function () {
+            // Register ScrollTrigger plugin
+            if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger);
+
+                // Animate divider line
+                gsap.from(".home-divider", {
+                    scaleX: 0,
+                    duration: 1.5,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: ".home-divider",
+                        start: "top 85%",
+                        toggleActions: "play none none reverse"
+                    }
+                });
+
+                // Option 2: Reveal with Blur (Premium/Luxury)
+                // Cards start blurred and transparent, then sharpen into focus
+                gsap.utils.toArray(".feature-card").forEach((card, index) => {
+                    gsap.fromTo(card,
+                        {
+                            opacity: 0,
+                            filter: "blur(12px)",
+                            y: 30
+                        },
+                        {
+                            opacity: 1,
+                            filter: "blur(0px)",
+                            y: 0,
+                            duration: 0.9,
+                            ease: "power2.out",
+                            scrollTrigger: {
+                                trigger: card,
+                                start: "top 85%",
+                                toggleActions: "play none none none"
+                            }
+                        }
+                    );
+                });
+
+                console.log('Feature cards animation initialized - Option 2: Reveal with Blur');
+            } else {
+                console.error('GSAP or ScrollTrigger not loaded');
+            }
+        });
+    </script>
+
+    <!-- Final CTA -->
+    <section class="py-20 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="bg-white/5 backdrop-blur-2xl rounded-3xl p-12 lg:p-16 border border-white/10">
+                <h2 class="font-display font-bold text-3xl lg:text-4xl text-white mb-6">
+                    Still Got Questions?
+                </h2>
+                <p class="text-xl text-grand-silver/80 mb-8">
+                    Let's talk. No pressure, just real answers.
+                </p>
+                <a href="/contact/"
+                    class="inline-flex items-center space-x-3 bg-white text-grand-dark px-10 py-5 rounded-2xl font-bold text-lg hover:bg-grand-silver transform hover:scale-105 transition-all duration-300 shadow-2xl">
+                    <span>Get In Touch</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+</div>
+{{ end }}

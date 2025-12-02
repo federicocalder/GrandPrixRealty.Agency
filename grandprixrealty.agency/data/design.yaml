@@ -1,0 +1,183 @@
+# Grand Prix Realty - Design System Parameters
+# This file contains all design tokens used across the website
+# These values can be referenced in Hugo templates via .Site.Data.design
+
+# Brand Colors
+colors:
+  primary:
+    blue: "#1e40af"
+    gold: "#f59e0b"
+    gray: "#6b7280"
+
+  gradients:
+    hero: "linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #f59e0b 100%)"
+    hero_tailwind: "bg-gradient-to-br from-grand-blue via-blue-600 to-grand-gold"
+
+  semantic:
+    background: "#ffffff"
+    text_primary: "#374151"
+    text_secondary: "#6b7280"
+    link: "#1e40af"
+    link_hover: "#f59e0b"
+
+  shades:
+    blue_100: "#dbeafe"
+    blue_200: "#bfdbfe"
+    blue_600: "#3b82f6"
+    blue_800: "#1e40af"
+    gray_100: "#f3f4f6"
+    gray_200: "#e5e7eb"
+    gray_700: "#374151"
+    gold_500: "#f59e0b"
+
+# Typography
+typography:
+  fonts:
+    sans:
+      name: "Inter"
+      family: "'Inter', ui-sans-serif, system-ui"
+      weights: [300, 400, 500, 600, 700]
+      google_url: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+
+    display:
+      name: "Poppins"
+      family: "'Poppins', ui-sans-serif, system-ui"
+      weights: [300, 400, 500, 600, 700, 800]
+      google_url: "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+
+  sizes:
+    xs: "0.75rem"      # 12px
+    sm: "0.875rem"     # 14px
+    base: "1rem"       # 16px
+    lg: "1.125rem"     # 18px
+    xl: "1.25rem"      # 20px
+    "2xl": "1.5rem"    # 24px
+    "3xl": "1.875rem"  # 30px
+    "4xl": "2.25rem"   # 36px
+    "5xl": "3rem"      # 48px
+    "6xl": "3.75rem"   # 60px
+
+  line_height:
+    tight: 1.25
+    normal: 1.5
+    relaxed: 1.75
+
+  font_weights:
+    light: 300
+    regular: 400
+    medium: 500
+    semibold: 600
+    bold: 700
+    extrabold: 800
+
+# Spacing
+spacing:
+  base: "1rem"  # 16px
+  scale:
+    0: "0"
+    1: "0.25rem"   # 4px
+    2: "0.5rem"    # 8px
+    3: "0.75rem"   # 12px
+    4: "1rem"      # 16px
+    5: "1.25rem"   # 20px
+    6: "1.5rem"    # 24px
+    8: "2rem"      # 32px
+    10: "2.5rem"   # 40px
+    12: "3rem"     # 48px
+    16: "4rem"     # 64px
+    20: "5rem"     # 80px
+    24: "6rem"     # 96px
+
+# Border Radius
+radius:
+  none: "0"
+  sm: "0.125rem"   # 2px
+  base: "0.25rem"  # 4px
+  md: "0.375rem"   # 6px
+  lg: "0.5rem"     # 8px
+  xl: "0.75rem"    # 12px
+  "2xl": "1rem"    # 16px
+  full: "9999px"
+
+# Shadows
+shadows:
+  sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)"
+  base: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)"
+  md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)"
+  lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
+  xl: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
+  "2xl": "0 25px 50px -12px rgb(0 0 0 / 0.25)"
+
+# Breakpoints (following Tailwind defaults)
+breakpoints:
+  sm: "640px"
+  md: "768px"
+  lg: "1024px"
+  xl: "1280px"
+  "2xl": "1536px"
+
+# Animation Timing
+animations:
+  duration:
+    fast: "0.15s"
+    base: "0.3s"
+    slow: "0.6s"
+    slower: "1s"
+
+  easing:
+    linear: "linear"
+    ease_in: "cubic-bezier(0.4, 0, 1, 1)"
+    ease_out: "cubic-bezier(0, 0, 0.2, 1)"
+    ease_in_out: "cubic-bezier(0.4, 0, 0.2, 1)"
+    power2_out: "power2.out"  # GSAP
+
+# Layout
+layout:
+  max_width: "1280px"  # 7xl container
+  content_width: "768px"
+  sidebar_width: "320px"
+  gutter: "1rem"
+
+# Components
+components:
+  button:
+    padding:
+      sm: "0.5rem 1rem"
+      base: "0.75rem 1.5rem"
+      lg: "1rem 2rem"
+    radius: "0.5rem"
+
+  card:
+    padding: "1.5rem"
+    radius: "0.5rem"
+    shadow: "lg"
+
+  input:
+    padding: "0.75rem 1rem"
+    radius: "0.375rem"
+    border_color: "#e5e7eb"
+
+# Brand Stats (for homepage)
+stats:
+  homes_sold: "500+"
+  years_experience: "15+"
+  client_satisfaction: "98%"
+
+# Contact Information
+contact:
+  location: "Las Vegas, Nevada"
+  phone: ""  # To be added
+  email: ""  # To be added
+
+# Social Media
+social:
+  twitter:
+    handle: "@grandprixrealty"
+    url: "https://twitter.com/grandprixrealty"
+  # Add more as needed
+
+# SEO Defaults
+seo:
+  og_image: "/images/og-image.jpg"
+  twitter_card: "summary_large_image"
+  keywords: "Las Vegas real estate, property management, home buying, home selling, mortgage"

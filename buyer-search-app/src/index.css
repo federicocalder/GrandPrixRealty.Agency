@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Shimmer text effect */
+@keyframes shimmer-letters {
+  0% {
+    background-position: -100% center;
+  }
+  100% {
+    background-position: 100% center;
+  }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    to right,
+    rgba(229, 229, 229, 0.5) 0%,
+    rgba(229, 229, 229, 0.5) 30%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(229, 229, 229, 0.5) 70%,
+    rgba(229, 229, 229, 0.5) 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer-letters 3s ease-in-out infinite;
+}

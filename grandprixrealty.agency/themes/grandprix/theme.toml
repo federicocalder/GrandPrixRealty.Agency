@@ -1,0 +1,14 @@
+name = "Grand Prix"
+license = "MIT"
+licenselink = "https://github.com/federicocalder/grandprixrealty.agency/blob/main/LICENSE"
+description = "Modern Hugo theme with TailwindCSS, GSAP, and Alpine.js"
+homepage = "https://grandprixrealty.agency"
+demosite = "https://grandprixrealty.agency"
+tags = ["real-estate", "business", "tailwindcss", "gsap", "alpine-js"]
+features = ["responsive", "animations", "seo-optimized", "performance"]
+
+[author]
+  name = "Federico Calderon"
+  homepage = "https://grandprixrealty.agency"
+
+min_version = "0.112.0"

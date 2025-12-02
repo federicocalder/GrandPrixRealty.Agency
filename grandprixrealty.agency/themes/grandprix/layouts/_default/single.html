@@ -1,0 +1,39 @@
+{{ define "main" }}
+<div class="min-h-screen">
+    <!-- Page Header -->
+    <section class="bg-gradient-to-r from-grand-blue to-blue-700 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center text-white space-y-4">
+                <h1 class="font-display font-bold text-4xl lg:text-5xl">{{ .Title }}</h1>
+                {{ if .Description }}
+                <p class="text-xl text-blue-100 max-w-3xl mx-auto">{{ .Description }}</p>
+                {{ end }}
+            </div>
+        </div>
+    </section>
+
+    <!-- Page Content -->
+    <section class="py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="prose prose-lg prose-blue max-w-none">
+                {{ .Content }}
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="space-y-6">
+                <h2 class="font-display font-bold text-3xl text-gray-900">Ready to Work Together?</h2>
+                <p class="text-lg text-gray-600">
+                    Contact Grand Prix Realty today for professional real estate services in Las Vegas.
+                </p>
+                <a href="/contact/" class="inline-block bg-gradient-to-r from-grand-blue to-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                    Get In Touch
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{{ end }}

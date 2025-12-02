@@ -1,0 +1,133 @@
+<style>
+    /* Mobile menu styles */
+    .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000000;
+        z-index: 50;
+    }
+
+    .mobile-menu.active {
+        display: block;
+    }
+
+    /* Disable scroll when menu is open */
+    body.menu-open {
+        overflow: hidden;
+    }
+
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        padding: 8px;
+        position: relative;
+        z-index: 70;
+    }
+
+    .hamburger span {
+        display: block;
+        width: 24px;
+        height: 3px;
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+    .hamburger.active span:nth-child(1) {
+        transform: rotate(45deg) translate(7px, 7px);
+        background: white;
+    }
+
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px, -7px);
+        background: white;
+    }
+</style>
+
+<!-- Header Navigation -->
+<header style="background-color: #000000;" class="fixed top-0 left-0 right-0 z-[60]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+
+            <!-- Logo Section (Left) -->
+            <div class="flex items-center space-x-3">
+                <a href="/" class="flex items-center space-x-3">
+                    <!-- Logo Image -->
+                    <div class="w-16 h-16 flex items-center justify-center">
+                        <img src="/images/logo.webp" alt="Grand Prix Realty Logo" class="w-16 h-16 object-contain">
+                    </div>
+                    <!-- Logo Text -->
+                    <div>
+                        <h2 class="font-cinzel font-bold text-white text-2xl">
+                            Grand Prix Realty
+                        </h2>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Hamburger Menu Button (Right) -->
+            <button id="menuToggle" class="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Dropdown -->
+    <div id="mobileMenu" class="mobile-menu">
+        <div class="w-full h-full flex flex-col items-end justify-center space-y-6 px-8">
+            <!-- Navigation Links -->
+            <a href="/homebuyer/" class="text-white hover:text-grand-silver font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300">
+                Buy
+            </a>
+            <a href="/homeseller/" class="text-white hover:text-grand-silver font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300">
+                Sell
+            </a>
+            <a href="/propertymanagement/" class="text-white hover:text-grand-silver font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300">
+                Manage
+            </a>
+            <a href="/about/" class="text-white hover:text-grand-silver font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300">
+                About Us
+            </a>
+            <a href="/realtors/" class="text-white hover:text-grand-silver font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300">
+                Join Us
+            </a>
+        </div>
+    </div>
+</header>
+
+<script>
+    // Simple menu toggle without Alpine.js dependency
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        if (menuToggle && mobileMenu) {
+            menuToggle.addEventListener('click', function() {
+                menuToggle.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                document.body.classList.toggle('menu-open');
+            });
+
+            // Close menu when clicking a link
+            const menuLinks = mobileMenu.querySelectorAll('a');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    menuToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    document.body.classList.remove('menu-open');
+                });
+            });
+        }
+    });
+</script>

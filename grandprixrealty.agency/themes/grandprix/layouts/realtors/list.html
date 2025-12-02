@@ -1,0 +1,226 @@
+{{ define "main" }}
+
+<style>
+    /* Shimmer Text Effect */
+    .shimmer-text {
+        background: linear-gradient(
+            to right,
+            rgba(229, 229, 229, 0.5) 0%,
+            rgba(229, 229, 229, 0.5) 30%,
+            rgba(255, 255, 255, 1) 50%,
+            rgba(229, 229, 229, 0.5) 70%,
+            rgba(229, 229, 229, 0.5) 100%
+        );
+        background-size: 200% 100%;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmer-letters 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer-letters {
+        0% {
+            background-position: -100% center;
+        }
+        100% {
+            background-position: 100% center;
+        }
+    }
+
+    /* Glass Card Effects */
+    .glass-card {
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(2.5px);
+        -webkit-backdrop-filter: blur(2.5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.6),
+            transparent
+        );
+        pointer-events: none;
+    }
+
+    .glass-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+        );
+        pointer-events: none;
+    }
+
+    .sheen {
+        position: absolute;
+        top: -50%;
+        left: -100%;
+        width: 100%;
+        height: 200%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent
+        );
+        transform: rotate(25deg);
+        transition: left 0.6s ease;
+    }
+
+    .glass-card:hover .sheen {
+        left: 100%;
+    }
+
+    /* Geometric corners */
+    .geometric-corner {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        pointer-events: none;
+    }
+
+    .corner-tl { top: 10%; left: 5%; border-right: none; border-bottom: none; }
+    .corner-tr { top: 10%; right: 5%; border-left: none; border-bottom: none; }
+    .corner-bl { bottom: 10%; left: 5%; border-right: none; border-top: none; }
+    .corner-br { bottom: 10%; right: 5%; border-left: none; border-top: none; }
+
+    /* Diagonal Pattern Background */
+    .diagonal-pattern {
+        background-image: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 50px,
+            rgba(255, 255, 255, 0.03) 50px,
+            rgba(255, 255, 255, 0.03) 51px
+        );
+    }
+
+    /* Geometric line divider */
+    .geometric-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    /* Performance optimizations */
+    .parallax-slow { will-change: transform; }
+    .parallax-medium { will-change: transform; }
+    .parallax-fast { will-change: transform; }
+</style>
+
+<div class="min-h-screen bg-black relative overflow-hidden">
+
+    <!-- Animated Diagonal Pattern Background -->
+    <div class="diagonal-pattern fixed inset-0 pointer-events-none opacity-20"></div>
+
+    <!-- Hero Section with Parallax -->
+    <section class="hero-section relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+
+        <!-- Geometric Decorative Elements -->
+        <div class="geometric-corner corner-tl parallax-slow"></div>
+        <div class="geometric-corner corner-tr parallax-slow"></div>
+        <div class="geometric-corner corner-bl parallax-slow"></div>
+        <div class="geometric-corner corner-br parallax-slow"></div>
+
+        <!-- Background Gradient -->
+        <div class="absolute inset-0 bg-black"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 relative z-10">
+            <div class="text-center space-y-4 hero-content">
+
+                <!-- H2 Subtitle -->
+                <h2 class="font-cinzel font-bold text-6xl lg:text-7xl xl:text-8xl leading-tight text-white">
+                    Pure Nitro
+                    <br/>
+                    For Agents
+                </h2>
+
+                <!-- Main H1 - SEO Optimized -->
+                <h1 class="text-xl lg:text-2xl font-light shimmer-text mt-8">
+                    Ignite your real estate career with precision systems, high-impact marketing, and AI-powered technology that converts effort into exponential results.
+                    <br/>
+                    This isn't a brokerage — it's a launchpad for agents ready to dominate their market.
+                    <br/>
+                    Scale faster. Close smarter. Lead the pack.
+                </h1>
+
+                <!-- CTA Button -->
+                <div class="pt-12">
+                    <a href="/contact/" class="glass-card inline-flex items-center space-x-3 bg-white/5 text-white px-12 py-6 rounded-full font-bold text-xl transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+                        <!-- Sheen layer -->
+                        <div class="sheen"></div>
+
+                        <!-- Button content -->
+                        <span class="relative z-10">Join Our Team</span>
+                        <svg class="w-6 h-6 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Scroll Indicator -->
+                <div class="pt-16 animate-bounce">
+                    <svg class="w-8 h-8 mx-auto text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+// Wait for GSAP to be fully loaded
+window.addEventListener('load', function() {
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Cinematic Fade & Scale on Hero Section (scroll down effect)
+        gsap.to(".hero-content", {
+            scrollTrigger: {
+                trigger: ".hero-section",
+                start: "top top",
+                end: "bottom top",
+                scrub: 1,
+            },
+            opacity: 0,
+            scale: 0.95,
+            y: -50
+        });
+
+        // Parallax Effects
+        gsap.to(".parallax-slow", {
+            y: 100,
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1
+            }
+        });
+    }
+});
+</script>
+
+{{ end }}

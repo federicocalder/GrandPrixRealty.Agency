@@ -1,0 +1,59 @@
+{{ define "main" }}
+<div class="min-h-screen">
+    <!-- Page Header -->
+    <section class="bg-gradient-to-r from-grand-charcoal to-grand-steel py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center text-white space-y-4">
+                <h1 class="font-cinzel font-bold text-4xl lg:text-5xl">{{ .Title }}</h1>
+                {{ if .Description }}
+                <p class="text-xl text-grand-silver max-w-3xl mx-auto">{{ .Description }}</p>
+                {{ end }}
+            </div>
+        </div>
+    </section>
+
+    <!-- Page Content -->
+    <section class="py-16 bg-grand-dark">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="prose prose-lg prose-invert max-w-none">
+                {{ .Content }}
+            </div>
+        </div>
+    </section>
+
+    <!-- List of Child Pages (if any) -->
+    {{ if .Pages }}
+    <section class="py-16 bg-grand-charcoal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {{ range .Pages }}
+                <a href="{{ .Permalink }}" class="glass-card bg-grand-steel/50 rounded-2xl p-6 transition-all duration-300 block">
+                    <div class="sheen"></div>
+                    <h3 class="font-display font-bold text-xl text-white mb-2">{{ .Title }}</h3>
+                    {{ if .Description }}
+                    <p class="text-grand-silver text-sm">{{ .Description }}</p>
+                    {{ end }}
+                    <span class="cta-link text-grand-silver text-sm mt-4 inline-block">Read more &rarr;</span>
+                </a>
+                {{ end }}
+            </div>
+        </div>
+    </section>
+    {{ end }}
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-grand-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="space-y-6">
+                <h2 class="font-display font-bold text-3xl text-white">Ready to Work Together?</h2>
+                <p class="text-lg text-grand-silver">
+                    Contact Grand Prix Realty today for professional real estate services in Las Vegas.
+                </p>
+                <a href="/contact/" class="inline-block bg-gradient-to-r from-grand-charcoal to-grand-steel text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 border border-grand-silver/20">
+                    Get In Touch
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{{ end }}

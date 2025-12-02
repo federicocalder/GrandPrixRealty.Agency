@@ -1,0 +1,783 @@
+{{ define "main" }}
+
+<style>
+    /* Shimmer Text Effect */
+    .shimmer-text {
+        background: linear-gradient(
+            to right,
+            rgba(229, 229, 229, 0.5) 0%,
+            rgba(229, 229, 229, 0.5) 30%,
+            rgba(255, 255, 255, 1) 50%,
+            rgba(229, 229, 229, 0.5) 70%,
+            rgba(229, 229, 229, 0.5) 100%
+        );
+        background-size: 200% 100%;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmer-letters 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer-letters {
+        0% { background-position: -100% center; }
+        100% { background-position: 100% center; }
+    }
+
+    /* Glass Card Effects */
+    .glass-card {
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(2.5px);
+        -webkit-backdrop-filter: blur(2.5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        pointer-events: none;
+    }
+
+    .glass-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        pointer-events: none;
+    }
+
+    .sheen {
+        position: absolute;
+        top: -50%;
+        left: -100%;
+        width: 100%;
+        height: 200%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: rotate(25deg);
+        transition: left 0.6s ease;
+    }
+
+    .glass-card:hover .sheen {
+        left: 100%;
+    }
+
+    /* Geometric corners */
+    .geometric-corner {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        pointer-events: none;
+    }
+
+    .corner-tl { top: 10%; left: 5%; border-right: none; border-bottom: none; }
+    .corner-tr { top: 10%; right: 5%; border-left: none; border-bottom: none; }
+    .corner-bl { bottom: 10%; left: 5%; border-right: none; border-top: none; }
+    .corner-br { bottom: 10%; right: 5%; border-left: none; border-top: none; }
+
+    /* Background Patterns */
+    .diagonal-pattern {
+        background-image: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 50px,
+            rgba(255, 255, 255, 0.03) 50px,
+            rgba(255, 255, 255, 0.03) 51px
+        );
+    }
+
+    .grid-pattern {
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 60px 60px;
+    }
+
+    .radial-gradient-bg {
+        background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+    }
+
+    .gradient-mesh {
+        background:
+            radial-gradient(at 40% 20%, rgba(120, 119, 198, 0.1) 0px, transparent 50%),
+            radial-gradient(at 80% 0%, rgba(75, 85, 99, 0.15) 0px, transparent 50%),
+            radial-gradient(at 0% 50%, rgba(120, 119, 198, 0.1) 0px, transparent 50%),
+            radial-gradient(at 80% 50%, rgba(75, 85, 99, 0.1) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, rgba(120, 119, 198, 0.1) 0px, transparent 50%);
+    }
+
+    .noise-overlay {
+        position: absolute;
+        inset: 0;
+        opacity: 0.4;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+
+    .horizontal-lines {
+        background-image: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 40px,
+            rgba(255, 255, 255, 0.02) 40px,
+            rgba(255, 255, 255, 0.02) 41px
+        );
+    }
+
+    /* Geometric line divider */
+    .geometric-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    /* Feature card animation */
+    .feature-card {
+        opacity: 0;
+        transform: translateY(30px) blur(12px);
+    }
+
+    /* Performance optimizations */
+    .parallax-slow { will-change: transform; }
+
+    /* Floating elements animation */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .float-slow {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .float-medium {
+        animation: float 4s ease-in-out infinite;
+        animation-delay: 1s;
+    }
+
+    /* Gradient text */
+    .gradient-text {
+        background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Icon styling */
+    .icon-box {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Process step connector */
+    .step-connector {
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    /* Stat card glow */
+    .stat-glow {
+        box-shadow: 0 0 60px rgba(255, 255, 255, 0.05);
+    }
+</style>
+
+<div class="min-h-screen bg-black relative overflow-hidden">
+
+    <!-- ============================================ -->
+    <!-- SECTION 1: HERO - Geometric Corners Pattern -->
+    <!-- ============================================ -->
+    <section class="hero-section relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+
+        <!-- Diagonal Pattern Background -->
+        <div class="diagonal-pattern absolute inset-0 pointer-events-none opacity-30"></div>
+
+        <!-- Geometric Decorative Elements -->
+        <div class="geometric-corner corner-tl parallax-slow"></div>
+        <div class="geometric-corner corner-tr parallax-slow"></div>
+        <div class="geometric-corner corner-bl parallax-slow"></div>
+        <div class="geometric-corner corner-br parallax-slow"></div>
+
+        <!-- Background Gradient -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black via-black to-zinc-950"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 relative z-10">
+            <div class="text-center space-y-4 hero-content">
+
+                <!-- H2 Subtitle -->
+                <h2 class="font-cinzel font-bold text-6xl lg:text-7xl xl:text-8xl leading-tight text-white">
+                    Deals Done
+                    <br/>
+                    Surgical Clean
+                </h2>
+
+                <!-- Main H1 - SEO Optimized -->
+                <h1 class="text-xl lg:text-2xl font-light shimmer-text mt-8 max-w-4xl mx-auto">
+                    Every home search starts with a vision. We turn yours into reality with data-driven precision,
+                    expert negotiation, and a buying experience built for winners.
+                </h1>
+
+                <!-- CTA Button -->
+                <div class="pt-12">
+                    <a href="http://localhost:5173/" class="glass-card inline-flex items-center space-x-3 bg-white/5 text-white px-12 py-6 rounded-full font-bold text-xl transform hover:scale-105 transition-all duration-300 relative overflow-hidden">
+                        <!-- Sheen layer -->
+                        <div class="sheen"></div>
+
+                        <!-- Button content -->
+                        <span class="relative z-10">Search Homes</span>
+                        <svg class="w-6 h-6 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- Scroll Indicator -->
+                <div class="pt-16 animate-bounce">
+                    <svg class="w-8 h-8 mx-auto text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 2: LETTER TO BUYERS - Horizontal Lines Background -->
+    <!-- ============================================ -->
+    <section class="relative py-32 overflow-hidden">
+
+        <!-- Dark base -->
+        <div class="absolute inset-0 bg-black"></div>
+
+        <!-- Horizontal lines pattern -->
+        <div class="horizontal-lines absolute inset-0 pointer-events-none opacity-60"></div>
+
+        <!-- Gradient mesh for depth -->
+        <div class="gradient-mesh absolute inset-0 opacity-50"></div>
+
+        <!-- Subtle corner accents -->
+        <div class="absolute top-20 left-10 w-40 h-40 border-l border-t border-white/10"></div>
+        <div class="absolute bottom-20 right-10 w-40 h-40 border-r border-b border-white/10"></div>
+
+        <!-- Top divider -->
+        <div class="geometric-line top-0"></div>
+
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+            <!-- Letter Content -->
+            <div class="space-y-8 text-2xl lg:text-3xl text-white font-light leading-relaxed text-left">
+
+                <p class="font-cinzel text-3xl lg:text-4xl">Dear Homebuyer,</p>
+
+                <p>A home is not just a place.</p>
+
+                <p>It's the quiet proof that imagination, perseverance, and belief can shape reality.</p>
+
+                <p>Like every extraordinary moment in history, your next chapter isn't built on impulse, but on vision, courage, and the refusal to settle.</p>
+
+                <p>And know that you don't walk this path alone.</p>
+
+                <p>Every step forward is guided, supported, and strengthened by those who honor the weight of your dream.</p>
+
+                <p>Dare to imagine more.</p>
+
+                <p>Dare to claim it.</p>
+
+                <p>Because what can be imagined can be achieved… especially when intention meets action.</p>
+
+                <p class="shimmer-text pt-4">Welcome to the beginning of the life you've been becoming.</p>
+
+            </div>
+
+        </div>
+
+        <!-- Bottom divider -->
+        <div class="geometric-line bottom-0"></div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 3: WHY BUY WITH US - Grid Pattern -->
+    <!-- ============================================ -->
+    <section class="relative py-32 overflow-hidden">
+
+        <!-- Grid Pattern Background -->
+        <div class="grid-pattern absolute inset-0 pointer-events-none"></div>
+
+        <!-- Radial Gradient Overlay -->
+        <div class="radial-gradient-bg absolute inset-0"></div>
+
+        <!-- Top divider -->
+        <div class="geometric-line top-0"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+            <!-- Section Header -->
+            <div class="text-center mb-20">
+                <h2 class="font-cinzel font-bold text-4xl lg:text-5xl xl:text-6xl text-white mb-6">
+                    Why Buy With Grand Prix
+                </h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    We don't just find homes. We engineer victories.
+                </p>
+            </div>
+
+            <!-- Value Props Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                <!-- Card 1 -->
+                <div class="feature-card glass-card bg-white/5 rounded-3xl p-8 transition-all duration-300 hover:bg-white/10">
+                    <div class="sheen"></div>
+                    <div class="relative z-10">
+                        <div class="icon-box w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-cinzel text-2xl text-white font-bold mb-4">Data-Driven Precision</h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            Real-time market analytics and AI-powered insights ensure you never overpay. We know the numbers before the sellers do.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="feature-card glass-card bg-white/5 rounded-3xl p-8 transition-all duration-300 hover:bg-white/10">
+                    <div class="sheen"></div>
+                    <div class="relative z-10">
+                        <div class="icon-box w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-cinzel text-2xl text-white font-bold mb-4">Negotiation Warfare</h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            Our agents are trained in advanced negotiation tactics. We don't ask for better deals — we engineer them.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="feature-card glass-card bg-white/5 rounded-3xl p-8 transition-all duration-300 hover:bg-white/10">
+                    <div class="sheen"></div>
+                    <div class="relative z-10">
+                        <div class="icon-box w-16 h-16 rounded-2xl flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-cinzel text-2xl text-white font-bold mb-4">Speed to Close</h3>
+                        <p class="text-gray-400 leading-relaxed">
+                            While others fumble with paperwork, we execute. Our streamlined process gets you from offer to keys faster than anyone.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bottom divider -->
+        <div class="geometric-line bottom-0"></div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 3: THE PROCESS - Gradient Mesh -->
+    <!-- ============================================ -->
+    <section class="relative py-32 overflow-hidden bg-zinc-950">
+
+        <!-- Gradient Mesh Background -->
+        <div class="gradient-mesh absolute inset-0"></div>
+
+        <!-- Horizontal Lines Pattern -->
+        <div class="horizontal-lines absolute inset-0 pointer-events-none opacity-50"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+            <!-- Section Header -->
+            <div class="text-center mb-20">
+                <h2 class="font-cinzel font-bold text-4xl lg:text-5xl xl:text-6xl text-white mb-6">
+                    Your Path to Victory
+                </h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    A battle-tested process that puts you in the winner's circle.
+                </p>
+            </div>
+
+            <!-- Process Steps -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+                <!-- Step 1 -->
+                <div class="feature-card text-center relative">
+                    <div class="glass-card bg-white/5 rounded-3xl p-8 h-full">
+                        <div class="sheen"></div>
+                        <div class="relative z-10">
+                            <div class="text-6xl font-cinzel font-bold text-white/20 mb-4">01</div>
+                            <h3 class="font-cinzel text-xl text-white font-bold mb-3">Discovery</h3>
+                            <p class="text-gray-400 text-sm">
+                                We learn your vision, timeline, and non-negotiables. Every detail matters.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="feature-card text-center relative">
+                    <div class="glass-card bg-white/5 rounded-3xl p-8 h-full">
+                        <div class="sheen"></div>
+                        <div class="relative z-10">
+                            <div class="text-6xl font-cinzel font-bold text-white/20 mb-4">02</div>
+                            <h3 class="font-cinzel text-xl text-white font-bold mb-3">Intelligence</h3>
+                            <p class="text-gray-400 text-sm">
+                                Our systems scan the market 24/7. You see opportunities before they hit Zillow.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="feature-card text-center relative">
+                    <div class="glass-card bg-white/5 rounded-3xl p-8 h-full">
+                        <div class="sheen"></div>
+                        <div class="relative z-10">
+                            <div class="text-6xl font-cinzel font-bold text-white/20 mb-4">03</div>
+                            <h3 class="font-cinzel text-xl text-white font-bold mb-3">Execution</h3>
+                            <p class="text-gray-400 text-sm">
+                                Strategic offers, tactical negotiations, and precision timing. We play to win.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="feature-card text-center relative">
+                    <div class="glass-card bg-white/5 rounded-3xl p-8 h-full">
+                        <div class="sheen"></div>
+                        <div class="relative z-10">
+                            <div class="text-6xl font-cinzel font-bold text-white/20 mb-4">04</div>
+                            <h3 class="font-cinzel text-xl text-white font-bold mb-3">Victory</h3>
+                            <p class="text-gray-400 text-sm">
+                                Keys in hand. Deal closed. Another win in the books. Welcome home.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 4: MARKET INTELLIGENCE - Noise Texture -->
+    <!-- ============================================ -->
+    <section class="relative py-32 overflow-hidden">
+
+        <!-- Dark gradient base -->
+        <div class="absolute inset-0 bg-gradient-to-b from-zinc-950 via-black to-zinc-950"></div>
+
+        <!-- Noise texture overlay -->
+        <div class="noise-overlay opacity-20"></div>
+
+        <!-- Floating geometric elements -->
+        <div class="absolute top-20 left-10 w-32 h-32 border border-white/10 rotate-45 float-slow"></div>
+        <div class="absolute bottom-40 right-20 w-24 h-24 border border-white/10 rotate-12 float-medium"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+                <!-- Left: Content -->
+                <div class="feature-card">
+                    <h2 class="font-cinzel font-bold text-4xl lg:text-5xl text-white mb-6">
+                        Market Intelligence.<br/>
+                        <span class="gradient-text">Unfair Advantage.</span>
+                    </h2>
+                    <p class="text-xl text-gray-400 mb-8 leading-relaxed">
+                        While other buyers rely on outdated listings and guesswork, you'll have access to real-time
+                        market data, predictive analytics, and insights that give you a decisive edge.
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-center space-x-3 text-gray-300">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Real-time MLS integration</span>
+                        </li>
+                        <li class="flex items-center space-x-3 text-gray-300">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Price history & trend analysis</span>
+                        </li>
+                        <li class="flex items-center space-x-3 text-gray-300">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Neighborhood intelligence reports</span>
+                        </li>
+                        <li class="flex items-center space-x-3 text-gray-300">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            <span>Off-market opportunity alerts</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Right: Stats Cards -->
+                <div class="feature-card grid grid-cols-2 gap-6">
+                    <div class="glass-card stat-glow bg-white/5 rounded-3xl p-8 text-center">
+                        <div class="sheen"></div>
+                        <div class="relative z-10">
+                            <div class="text-5xl font-cinzel font-bold text-white mb-2">98%</div>
+                            <p class="text-gray-400 text-sm">Offer Acceptance Rate</p>
+                        </div>
+                    </div>
+                    <div class="glass-card stat-glow bg-white/5 rounded-3xl p-8 text-center">
+                        <div class="sheen"></div>
+                        <div class="relative z-10">
+                            <div class="text-5xl font-cinzel font-bold text-white mb-2">21</div>
+                            <p class="text-gray-400 text-sm">Avg. Days to Close</p>
+                        </div>
+                    </div>
+                    <div class="glass-card stat-glow bg-white/5 rounded-3xl p-8 text-center">
+                        <div class="sheen"></div>
+                        <div class="relative z-10">
+                            <div class="text-5xl font-cinzel font-bold text-white mb-2">$47K</div>
+                            <p class="text-gray-400 text-sm">Avg. Savings Negotiated</p>
+                        </div>
+                    </div>
+                    <div class="glass-card stat-glow bg-white/5 rounded-3xl p-8 text-center">
+                        <div class="sheen"></div>
+                        <div class="relative z-10">
+                            <div class="text-5xl font-cinzel font-bold text-white mb-2">500+</div>
+                            <p class="text-gray-400 text-sm">Deals Closed</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 5: GUARANTEES - Diagonal Pattern -->
+    <!-- ============================================ -->
+    <section class="relative py-32 overflow-hidden bg-zinc-950">
+
+        <!-- Diagonal Pattern -->
+        <div class="diagonal-pattern absolute inset-0 pointer-events-none opacity-40"></div>
+
+        <!-- Radial glow -->
+        <div class="absolute inset-0 bg-radial-gradient from-white/5 to-transparent opacity-30"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+            <!-- Section Header -->
+            <div class="text-center mb-20">
+                <h2 class="font-cinzel font-bold text-4xl lg:text-5xl xl:text-6xl text-white mb-6">
+                    Our Promises.<br/>Made in Steel.
+                </h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    These aren't marketing slogans. They're guarantees we stake our reputation on.
+                </p>
+            </div>
+
+            <!-- Guarantees Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                <!-- Guarantee 1 -->
+                <div class="feature-card glass-card bg-white/5 rounded-3xl p-10 transition-all duration-300 hover:bg-white/10">
+                    <div class="sheen"></div>
+                    <div class="relative z-10 flex items-start space-x-6">
+                        <div class="icon-box w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-2xl text-white font-bold mb-3">No Pressure. Ever.</h3>
+                            <p class="text-gray-400">
+                                Take your time. We're here when you're ready, not pushing you to close before you're confident.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guarantee 2 -->
+                <div class="feature-card glass-card bg-white/5 rounded-3xl p-10 transition-all duration-300 hover:bg-white/10">
+                    <div class="sheen"></div>
+                    <div class="relative z-10 flex items-start space-x-6">
+                        <div class="icon-box w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-2xl text-white font-bold mb-3">Transparent Fees</h3>
+                            <p class="text-gray-400">
+                                No hidden costs. No surprises at closing. You'll know exactly what you're paying and why.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guarantee 3 -->
+                <div class="feature-card glass-card bg-white/5 rounded-3xl p-10 transition-all duration-300 hover:bg-white/10">
+                    <div class="sheen"></div>
+                    <div class="relative z-10 flex items-start space-x-6">
+                        <div class="icon-box w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-2xl text-white font-bold mb-3">24-Hour Response</h3>
+                            <p class="text-gray-400">
+                                Questions don't wait for business hours. Neither do we. You'll always get a response within 24 hours.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guarantee 4 -->
+                <div class="feature-card glass-card bg-white/5 rounded-3xl p-10 transition-all duration-300 hover:bg-white/10">
+                    <div class="sheen"></div>
+                    <div class="relative z-10 flex items-start space-x-6">
+                        <div class="icon-box w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-2xl text-white font-bold mb-3">Your Best Interest. Always.</h3>
+                            <p class="text-gray-400">
+                                We'd rather lose a deal than put you in a bad one. Your long-term success is our only metric.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- SECTION 6: FINAL CTA - Clean with Glow -->
+    <!-- ============================================ -->
+    <section class="relative py-32 overflow-hidden">
+
+        <!-- Background -->
+        <div class="absolute inset-0 bg-black"></div>
+
+        <!-- Central glow effect -->
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-[600px] h-[600px] bg-white/5 rounded-full blur-3xl"></div>
+        </div>
+
+        <!-- Grid pattern subtle -->
+        <div class="grid-pattern absolute inset-0 pointer-events-none opacity-10"></div>
+
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+
+            <div class="feature-card">
+                <h2 class="font-cinzel font-bold text-4xl lg:text-5xl xl:text-6xl text-white mb-8">
+                    Your Dream Home<br/>Is Waiting
+                </h2>
+
+                <p class="text-xl lg:text-2xl text-gray-400 mb-12 max-w-2xl mx-auto">
+                    Stop scrolling through endless listings. Start working with a team that knows how to win.
+                </p>
+
+                <!-- Primary CTA -->
+                <a href="http://localhost:5173/" class="glass-card inline-flex items-center space-x-3 bg-white/10 text-white px-14 py-7 rounded-full font-bold text-2xl transform hover:scale-105 transition-all duration-300 relative overflow-hidden mb-8">
+                    <div class="sheen"></div>
+                    <span class="relative z-10">Search Homes Now</span>
+                    <svg class="w-7 h-7 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
+
+                <!-- Secondary CTA -->
+                <p class="text-gray-500">
+                    Or <a href="/contact/" class="text-white underline hover:no-underline transition-all">schedule a consultation</a> with our team.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+
+<script>
+// Wait for GSAP to be fully loaded
+window.addEventListener('load', function() {
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Cinematic Fade & Scale on Hero Section (scroll down effect)
+        gsap.to(".hero-content", {
+            scrollTrigger: {
+                trigger: ".hero-section",
+                start: "top top",
+                end: "bottom top",
+                scrub: 1,
+            },
+            opacity: 0,
+            scale: 0.95,
+            y: -50
+        });
+
+        // Parallax Effects
+        gsap.to(".parallax-slow", {
+            y: 100,
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1
+            }
+        });
+
+        // Feature cards blur reveal animation
+        gsap.utils.toArray(".feature-card").forEach((card, index) => {
+            gsap.fromTo(card,
+                {
+                    opacity: 0,
+                    filter: "blur(12px)",
+                    y: 30
+                },
+                {
+                    opacity: 1,
+                    filter: "blur(0px)",
+                    y: 0,
+                    duration: 0.9,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 85%",
+                        toggleActions: "play none none none"
+                    }
+                }
+            );
+        });
+
+        console.log('Homebuyer page animations initialized');
+    } else {
+        console.error('GSAP or ScrollTrigger not loaded');
+    }
+});
+</script>
+
+{{ end }}

@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Hugo
+grandprixrealty.agency/public/
+grandprixrealty.agency/resources/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Model files (large)
+*.joblib
+*.pkl
+*.h5
+models/*.joblib
+
+# Backups
+*.backup
+*-backup-*
+*.tar.gz
+
+# Temp files
+*.tmp
+.cache/
+
+# Claude
+.claude/
+docs/CREDENTIALS.md

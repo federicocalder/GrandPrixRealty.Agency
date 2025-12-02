@@ -1,0 +1,13 @@
+# GPR AVM Model Training Dependencies
+lightgbm==4.5.0
+scikit-learn==1.5.2
+pandas==2.2.3
+numpy==2.0.2
+asyncpg==0.30.0
+python-dotenv==1.0.1
+structlog==24.4.0
+joblib==1.4.2
+shap==0.46.0
+matplotlib==3.9.2
+seaborn==0.13.2
+tqdm==4.66.5
