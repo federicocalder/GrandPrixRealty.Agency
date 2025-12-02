@@ -847,6 +847,7 @@
 
 </div>
 
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWnfUa65lT3-KembWLHGPLBQnBerCDnSA&libraries=places"></script>
 <script>
 // Wait for GSAP to be fully loaded
 window.addEventListener('load', function() {
@@ -907,15 +908,49 @@ window.addEventListener('load', function() {
 });
 
 // ============================================
-// AVM ADDRESS FORM SUBMISSION (NO AUTOCOMPLETE)
+// GOOGLE PLACES AUTOCOMPLETE + AVM SUBMISSION
 // ============================================
-// Note: Google Places Autocomplete disabled - API key needs billing verification
-// To re-enable: Check Google Cloud Console billing and Places API status
 (function() {
     // Auto-detect environment: use relative URLs in production, localhost for dev
     const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const AVM_API_URL = isLocalhost ? 'http://localhost:8000' : '/api';
     const SELLER_PORTAL_URL = isLocalhost ? 'http://localhost:5174/seller-portal' : '/seller-portal';
+
+    // Store selected place data
+    let selectedPlaces = {};
+
+    // Initialize Google Places Autocomplete for all address inputs
+    function initAutocomplete() {
+        const addressInputs = document.querySelectorAll('.address-input');
+
+        addressInputs.forEach((input, index) => {
+            if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+                const autocomplete = new google.maps.places.Autocomplete(input, {
+                    types: ['address'],
+                    componentRestrictions: { country: 'us' },
+                    fields: ['formatted_address', 'place_id', 'geometry']
+                });
+
+                // When a place is selected from dropdown
+                autocomplete.addListener('place_changed', function() {
+                    const place = autocomplete.getPlace();
+                    if (place && place.formatted_address) {
+                        selectedPlaces[index] = {
+                            address: place.formatted_address,
+                            placeId: place.place_id
+                        };
+                        console.log('Place selected:', place.formatted_address);
+                    }
+                });
+
+                // Style the autocomplete dropdown
+                input.setAttribute('autocomplete', 'off');
+                console.log('Google Places Autocomplete initialized for input', index);
+            } else {
+                console.warn('Google Places API not loaded');
+            }
+        });
+    }
 
     // Setup submit button click handlers
     function setupSubmitButtons() {
@@ -928,7 +963,8 @@ window.addEventListener('load', function() {
 
                 // Get the corresponding input
                 const input = addressInputs[index] || addressInputs[0];
-                const address = input.value.trim();
+                // Prefer selected place address, fall back to input value
+                const address = (selectedPlaces[index]?.address) || input.value.trim();
 
                 if (!address) {
                     showError(input, 'Please enter a property address');
@@ -998,8 +1034,12 @@ window.addEventListener('load', function() {
 
     // Initialize on DOM ready
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupSubmitButtons);
+        document.addEventListener('DOMContentLoaded', function() {
+            initAutocomplete();
+            setupSubmitButtons();
+        });
     } else {
+        initAutocomplete();
         setupSubmitButtons();
     }
 })();

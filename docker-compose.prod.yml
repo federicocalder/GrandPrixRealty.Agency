@@ -36,12 +36,14 @@ services:
     environment:
       - ENVIRONMENT=production
       - DATABASE_URL=${DATABASE_URL}
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
       - CORS_ORIGINS=https://grandprixrealty.agency,https://www.grandprixrealty.agency
       - DEBUG=false
     volumes:
       - ./avm-api/models:/app/models:ro
     networks:
       - gpr-network
+      - supabase_default
     healthcheck:
       test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health').raise_for_status()"]
       interval: 30s
@@ -96,4 +98,6 @@ networks:
   gpr-network:
     driver: bridge
   n8n-postgres-nginx_default:
+    external: true
+  supabase_default:
     external: true
