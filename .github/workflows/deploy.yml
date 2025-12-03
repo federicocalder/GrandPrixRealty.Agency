@@ -1,0 +1,59 @@
+name: Deploy to Hetzner
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'grandprixrealty.agency/**'
+      - 'avm-api/**'
+      - 'seo-api/**'
+      - 'buyer-search-app/**'
+      - 'seller-portal/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Hetzner
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          script: |
+            cd /root/GrandPrixRealty.Agency
+            git pull origin main
+            
+            # Rebuild and restart website
+            docker-compose -f docker-compose.prod.yml build gpr-website
+            docker stop gpr-website || true
+            docker rm gpr-website || true
+            docker-compose -f docker-compose.prod.yml up -d gpr-website
+            
+            # Ensure network connections
+            docker network connect n8n-postgres-nginx_default gpr-website || true
+            docker network connect grandprixrealtyagency_gpr-network gpr-website || true
+            
+            # Rebuild AVM API if changed
+            if git diff --name-only HEAD~1 | grep -q "avm-api/"; then
+              docker build -t gpr-avm-api:latest ./avm-api
+              docker stop gpr-avm-api || true
+              docker rm gpr-avm-api || true
+              docker run -d \
+                --name gpr-avm-api \
+                --restart unless-stopped \
+                --network supabase_default \
+                -e ENVIRONMENT=production \
+                -e DATABASE_URL=postgresql+asyncpg://postgres.supabase:supabase_secure_db_password_2024@supabase-pooler:6543/postgres \
+                -e CORS_ORIGINS=https://grandprixrealty.agency,https://www.grandprixrealty.agency \
+                -e GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} \
+                -e RATE_LIMIT_PER_MINUTE=60 \
+                gpr-avm-api:latest
+              docker network connect grandprixrealtyagency_gpr-network gpr-avm-api || true
+            fi
+            
+            echo "Deployment complete!"
