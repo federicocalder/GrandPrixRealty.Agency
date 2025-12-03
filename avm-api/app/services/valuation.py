@@ -367,7 +367,14 @@ async def _fallback_estimate(
     property_data: PropertyBase,
     comparables: list[ComparableSale],
 ) -> tuple[ValuationResult, list[ValuationFactor]]:
-    """Fallback to comparable-based estimate if model unavailable."""
+    """
+    Fallback to comparable-based estimate if model unavailable.
+
+    Uses intelligent weighting that heavily favors:
+    1. High match scores (exponential weighting)
+    2. Same bedroom count ("model match" bonus)
+    3. Similar square footage
+    """
     if not comparables:
         base_estimate = 350000
         return (
@@ -380,22 +387,160 @@ async def _fallback_estimate(
             [],
         )
 
-    # Weighted average of comps
-    total_weight = sum(c.match_score for c in comparables) or 1
-    weighted_avg = sum(c.sale_price * c.match_score for c in comparables) / total_weight
+    subject_beds = property_data.beds
+    subject_sqft = property_data.sqft_living
+
+    # Calculate enhanced weights for each comp
+    weights = []
+    adjusted_prices = []
+
+    for comp in comparables:
+        # Base weight from match score - use exponential to heavily favor high matches
+        # A 95% match gets 4x the weight of an 80% match
+        base_weight = comp.match_score ** 3
+
+        # Model match bonus: same bedroom count gets 2x weight
+        bed_multiplier = 1.0
+        if subject_beds is not None and comp.beds is not None:
+            if comp.beds == subject_beds:
+                bed_multiplier = 2.0  # Exact match - double the weight
+            elif abs(comp.beds - subject_beds) == 1:
+                bed_multiplier = 0.7  # One bedroom difference - reduce weight
+            else:
+                bed_multiplier = 0.4  # 2+ bedroom difference - significantly reduce
+
+        # Sqft similarity bonus
+        sqft_multiplier = 1.0
+        if subject_sqft is not None and comp.sqft is not None:
+            sqft_diff_pct = abs(comp.sqft - subject_sqft) / subject_sqft
+            if sqft_diff_pct <= 0.05:  # Within 5% - model match territory
+                sqft_multiplier = 1.5
+            elif sqft_diff_pct <= 0.15:  # Within 15%
+                sqft_multiplier = 1.0
+            else:
+                sqft_multiplier = 0.7
+
+        final_weight = base_weight * bed_multiplier * sqft_multiplier
+        weights.append(final_weight)
+
+        # Adjust price for bedroom differences
+        adjusted_price = comp.sale_price
+        if subject_beds is not None and comp.beds is not None:
+            bed_diff = subject_beds - comp.beds
+            # Adjust ~$15k per bedroom difference (Las Vegas market avg)
+            adjusted_price += bed_diff * 15000
+
+        adjusted_prices.append(adjusted_price)
+
+        logger.debug(
+            "comp_weight_calc",
+            address=comp.address,
+            match_score=comp.match_score,
+            beds=comp.beds,
+            sqft=comp.sqft,
+            base_weight=round(base_weight, 4),
+            bed_mult=bed_multiplier,
+            sqft_mult=sqft_multiplier,
+            final_weight=round(final_weight, 4),
+            original_price=comp.sale_price,
+            adjusted_price=adjusted_price,
+        )
+
+    # Calculate weighted average
+    total_weight = sum(weights) or 1
+    weighted_avg = sum(p * w for p, w in zip(adjusted_prices, weights)) / total_weight
 
     estimate = round(weighted_avg, -3)
+
+    # Higher confidence if we have a strong model match
+    best_match = max(comparables, key=lambda c: c.match_score)
+    has_model_match = (
+        best_match.match_score >= 0.9
+        and subject_beds is not None
+        and best_match.beds == subject_beds
+    )
+
     confidence = min(0.7, 0.4 + len(comparables) * 0.06)
+    if has_model_match:
+        confidence = min(0.85, confidence + 0.15)
+
+    # Calculate data-driven range based on comp variance and match quality
+    range_pct = _calculate_range_percentage(
+        adjusted_prices=adjusted_prices,
+        weights=weights,
+        estimate=estimate,
+        best_match_score=best_match.match_score,
+        has_model_match=has_model_match,
+    )
 
     return (
         ValuationResult(
             estimate=estimate,
-            range_low=round(estimate * 0.9, -3),
-            range_high=round(estimate * 1.1, -3),
+            range_low=round(estimate * (1 - range_pct), -3),
+            range_high=round(estimate * (1 + range_pct), -3),
             confidence=confidence,
         ),
         [],
     )
+
+
+def _calculate_range_percentage(
+    adjusted_prices: list[float],
+    weights: list[float],
+    estimate: float,
+    best_match_score: float,
+    has_model_match: bool,
+) -> float:
+    """
+    Calculate the range percentage based on comp variance and match quality.
+
+    Returns a percentage (0.05 to 0.20) to apply as ± around the estimate.
+    """
+    if not adjusted_prices or estimate <= 0:
+        return 0.15  # Default 15% if no data
+
+    # Calculate weighted standard deviation of comp prices
+    total_weight = sum(weights) or 1
+    weighted_mean = sum(p * w for p, w in zip(adjusted_prices, weights)) / total_weight
+
+    # Weighted variance
+    variance = sum(
+        w * (p - weighted_mean) ** 2
+        for p, w in zip(adjusted_prices, weights)
+    ) / total_weight
+
+    weighted_std = variance ** 0.5
+
+    # Convert to percentage of estimate
+    base_range_pct = weighted_std / estimate if estimate > 0 else 0.15
+
+    # Apply match quality multiplier
+    # Strong model match = tighter range (0.5x to 0.7x)
+    # Weak matches = wider range (1.0x to 1.3x)
+    if has_model_match:
+        # 95% match → 0.5x multiplier, 90% match → 0.7x multiplier
+        match_multiplier = 0.5 + (0.95 - best_match_score) * 4
+    else:
+        # No model match - use match score to scale
+        # 85% match → 1.0x, 70% match → 1.3x
+        match_multiplier = 1.0 + (0.85 - best_match_score) * 2
+
+    adjusted_range_pct = base_range_pct * match_multiplier
+
+    # Clamp to reasonable bounds: 5% minimum, 20% maximum
+    final_range_pct = max(0.05, min(0.20, adjusted_range_pct))
+
+    logger.debug(
+        "range_calc",
+        weighted_std=round(weighted_std, 0),
+        base_range_pct=round(base_range_pct, 3),
+        match_multiplier=round(match_multiplier, 2),
+        adjusted_range_pct=round(adjusted_range_pct, 3),
+        final_range_pct=round(final_range_pct, 3),
+        has_model_match=has_model_match,
+    )
+
+    return final_range_pct
 
 
 def build_valuation_response(
