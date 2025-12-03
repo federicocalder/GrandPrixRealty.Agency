@@ -27,17 +27,28 @@ jobs:
           script: |
             cd /root/GrandPrixRealty.Agency
             git pull origin main
-            
-            # Rebuild and restart website
+
+            # Rebuild website image only (don't use docker-compose up to avoid conflicts)
             docker-compose -f docker-compose.prod.yml build gpr-website
+
+            # Stop and remove old website container
             docker stop gpr-website || true
             docker rm gpr-website || true
-            docker-compose -f docker-compose.prod.yml up -d gpr-website
-            
-            # Ensure network connections
+
+            # Start website container manually with correct networks
+            docker run -d \
+              --name gpr-website \
+              --restart unless-stopped \
+              -p 8080:80 \
+              grandprixrealtyagency-gpr-website
+
+            # Wait for container to initialize
+            sleep 3
+
+            # Connect to required networks
             docker network connect n8n-postgres-nginx_default gpr-website || true
             docker network connect grandprixrealtyagency_gpr-network gpr-website || true
-            
+
             # Rebuild AVM API if changed
             if git diff --name-only HEAD~1 | grep -q "avm-api/"; then
               docker build -t gpr-avm-api:latest ./avm-api
@@ -55,5 +66,5 @@ jobs:
                 gpr-avm-api:latest
               docker network connect grandprixrealtyagency_gpr-network gpr-avm-api || true
             fi
-            
+
             echo "Deployment complete!"
