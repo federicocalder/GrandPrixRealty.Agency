@@ -81,7 +81,7 @@ export default function ValuationPage() {
         <div className="text-center">
           <p className="text-red-400 mb-4">{error || 'Valuation not found'}</p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => window.location.href = '/homeseller'}
             className="btn-gold px-6 py-3 rounded-xl"
           >
             Try Another Address

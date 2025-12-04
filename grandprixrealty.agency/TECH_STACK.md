@@ -1,168 +1,256 @@
 # Grand Prix Realty - Tech Stack Documentation
 
 ## Overview
-This document outlines the complete technology stack used in the Grand Prix Realty website.
+This document outlines the complete technology stack used in the Grand Prix Realty website and applications.
 
-## Core Framework
+## Architecture
 
-### Hugo Static Site Generator
-- **Version:** 0.112.0+ (minimum)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         NGINX (Port 8080)                       │
+│                    Reverse Proxy + Static Files                 │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │  Hugo Site   │  │ Seller Portal│  │ Buyer Search │          │
+│  │  (Static)    │  │   (React)    │  │   (React)    │          │
+│  │     /        │  │/seller-portal│  │/buyer-search │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+│                                                                 │
+│  ┌──────────────┐                                              │
+│  │   SEO Lab    │                                              │
+│  │   (React)    │                                              │
+│  │  /seo-lab    │                                              │
+│  └──────────────┘                                              │
+│                                                                 │
+├─────────────────────────────────────────────────────────────────┤
+│                         Backend APIs                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │   AVM API    │  │  SEO API     │  │  PDF Service │          │
+│  │  (FastAPI)   │  │  (FastAPI)   │  │(Node/Puppeteer│          │
+│  │    /api/     │  │  /seo-api/   │  │  /pdf-api/   │          │
+│  │  Port 8000   │  │  Port 8001   │  │  Port 3003   │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+│                                                                 │
+│  ┌──────────────┐                                              │
+│  │  Buyer API   │                                              │
+│  │ (Node/Express│                                              │
+│  │ /buyer-api/  │                                              │
+│  │  Port 4000   │                                              │
+│  └──────────────┘                                              │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+               ┌──────────────────────────┐
+               │     External Services    │
+               ├──────────────────────────┤
+               │ • PostgreSQL (Supabase)  │
+               │ • Google Maps API        │
+               │ • Trestle MLS API        │
+               └──────────────────────────┘
+```
+
+## Frontend Applications
+
+### 1. Hugo Static Site (Marketing Website)
+- **Location:** `/grandprixrealty.agency/`
+- **Framework:** Hugo v0.112.0+
 - **Theme:** Custom "Grand Prix" theme
-- **Location:** `/themes/grandprix/`
-- **Config:** `hugo.toml`
+- **Key Pages:**
+  - Homepage (`/`)
+  - Homeseller landing page (`/homeseller/`)
+  - Homebuyer landing page (`/homebuyer/`)
+  - Blog (`/blog/`)
+  - Contact (`/contact/`)
 
-## Frontend Technologies
+### 2. Seller Portal (React SPA)
+- **Location:** `/seller-portal/`
+- **Framework:** React 18 + TypeScript + Vite
+- **Routing:** React Router v6
+- **Styling:** TailwindCSS + custom CSS
+- **Key Features:**
+  - AVM valuation display (Step 2)
+  - Seller Net Sheet calculator (Step 3)
+  - Listing configuration (Step 4)
+  - PDF report downloads
+- **Routes:**
+  - `/seller-portal/valuation/:id` - AVM results
+  - `/seller-portal/net-sheet/:id` - Net sheet calculator
+  - `/seller-portal/list/:id` - Listing configuration
 
-### CSS Framework
-
-#### TailwindCSS
-- **Version:** Latest (via CDN)
-- **Delivery:** CDN (`https://cdn.tailwindcss.com`)
-- **Configuration:** Inline config in `baseof.html`
-- **Custom Colors:**
-  - `grand-blue`: `#1e40af`
-  - `grand-gold`: `#f59e0b`
-  - `grand-gray`: `#6b7280`
-- **Custom Fonts:**
-  - Sans: Inter
-  - Display: Poppins
-
-#### Custom CSS
-- **Location:** `/themes/grandprix/assets/css/main.css`
+### 3. Buyer Search App (React SPA)
+- **Location:** `/buyer-search-app/`
+- **Framework:** React 18 + TypeScript + Vite
 - **Features:**
-  - Hero gradients
-  - Custom animations (fadeInUp, spin)
-  - Hover effects (hover-lift)
-  - Prose/content styling
-  - Responsive utilities
-  - Loading spinners
+  - MLS property search
+  - Interactive map view
+  - Property detail pages
+  - Saved searches
 
-### JavaScript Libraries
-
-#### GSAP (GreenSock Animation Platform)
-- **Version:** 3.12.2
-- **Delivery:** CDN (cdnjs.cloudflare.com)
-- **Plugins Used:**
-  - GSAP Core (`gsap.min.js`)
-  - ScrollTrigger (`ScrollTrigger.min.js`)
-  - TextPlugin (`TextPlugin.min.js`)
-- **Usage:**
-  - Page load animations
-  - Scroll-triggered animations
-  - Smooth scrolling for anchor links
-  - Element transitions
-
-#### Alpine.js
-- **Version:** 3.x
-- **Delivery:** CDN (cdn.jsdelivr.net)
-- **Usage:**
-  - Interactive components
-  - Mobile menu toggling
-  - Dynamic UI elements
-
-#### Custom JavaScript
-- **Location:** `/themes/grandprix/assets/js/main.js`
+### 4. SEO Lab (React SPA)
+- **Location:** `/seo-frontend/`
+- **Framework:** React 18 + TypeScript + Vite
+- **Auth:** Supabase authentication
 - **Features:**
-  - Smooth scrolling initialization
-  - Animation initialization
-  - Mobile menu functionality
-  - Contact form handling (prepared)
-  - Utility functions (debounce, viewport detection)
+  - Blog post management
+  - SEO keyword tracking
+  - Content optimization
 
-### Typography
+## Backend Services
 
-#### Google Fonts
-- **Fonts Used:**
-  - **Inter** (300, 400, 500, 600, 700) - Body text
-  - **Poppins** (300, 400, 500, 600, 700, 800) - Headings/Display
-- **Delivery:** Google Fonts CDN
-- **Preconnect:** Enabled for performance
+### 1. AVM API (Python/FastAPI)
+- **Location:** `/avm-api/`
+- **Port:** 8000
+- **Proxy Path:** `/api/`
+- **Features:**
+  - Property valuation estimates
+  - Comparable sales analysis
+  - Address geocoding (Google Maps)
+  - PostgreSQL storage
+- **Key Endpoints:**
+  - `POST /valuations` - Create new valuation
+  - `GET /valuations/{id}` - Get valuation by ID
 
-## SEO & Analytics
+### 2. Buyer Search API (Node.js/Express)
+- **Location:** `/buyer-search-app/` (backend)
+- **Port:** 4000
+- **Proxy Path:** `/buyer-api/`
+- **Features:**
+  - Trestle MLS integration
+  - Property search
+  - Listing data
 
-### Meta Tags
-- Open Graph (Facebook)
-- Twitter Cards
-- Schema.org structured data (RealEstateAgent)
-- Standard SEO meta tags
+### 3. SEO API (Python/FastAPI)
+- **Location:** `/seo-api/`
+- **Port:** 8001
+- **Proxy Path:** `/seo-api/`
+- **Features:**
+  - Blog content management
+  - SEO metrics tracking
+  - Supabase integration
 
-### Structured Data
-- **Type:** RealEstateAgent
-- **Location:** Inline JSON-LD in `baseof.html`
+### 4. PDF Service (Node.js/Puppeteer)
+- **Location:** `/pdf-service/`
+- **Port:** 3003
+- **Proxy Path:** `/pdf-api/`
+- **Features:**
+  - Headless Chrome PDF generation
+  - Professional report templates
+  - Seller Net Sheet PDFs
+  - AVM Report PDFs
+- **Key Endpoints:**
+  - `POST /api/pdf/net-sheet` - Generate seller net sheet PDF
+  - `POST /api/pdf/avm-report` - Generate AVM report PDF
+- **Templates:**
+  - `/src/templates/net-sheet.html` - Dark theme with gold accents
+  - `/src/templates/avm-report.html` - Property valuation report
 
-## Accessibility Features
-- Skip to content links
-- Semantic HTML5 structure
-- ARIA labels where needed
-- Keyboard navigation support
+## Infrastructure
 
-## Build & Deployment
+### Docker Deployment
+- **Compose File:** `docker-compose.prod.yml`
+- **Containers:**
+  - `gpr-website` - Nginx + all frontends
+  - `gpr-avm-api` - AVM Python API
+  - `gpr-buyer-api` - Buyer search Node API
+  - `gpr-seo-api` - SEO Python API
+  - `gpr-pdf-service` - PDF generation service
 
-### Hugo Build
-- **Build Stats:** Enabled (`writeStats = true`)
-- **Output:** `/public/` directory
-- **Goldmark:** Unsafe HTML enabled for flexibility
+### Nginx Configuration
+- **File:** `/deploy/nginx.conf`
+- **Features:**
+  - Reverse proxy for all APIs
+  - SPA routing for React apps
+  - Static file caching
+  - Gzip compression
 
-### Asset Processing
-- CSS/JS minification via Hugo Pipes
-- Fingerprinting for cache busting
-- Resource bundling
+### Hosting
+- **Provider:** Hetzner Cloud
+- **Server:** VPS with Docker
+- **Domain:** grandprixrealty.agency
+- **SSL:** Let's Encrypt (via external proxy)
+
+## External APIs & Services
+
+### Google Maps API
+- Address autocomplete
+- Geocoding
+- Property location
+
+### Trestle MLS API
+- Active listings
+- Property data
+- Market statistics
+
+### Supabase
+- PostgreSQL database
+- Authentication (SEO Lab)
+- Real-time subscriptions
+
+## Development
+
+### Local Development
+```bash
+# Hugo site
+cd grandprixrealty.agency && hugo server
+
+# Seller Portal
+cd seller-portal && npm run dev
+
+# AVM API
+cd avm-api && uvicorn main:app --reload
+
+# PDF Service
+cd pdf-service && npm run dev
+```
+
+### Build & Deploy
+```bash
+# Full deployment (via Docker Compose)
+docker-compose -f docker-compose.prod.yml build --no-cache
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### CI/CD
+- **Platform:** GitHub Actions
+- **Trigger:** Push to `main` branch
+- **Process:** Build Docker images → SSH deploy to Hetzner
 
 ## File Structure
 
 ```
-grandprixrealty.agency/
-├── archetypes/          # Content templates
-├── assets/              # (empty - using theme assets)
-├── content/             # Site content (pages, blog posts)
-├── data/                # Data files
-├── layouts/             # (empty - using theme layouts)
-├── static/              # Static files (images, favicon, etc.)
-├── themes/
-│   └── grandprix/       # Custom theme
-│       ├── assets/
-│       │   ├── css/
-│       │   │   └── main.css
-│       │   └── js/
-│       │       └── main.js
-│       └── layouts/
-│           ├── _default/
-│           │   ├── baseof.html
-│           │   └── single.html
-│           ├── partials/
-│           │   ├── header.html
-│           │   └── footer.html
-│           └── index.html
-├── hugo.toml            # Site configuration
-└── hugo_stats.json      # Build statistics
+/
+├── grandprixrealty.agency/    # Hugo marketing site
+│   ├── content/               # Markdown content
+│   ├── themes/grandprix/      # Custom theme
+│   └── hugo.toml              # Hugo config
+├── seller-portal/             # Seller React app
+│   └── src/pages/             # React pages
+├── buyer-search-app/          # Buyer React app
+├── seo-frontend/              # SEO Lab React app
+├── seo-api/                   # SEO Python API
+├── avm-api/                   # AVM Python API
+├── pdf-service/               # PDF generation service
+│   └── src/templates/         # HTML templates for PDFs
+├── deploy/                    # Deployment configs
+│   ├── Dockerfile             # Multi-stage Docker build
+│   └── nginx.conf             # Nginx config
+└── docker-compose.prod.yml    # Production compose file
 ```
 
-## Performance Optimizations
-- CDN-delivered libraries
-- Minified CSS/JS
-- Asset fingerprinting
-- Preconnect hints for fonts
-- Lazy loading ready
+## Performance & SEO
+- CDN-delivered libraries (GSAP, Alpine.js)
+- Asset fingerprinting for cache busting
+- Preconnect hints for Google Fonts
+- Gzip compression
+- Print styles for PDF export
+- Schema.org structured data
 
-## Future Considerations
-
-### Planned Features
-- IDX integration for property search
-- MLS data feeds
-- Property detail pages
-- Advanced search/filtering
-- Map integrations (Google Maps/Mapbox)
-- Multi-agent site architecture
-
-### Potential Tech Additions
-- Build process (npm/Vite) for local Tailwind
-- CMS integration (Netlify CMS, Forestry, etc.)
-- Form handling service (Netlify Forms, Formspree)
-- Analytics (Google Analytics, Plausible)
-- Performance monitoring
-
-## Notes
-- All external dependencies loaded via CDN (no local node_modules)
-- No build process required for JS/CSS beyond Hugo
-- Simple deployment to any static hosting (Netlify, Vercel, GitHub Pages)
-- Git repository located at: `grandprixrealty.agency/.git`
+## Security
+- CORS configured per service
+- No secrets in client code
+- Environment variables for API keys
+- HTTPS everywhere (via reverse proxy)

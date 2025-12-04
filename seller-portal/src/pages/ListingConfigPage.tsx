@@ -53,7 +53,7 @@ export default function ListingConfigPage() {
         <div className="text-center">
           <p className="text-zinc-400 mb-4">Please start with a home value estimate</p>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => window.location.href = '/homeseller'}
             className="btn-gold px-6 py-3 rounded-xl"
           >
             Get Started

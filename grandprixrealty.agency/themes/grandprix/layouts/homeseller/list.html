@@ -1062,16 +1062,34 @@ window.addEventListener('load', function() {
         setTimeout(() => errorDiv.remove(), 5000);
     }
 
+    // Reset all buttons to their default state (in case browser cached disabled state)
+    function resetButtons() {
+        const buttons = document.querySelectorAll('.glass-card button');
+        buttons.forEach(button => {
+            button.disabled = false;
+            button.innerHTML = 'Get My Value';
+        });
+    }
+
     // Initialize on DOM ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
+            resetButtons();
             initAutocomplete();
             setupSubmitButtons();
         });
     } else {
+        resetButtons();
         initAutocomplete();
         setupSubmitButtons();
     }
+
+    // Also reset on pageshow (handles back/forward cache)
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            resetButtons();
+        }
+    });
 })();
 </script>
 
