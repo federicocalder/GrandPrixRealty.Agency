@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -10,7 +10,8 @@ import {
   Users,
   Calculator,
   Info,
-  MapPin
+  MapPin,
+  Download
 } from 'lucide-react'
 import { formatCurrency } from '../lib/api'
 import type { ValuationResponse } from '../types'
@@ -151,6 +152,82 @@ export default function SellerNetSheetPage() {
     buyerCommissionPct,
     buyerConcessions,
     homeWarranty,
+  ])
+
+  const [isDownloading, setIsDownloading] = useState(false)
+
+  const handleDownloadPDF = useCallback(async () => {
+    if (!valuation) return
+
+    setIsDownloading(true)
+    try {
+      const response = await fetch('/pdf-api/pdf/net-sheet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          property: valuation.property,
+          salePrice,
+          loanPayoff: loan1Balance,
+          secondLoanPayoff: loan2Balance,
+          titleClosingCosts: {
+            escrowFee,
+            ownersTitlePolicy,
+            reconveyanceFee,
+            payoffDemand,
+            transactionFee,
+            hoaResalePackage,
+            fedexCourier,
+            notarySigning,
+          },
+          governmentFees: {
+            propertyTaxProration,
+            transferTax,
+          },
+          commissions: {
+            listingCommission: calculations.listingCommissionAmount,
+            buyerAgentCommission: calculations.buyerCommissionAmount,
+            buyerCredit: buyerConcessions,
+            homeWarranty,
+          },
+          sellerNet: calculations.estimatedSellerNet,
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to generate PDF')
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `seller-net-sheet-${valuation.id}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('PDF download failed:', error)
+      alert('Failed to download PDF. Please try again.')
+    } finally {
+      setIsDownloading(false)
+    }
+  }, [
+    valuation,
+    salePrice,
+    loan1Balance,
+    loan2Balance,
+    escrowFee,
+    ownersTitlePolicy,
+    reconveyanceFee,
+    payoffDemand,
+    transactionFee,
+    hoaResalePackage,
+    fedexCourier,
+    notarySigning,
+    propertyTaxProration,
+    transferTax,
+    buyerConcessions,
+    homeWarranty,
+    calculations,
   ])
 
   if (!valuation) {
@@ -506,6 +583,25 @@ export default function SellerNetSheetPage() {
             <p className="text-xs text-zinc-500 text-center mt-3">
               Next: Configure your marketing plan
             </p>
+
+            {/* Download PDF */}
+            <button
+              onClick={handleDownloadPDF}
+              disabled={isDownloading}
+              className="w-full mt-4 py-3 rounded-xl bg-white/10 text-white/70 text-sm hover:bg-white/15 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isDownloading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Generating PDF...
+                </>
+              ) : (
+                <>
+                  <Download size={16} />
+                  Download Net Sheet PDF
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>

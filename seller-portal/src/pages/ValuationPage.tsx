@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import {
   ArrowRight,
   Home,
@@ -92,6 +92,41 @@ export default function ValuationPage() {
   }
 
   const { property, valuation: result, factors, comparables } = valuation
+
+  const [isDownloading, setIsDownloading] = useState(false)
+
+  const handleDownloadPDF = useCallback(async () => {
+    if (!valuation) return
+
+    setIsDownloading(true)
+    try {
+      const response = await fetch('/pdf-api/pdf/avm-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          property: valuation.property,
+          valuation: valuation.valuation,
+        }),
+      })
+
+      if (!response.ok) throw new Error('Failed to generate PDF')
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `avm-report-${valuation.id}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('PDF download failed:', error)
+      alert('Failed to download PDF. Please try again.')
+    } finally {
+      setIsDownloading(false)
+    }
+  }, [valuation])
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
@@ -339,9 +374,22 @@ export default function ValuationPage() {
           {/* Quick Actions */}
           <div className="glass-card bg-white/5 rounded-[32px] p-4">
             <div className="flex gap-2">
-              <button className="flex-1 py-3 rounded-lg bg-white/10 text-white/70 text-sm hover:bg-white/15 transition-colors flex items-center justify-center gap-2">
-                <Download size={16} />
-                Download PDF
+              <button
+                onClick={handleDownloadPDF}
+                disabled={isDownloading}
+                className="flex-1 py-3 rounded-lg bg-white/10 text-white/70 text-sm hover:bg-white/15 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isDownloading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Download size={16} />
+                    Download PDF
+                  </>
+                )}
               </button>
               <button className="flex-1 py-3 rounded-lg bg-white/10 text-white/70 text-sm hover:bg-white/15 transition-colors flex items-center justify-center gap-2">
                 <Share2 size={16} />
