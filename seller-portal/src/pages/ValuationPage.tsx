@@ -13,7 +13,14 @@ import {
   ChevronRight,
   Download,
   Share2,
-  Building
+  Building,
+  Check,
+  Lock,
+  DollarSign,
+  Target,
+  Megaphone,
+  FileSignature,
+  Rocket
 } from 'lucide-react'
 import { getValuation, formatCurrency, formatDate, formatDistance, formatConfidence } from '../lib/api'
 import type { ValuationResponse, ComparableSale, ValuationFactor } from '../types'
@@ -223,34 +230,110 @@ export default function ValuationPage() {
           )}
         </div>
 
-        {/* Right Column - CTA */}
+        {/* Right Column - Seller Journey */}
         <div className="space-y-6">
-          {/* Main CTA Card */}
+          {/* Seller Journey Panel */}
           <div className="glass-card bg-white/5 rounded-[32px] p-6 md:p-8 border-[#d4af37]/20">
-            <h2 className="font-cinzel text-2xl font-bold text-white mb-2">
-              Ready To Turn This Into a Real Listing?
-            </h2>
-            <p className="text-white/60 text-sm mb-6">
-              Configure your marketing plan, sign online, and let us handle the rest.
+            {/* Progress Ring */}
+            <div className="flex items-center gap-5 mb-6">
+              <div className="relative w-20 h-20 flex-shrink-0">
+                {/* Background circle */}
+                <svg className="w-20 h-20 transform -rotate-90">
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="36"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.1)"
+                    strokeWidth="6"
+                  />
+                  {/* Progress arc - 5% = ~11.3 of 226 circumference */}
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="36"
+                    fill="none"
+                    stroke="url(#goldGradient)"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    strokeDasharray="226"
+                    strokeDashoffset="215"
+                  />
+                  <defs>
+                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#d4af37" />
+                      <stop offset="100%" stopColor="#f4d03f" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                {/* Center text */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-2xl font-bold text-white">5%</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-white/50 text-sm">of your seller plan</p>
+                <p className="text-white font-semibold">is complete</p>
+              </div>
+            </div>
+
+            {/* Motivational text */}
+            <p className="text-white/80 text-lg mb-6 leading-relaxed">
+              You've got your number. Now turn it into a clean exit plan.
             </p>
 
-            <ul className="space-y-3 mb-6">
-              <CTABullet text="Professional photos and 3D tour available" />
-              <CTABullet text="Pricing strategy based on 514K+ Vegas sales" />
-              <CTABullet text="Full listing paperwork handled online" />
-            </ul>
+            {/* 6 Steps */}
+            <div className="space-y-3 mb-6">
+              <JourneyStep
+                icon={<TrendingUp size={18} />}
+                title="Instant Value"
+                subtitle="Where you are now"
+                status="complete"
+              />
+              <JourneyStep
+                icon={<DollarSign size={18} />}
+                title="Net Sheet & Payout"
+                subtitle="See your cash at closing"
+                status="locked"
+              />
+              <JourneyStep
+                icon={<Target size={18} />}
+                title="Pricing Gameplan"
+                subtitle="Pick your list price strategy"
+                status="locked"
+              />
+              <JourneyStep
+                icon={<Megaphone size={18} />}
+                title="Marketing Blueprint"
+                subtitle="Photos, video, 3D, ads"
+                status="locked"
+              />
+              <JourneyStep
+                icon={<FileSignature size={18} />}
+                title="Paperwork & E-Sign"
+                subtitle="We prep the docs for you"
+                status="locked"
+              />
+              <JourneyStep
+                icon={<Rocket size={18} />}
+                title="Launch & Updates"
+                subtitle="Weekly reports on showings"
+                status="locked"
+              />
+            </div>
 
+            {/* CTA */}
             <button
               onClick={() => navigate(`/list/${valuation.id}`, { state: { valuation } })}
               className="w-full btn-gold py-4 rounded-xl text-lg font-semibold flex items-center justify-center gap-2 pulse-gold"
             >
-              List This Home Now
+              Enter Seller Portal
               <ArrowRight size={20} />
             </button>
 
-            <button className="w-full mt-3 py-3 rounded-xl border border-white/20 text-white/70 text-sm hover:bg-white/5 transition-colors">
-              Just send me the full report
-            </button>
+            <p className="text-center text-white/40 text-xs mt-3">
+              Free account. No obligation.
+            </p>
           </div>
 
           {/* Quick Actions */}
@@ -345,11 +428,58 @@ function ComparableCard({ comp }: { comp: ComparableSale }) {
   )
 }
 
-function CTABullet({ text }: { text: string }) {
+function JourneyStep({
+  icon,
+  title,
+  subtitle,
+  status
+}: {
+  icon: React.ReactNode
+  title: string
+  subtitle: string
+  status: 'complete' | 'locked'
+}) {
+  const isComplete = status === 'complete'
+
   return (
-    <li className="flex items-start gap-2 text-sm text-white/70">
-      <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37] mt-2 flex-shrink-0" />
-      {text}
-    </li>
+    <div
+      className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+        isComplete
+          ? 'bg-[#d4af37]/10 border-[#d4af37]/30'
+          : 'bg-white/5 border-white/10 opacity-60'
+      }`}
+    >
+      {/* Icon container */}
+      <div
+        className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+          isComplete
+            ? 'bg-[#d4af37]/20 text-[#d4af37]'
+            : 'bg-white/10 text-white/40'
+        }`}
+      >
+        {icon}
+      </div>
+
+      {/* Text */}
+      <div className="flex-1 min-w-0">
+        <p className={`font-medium ${isComplete ? 'text-white' : 'text-white/60'}`}>
+          {title}
+        </p>
+        <p className={`text-xs ${isComplete ? 'text-white/60' : 'text-white/40'}`}>
+          {subtitle}
+        </p>
+      </div>
+
+      {/* Status icon */}
+      <div className="flex-shrink-0">
+        {isComplete ? (
+          <div className="w-6 h-6 rounded-full bg-[#d4af37] flex items-center justify-center">
+            <Check size={14} className="text-black" />
+          </div>
+        ) : (
+          <Lock size={16} className="text-white/30" />
+        )}
+      </div>
+    </div>
   )
 }
