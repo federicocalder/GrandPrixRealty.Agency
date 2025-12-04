@@ -399,15 +399,15 @@ async def _fallback_estimate(
         # A 95% match gets 4x the weight of an 80% match
         base_weight = comp.match_score ** 3
 
-        # Model match bonus: same bedroom count gets 2x weight
+        # Model match bonus: same bedroom count gets 3x weight
         bed_multiplier = 1.0
         if subject_beds is not None and comp.beds is not None:
             if comp.beds == subject_beds:
-                bed_multiplier = 2.0  # Exact match - double the weight
+                bed_multiplier = 3.0  # Exact match - triple the weight
             elif abs(comp.beds - subject_beds) == 1:
-                bed_multiplier = 0.7  # One bedroom difference - reduce weight
+                bed_multiplier = 0.5  # One bedroom difference - halve weight
             else:
-                bed_multiplier = 0.4  # 2+ bedroom difference - significantly reduce
+                bed_multiplier = 0.25  # 2+ bedroom difference - quarter weight
 
         # Sqft similarity bonus
         sqft_multiplier = 1.0
@@ -427,8 +427,8 @@ async def _fallback_estimate(
         adjusted_price = comp.sale_price
         if subject_beds is not None and comp.beds is not None:
             bed_diff = subject_beds - comp.beds
-            # Adjust ~$15k per bedroom difference (Las Vegas market avg)
-            adjusted_price += bed_diff * 15000
+            # Adjust ~$10k per bedroom difference (Las Vegas market avg)
+            adjusted_price += bed_diff * 10000
 
         adjusted_prices.append(adjusted_price)
 
