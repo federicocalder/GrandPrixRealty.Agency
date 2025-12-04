@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Net Sheet</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      line-height: 1.5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #d4af37;
+    }
+
+    .logo-section h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #d4af37;
+      letter-spacing: 1px;
+    }
+
+    .logo-section p {
+      color: #888;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .report-info {
+      text-align: right;
+    }
+
+    .report-info h2 {
+      font-size: 20px;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .report-info .date {
+      color: #888;
+      font-size: 12px;
+    }
+
+    /* Property Card */
+    .property-card {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(30, 30, 30, 0.8) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .property-card .address {
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .property-card .details {
+      color: #888;
+      font-size: 14px;
+    }
+
+    /* Section */
+    .section {
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #d4af37;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    /* Line Items */
+    .line-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #1a1a1a;
+    }
+
+    .line-item:last-child {
+      border-bottom: none;
+    }
+
+    .line-item .label {
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .line-item .value {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .line-item .value.negative {
+      color: #ef4444;
+    }
+
+    .line-item.subtotal {
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid #333;
+    }
+
+    .line-item.subtotal .label,
+    .line-item.subtotal .value {
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    /* Final Result */
+    .final-result {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+      border: 2px solid #d4af37;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .final-result .label {
+      font-size: 14px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .final-result .amount {
+      font-size: 42px;
+      font-weight: 700;
+      color: #d4af37;
+    }
+
+    .final-result .note {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer .disclaimer {
+      font-size: 10px;
+      color: #666;
+      max-width: 60%;
+      line-height: 1.4;
+    }
+
+    .footer .compliance {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer .compliance img {
+      height: 30px;
+      opacity: 0.7;
+    }
+
+    .equal-housing {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-section">
+        <h1>GRAND PRIX REALTY</h1>
+        <p>Luxury Real Estate | Las Vegas, NV</p>
+      </div>
+      <div class="report-info">
+        <h2>Seller Net Sheet</h2>
+        <p class="date">{{generatedDate}}</p>
+      </div>
+    </div>
+
+    <!-- Property Card -->
+    <div class="property-card">
+      <p class="address">{{propertyAddress}}</p>
+      <p class="details">{{propertyDetails}}</p>
+    </div>
+
+    <!-- Sale Price -->
+    <div class="section">
+      <div class="section-title">Sale Information</div>
+      <div class="line-item">
+        <span class="label">Sale Price</span>
+        <span class="value">{{salePrice}}</span>
+      </div>
+    </div>
+
+    <!-- Loan Payoffs -->
+    <div class="section">
+      <div class="section-title">Loan Payoffs</div>
+      <div class="line-item">
+        <span class="label">1st Mortgage Payoff</span>
+        <span class="value negative">-{{firstLoanPayoff}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">2nd Mortgage / HELOC Payoff</span>
+        <span class="value negative">-{{secondLoanPayoff}}</span>
+      </div>
+      <div class="line-item subtotal">
+        <span class="label">Total Loan Payoffs</span>
+        <span class="value negative">-{{totalLoanPayoff}}</span>
+      </div>
+    </div>
+
+    <!-- Title & Closing Costs -->
+    <div class="section">
+      <div class="section-title">Title & Closing Costs</div>
+      <div class="line-item">
+        <span class="label">Escrow Fee</span>
+        <span class="value negative">-{{escrowFee}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">Owner's Title Policy</span>
+        <span class="value negative">-{{ownersTitlePolicy}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">Reconveyance Fee</span>
+        <span class="value negative">-{{reconveyanceFee}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">Payoff Demand Fee</span>
+        <span class="value negative">-{{payoffDemand}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">Transaction Fee</span>
+        <span class="value negative">-{{transactionFee}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">HOA Resale Package</span>
+        <span class="value negative">-{{hoaResalePackage}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">FedEx / Courier</span>
+        <span class="value negative">-{{fedexCourier}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">Notary / Mobile Signing</span>
+        <span class="value negative">-{{notarySigning}}</span>
+      </div>
+      <div class="line-item subtotal">
+        <span class="label">Total Title & Closing</span>
+        <span class="value negative">-{{totalTitleClosing}}</span>
+      </div>
+    </div>
+
+    <!-- Government Fees -->
+    <div class="section">
+      <div class="section-title">Government Fees & Taxes</div>
+      <div class="line-item">
+        <span class="label">Property Tax Proration</span>
+        <span class="value negative">-{{propertyTaxProration}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">Transfer Tax (Clark County)</span>
+        <span class="value negative">-{{transferTax}}</span>
+      </div>
+      <div class="line-item subtotal">
+        <span class="label">Total Government Fees</span>
+        <span class="value negative">-{{totalGovernmentFees}}</span>
+      </div>
+    </div>
+
+    <!-- Commissions & Credits -->
+    <div class="section">
+      <div class="section-title">Commissions & Credits</div>
+      <div class="line-item">
+        <span class="label">Listing Agent Commission</span>
+        <span class="value negative">-{{listingCommission}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">Buyer's Agent Commission</span>
+        <span class="value negative">-{{buyerAgentCommission}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">Buyer Credit / Concession</span>
+        <span class="value negative">-{{buyerCredit}}</span>
+      </div>
+      <div class="line-item">
+        <span class="label">Home Warranty</span>
+        <span class="value negative">-{{homeWarranty}}</span>
+      </div>
+      <div class="line-item subtotal">
+        <span class="label">Total Commissions & Credits</span>
+        <span class="value negative">-{{totalCommissions}}</span>
+      </div>
+    </div>
+
+    <!-- Final Result -->
+    <div class="final-result">
+      <p class="label">Estimated Seller Net Proceeds</p>
+      <p class="amount">{{sellerNet}}</p>
+      <p class="note">*This is an estimate. Actual proceeds may vary based on final closing figures.</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="disclaimer">
+        This Seller Net Sheet is an estimate only and is not a guarantee of the seller's actual proceeds.
+        Final figures will be determined at closing. Grand Prix Realty recommends consulting with
+        your escrow officer and tax advisor for accurate calculations.
+      </div>
+      <div class="compliance">
+        <div class="equal-housing">
+          EQUAL<br>HOUSING
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

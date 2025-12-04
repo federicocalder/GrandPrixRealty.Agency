@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Valuation Report</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      line-height: 1.5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #d4af37;
+    }
+
+    .logo-section h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #d4af37;
+      letter-spacing: 1px;
+    }
+
+    .logo-section p {
+      color: #888;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .report-info {
+      text-align: right;
+    }
+
+    .report-info h2 {
+      font-size: 20px;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .report-info .date {
+      color: #888;
+      font-size: 12px;
+    }
+
+    /* Property Card */
+    .property-card {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(30, 30, 30, 0.8) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .property-card .address {
+      font-size: 22px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .property-card .details {
+      color: #888;
+      font-size: 14px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .property-card .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .property-card .detail-label {
+      color: #666;
+    }
+
+    /* Value Display */
+    .value-display {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.05) 100%);
+      border: 2px solid #d4af37;
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .value-display .label {
+      font-size: 14px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .value-display .amount {
+      font-size: 52px;
+      font-weight: 700;
+      color: #d4af37;
+      margin-bottom: 16px;
+    }
+
+    .value-range {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .value-range .range-item {
+      text-align: center;
+    }
+
+    .value-range .range-label {
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .value-range .range-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-top: 4px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-card .stat-label {
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .stat-card .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .stat-card .stat-value.gold {
+      color: #d4af37;
+    }
+
+    /* Confidence Meter */
+    .confidence-section {
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .confidence-section .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #d4af37;
+      margin-bottom: 16px;
+    }
+
+    .confidence-bar {
+      height: 12px;
+      background: #2a2a2a;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .confidence-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #d4af37, #f5d77a);
+      border-radius: 6px;
+    }
+
+    .confidence-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Section */
+    .section {
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #d4af37;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .section p {
+      color: #aaa;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #2a2a2a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer .disclaimer {
+      font-size: 10px;
+      color: #666;
+      max-width: 60%;
+      line-height: 1.4;
+    }
+
+    .footer .compliance {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .equal-housing {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      color: #666;
+      text-align: center;
+      line-height: 1.1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-section">
+        <h1>GRAND PRIX REALTY</h1>
+        <p>Luxury Real Estate | Las Vegas, NV</p>
+      </div>
+      <div class="report-info">
+        <h2>Property Valuation Report</h2>
+        <p class="date">{{generatedDate}}</p>
+      </div>
+    </div>
+
+    <!-- Property Card -->
+    <div class="property-card">
+      <p class="address">{{propertyAddress}}</p>
+      <div class="details">
+        <span class="detail-item">
+          <span class="detail-label">Beds/Baths:</span>
+          {{propertyDetails}}
+        </span>
+        <span class="detail-item">
+          <span class="detail-label">Year Built:</span>
+          {{yearBuilt}}
+        </span>
+        <span class="detail-item">
+          <span class="detail-label">Lot Size:</span>
+          {{lotSize}} sqft
+        </span>
+      </div>
+    </div>
+
+    <!-- Value Display -->
+    <div class="value-display">
+      <p class="label">Estimated Market Value</p>
+      <p class="amount">{{estimatedValue}}</p>
+      <div class="value-range">
+        <div class="range-item">
+          <p class="range-label">Low Estimate</p>
+          <p class="range-value">{{valueLow}}</p>
+        </div>
+        <div class="range-item">
+          <p class="range-label">High Estimate</p>
+          <p class="range-value">{{valueHigh}}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <p class="stat-label">Price / Sq Ft</p>
+        <p class="stat-value">{{pricePerSqft}}</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Confidence</p>
+        <p class="stat-value gold">{{confidenceScore}}</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-label">Comparables Used</p>
+        <p class="stat-value">{{comparablesCount}}</p>
+      </div>
+    </div>
+
+    <!-- Methodology -->
+    <div class="section">
+      <div class="section-title">Valuation Methodology</div>
+      <p>
+        This automated valuation model (AVM) estimate is calculated using a proprietary algorithm
+        that analyzes recent comparable sales, property characteristics, market trends, and
+        location factors. The model considers properties sold within the last 6 months in the
+        surrounding area with similar features including square footage, bedrooms, bathrooms,
+        lot size, and year built.
+      </p>
+    </div>
+
+    <!-- Disclaimer Section -->
+    <div class="section">
+      <div class="section-title">Important Information</div>
+      <p>
+        This valuation is an estimate based on available data and should not be considered an
+        appraisal. Market conditions can change rapidly, and actual sale prices may vary.
+        For a comprehensive market analysis or to discuss listing your property, please contact
+        Grand Prix Realty directly.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="disclaimer">
+        This report is provided for informational purposes only and does not constitute an appraisal
+        or guarantee of value. Grand Prix Realty makes no warranties regarding the accuracy of this
+        estimate. Please consult with a licensed appraiser for official property valuations.
+      </div>
+      <div class="compliance">
+        <div class="equal-housing">
+          EQUAL<br>HOUSING
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
