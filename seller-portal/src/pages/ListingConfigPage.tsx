@@ -117,43 +117,32 @@ export default function ListingConfigPage() {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Left Column - Configuration */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Big Seller Net Sheet Card */}
-          <div
-            className="relative overflow-hidden rounded-2xl border border-[#d4af37]/30 bg-gradient-to-br from-[#d4af37]/10 via-zinc-900/50 to-zinc-900/80 p-8 cursor-pointer hover:border-[#d4af37]/50 transition-all group"
-            onClick={() => navigate(`/net-sheet/${valuationId}`, { state: { valuation } })}
-          >
-            {/* Background decoration */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#d4af37]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          {/* Seller Net Sheet Card */}
+          <section className="card-dark p-6">
+            <h2 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
+              <Calculator size={22} className="text-[#d4af37]" />
+              Calculate Your Net
+            </h2>
+            <p className="text-zinc-500 text-sm mb-6">
+              How much will you actually walk away with after all costs?
+            </p>
 
-            <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
-              {/* Left side - Icon and title */}
-              <div className="flex items-center gap-5">
-                <div className="w-16 h-16 rounded-2xl bg-[#d4af37]/20 flex items-center justify-center">
-                  <Calculator size={32} className="text-[#d4af37]" />
-                </div>
+            <div
+              className="p-5 rounded-xl border border-[#d4af37]/30 bg-gradient-to-r from-[#d4af37]/10 to-transparent cursor-pointer hover:border-[#d4af37]/50 transition-all group"
+              onClick={() => navigate(`/net-sheet/${valuationId}`, { state: { valuation } })}
+            >
+              <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-2xl font-bold text-white mb-1">Calculate Your Net</h2>
-                  <p className="text-zinc-400">How much will you actually walk away with?</p>
+                  <p className="text-white font-medium mb-1">Seller Net Sheet Calculator</p>
+                  <p className="text-zinc-400 text-sm">See your estimated cash at closing after fees, commissions & payoffs</p>
                 </div>
+                <button className="btn-gold px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 group-hover:scale-105 transition-transform whitespace-nowrap">
+                  Calculate
+                  <ArrowRight size={16} />
+                </button>
               </div>
-
-              {/* Center - Mystery amount to entice click */}
-              <div className="text-center md:text-right">
-                <p className="text-sm text-zinc-500 uppercase tracking-wide mb-1">Your Seller Net</p>
-                <div className="flex items-center gap-2 justify-center md:justify-end">
-                  <DollarSign size={28} className="text-[#d4af37]" />
-                  <span className="text-5xl font-bold text-[#d4af37] tracking-wider">???????</span>
-                </div>
-                <p className="text-xs text-zinc-500 mt-1">Click to calculate your cash at closing</p>
-              </div>
-
-              {/* Right side - CTA */}
-              <button className="btn-gold px-6 py-3 rounded-xl font-semibold flex items-center gap-2 group-hover:scale-105 transition-transform">
-                Calculate Now
-                <ArrowRight size={18} />
-              </button>
             </div>
-          </div>
+          </section>
 
           {/* Section 1: Listing Strategy */}
           <section className="card-dark p-6">
