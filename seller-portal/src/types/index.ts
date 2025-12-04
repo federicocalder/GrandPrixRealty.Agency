@@ -119,3 +119,44 @@ export interface LeadResponse {
   report_url: string;
   message: string;
 }
+
+// Seller Net Sheet Types
+
+export interface NetSheetInputs {
+  salePrice: number;
+  loan1Balance: number;
+  loan2Balance: number;
+  annualPropertyTax: number;
+  estimatedClosingDate: string;
+}
+
+export interface TitleClosingCosts {
+  escrowFee: number;
+  ownersTitlePolicy: number;
+  reconveyanceFee: number;
+  payoffDemand: number;
+  transactionFee: number;
+  hoaResalePackage: number;
+  fedexCourier: number;
+  notarySigning: number;
+}
+
+export interface GovernmentFees {
+  propertyTaxProration: number;
+  transferTax: number;
+}
+
+export interface CommissionsCredits {
+  listingCommissionPct: number;
+  buyerCommissionPct: number;
+  buyerConcessions: number;
+  homeWarranty: number;
+}
+
+export interface NetSheetData {
+  inputs: NetSheetInputs;
+  titleClosingCosts: TitleClosingCosts;
+  governmentFees: GovernmentFees;
+  commissionsCredits: CommissionsCredits;
+  estimatedSellerNet: number;
+}

@@ -294,7 +294,7 @@ export default function ValuationPage() {
                 icon={<DollarSign size={18} />}
                 title="Net Sheet & Payout"
                 subtitle="See your cash at closing"
-                status="locked"
+                status="next"
               />
               <JourneyStep
                 icon={<Target size={18} />}
@@ -324,10 +324,10 @@ export default function ValuationPage() {
 
             {/* CTA */}
             <button
-              onClick={() => navigate(`/list/${valuation.id}`, { state: { valuation } })}
+              onClick={() => navigate(`/net-sheet/${valuation.id}`, { state: { valuation } })}
               className="w-full btn-gold py-4 rounded-xl text-lg font-semibold flex items-center justify-center gap-2 pulse-gold"
             >
-              Enter Seller Portal
+              Calculate My Payout
               <ArrowRight size={20} />
             </button>
 
@@ -437,15 +437,18 @@ function JourneyStep({
   icon: React.ReactNode
   title: string
   subtitle: string
-  status: 'complete' | 'locked'
+  status: 'complete' | 'next' | 'locked'
 }) {
   const isComplete = status === 'complete'
+  const isNext = status === 'next'
 
   return (
     <div
       className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
         isComplete
           ? 'bg-[#d4af37]/10 border-[#d4af37]/30'
+          : isNext
+          ? 'bg-white/10 border-[#d4af37]/50'
           : 'bg-white/5 border-white/10 opacity-60'
       }`}
     >
@@ -454,6 +457,8 @@ function JourneyStep({
         className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
           isComplete
             ? 'bg-[#d4af37]/20 text-[#d4af37]'
+            : isNext
+            ? 'bg-[#d4af37]/10 text-[#d4af37]'
             : 'bg-white/10 text-white/40'
         }`}
       >
@@ -462,11 +467,11 @@ function JourneyStep({
 
       {/* Text */}
       <div className="flex-1 min-w-0">
-        <p className={`font-medium ${isComplete ? 'text-white' : 'text-white/60'}`}>
+        <p className={`font-medium ${isComplete || isNext ? 'text-white' : 'text-white/60'}`}>
           {title}
         </p>
-        <p className={`text-xs ${isComplete ? 'text-white/60' : 'text-white/40'}`}>
-          {subtitle}
+        <p className={`text-xs ${isComplete ? 'text-white/60' : isNext ? 'text-[#d4af37]/80' : 'text-white/40'}`}>
+          {isNext ? 'Up next' : subtitle}
         </p>
       </div>
 
@@ -476,6 +481,8 @@ function JourneyStep({
           <div className="w-6 h-6 rounded-full bg-[#d4af37] flex items-center justify-center">
             <Check size={14} className="text-black" />
           </div>
+        ) : isNext ? (
+          <ChevronRight size={18} className="text-[#d4af37]" />
         ) : (
           <Lock size={16} className="text-white/30" />
         )}
