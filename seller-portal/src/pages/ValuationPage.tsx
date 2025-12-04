@@ -25,6 +25,21 @@ import {
 import { getValuation, formatCurrency, formatDate, formatDistance, formatConfidence } from '../lib/api'
 import type { ValuationResponse, ComparableSale, ValuationFactor } from '../types'
 
+// Format property type for display
+function formatPropertyType(type: string): string {
+  const typeMap: Record<string, string> = {
+    'Condo': 'Attached',
+    'Condominium': 'Attached',
+    'Townhouse': 'Attached',
+    'SingleFamilyResidence': 'Single Family',
+    'SingleFamily': 'Single Family',
+    'MultiFamily': 'Multi-Family',
+    'Manufactured': 'Manufactured',
+    'MobileHome': 'Mobile Home',
+  }
+  return typeMap[type] || type
+}
+
 export default function ValuationPage() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -227,7 +242,7 @@ export default function ValuationPage() {
                 <PropertyStat
                   icon={<Building size={18} />}
                   label="Type"
-                  value={property.property_type}
+                  value={formatPropertyType(property.property_type)}
                 />
               )}
             </div>
