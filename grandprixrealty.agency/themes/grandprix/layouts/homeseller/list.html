@@ -976,6 +976,24 @@ window.addEventListener('load', function() {
 
             if (!button || !addressInput) return;
 
+            // Handle Enter key on address input
+            addressInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    button.click();
+                }
+            });
+
+            // Handle Enter key on unit input too
+            if (unitInput) {
+                unitInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        button.click();
+                    }
+                });
+            }
+
             button.addEventListener('click', async function(e) {
                 e.preventDefault();
 
