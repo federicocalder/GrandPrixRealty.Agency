@@ -1084,12 +1084,14 @@ window.addEventListener('load', function() {
         setupSubmitButtons();
     }
 
-    // Also reset on pageshow (handles back/forward cache)
+    // Also reset on pageshow (handles back/forward cache and navigation)
     window.addEventListener('pageshow', function(event) {
-        if (event.persisted) {
-            resetButtons();
-        }
+        // Always reset on pageshow - covers both bfcache and regular navigation
+        resetButtons();
     });
+
+    // Extra safety: reset after a brief delay to catch any browser state restoration
+    setTimeout(resetButtons, 100);
 })();
 </script>
 
