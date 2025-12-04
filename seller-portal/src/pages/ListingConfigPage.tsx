@@ -115,7 +115,7 @@ export default function ListingConfigPage() {
       </div>
 
       {/* Big Seller Net Sheet Card */}
-      <div className="mb-10">
+      <div className="mb-8">
         <div
           className="relative overflow-hidden rounded-2xl border border-[#d4af37]/30 bg-gradient-to-br from-[#d4af37]/10 via-zinc-900/50 to-zinc-900/80 p-8 cursor-pointer hover:border-[#d4af37]/50 transition-all group"
           onClick={() => navigate(`/net-sheet/${valuationId}`, { state: { valuation } })}
@@ -157,57 +157,7 @@ export default function ListingConfigPage() {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Left Column - Configuration */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Section 1: Media Options */}
-          <section className="card-dark p-6">
-            <h2 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
-              <Camera size={22} className="text-[#d4af37]" />
-              Photography & Media
-            </h2>
-            <p className="text-zinc-500 text-sm mb-6">
-              Choose what visual content we'll create for your listing.
-            </p>
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              <MediaOption
-                icon={<Camera size={20} />}
-                title="Pro Photos"
-                description="HDR professional photography"
-                checked={mediaOptions.pro_photos}
-                onChange={(checked) => setMediaOptions({ ...mediaOptions, pro_photos: checked })}
-                required
-              />
-              <MediaOption
-                icon={<Sun size={20} />}
-                title="Twilight Photos"
-                description="Stunning dusk/evening shots"
-                checked={mediaOptions.twilight_photos}
-                onChange={(checked) => setMediaOptions({ ...mediaOptions, twilight_photos: checked })}
-              />
-              <MediaOption
-                icon={<Rotate3d size={20} />}
-                title="3D Virtual Tour"
-                description="Interactive walkthrough"
-                checked={mediaOptions.virtual_tour_3d}
-                onChange={(checked) => setMediaOptions({ ...mediaOptions, virtual_tour_3d: checked })}
-              />
-              <MediaOption
-                icon={<Plane size={20} />}
-                title="Drone Photos"
-                description="Aerial views of property"
-                checked={mediaOptions.drone_photos}
-                onChange={(checked) => setMediaOptions({ ...mediaOptions, drone_photos: checked })}
-              />
-              <MediaOption
-                icon={<Video size={20} />}
-                title="Video Tour"
-                description="Professional video walkthrough"
-                checked={mediaOptions.video_tour}
-                onChange={(checked) => setMediaOptions({ ...mediaOptions, video_tour: checked })}
-              />
-            </div>
-          </section>
-
-          {/* Section 2: Listing Strategy */}
+          {/* Section 1: Listing Strategy */}
           <section className="card-dark p-6">
             <h2 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
               <Megaphone size={22} className="text-[#d4af37]" />
@@ -275,7 +225,7 @@ export default function ListingConfigPage() {
             </label>
           </section>
 
-          {/* Section 3: Pricing Strategy */}
+          {/* Section 2: Pricing Strategy */}
           <section className="card-dark p-6">
             <h2 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
               <DollarSign size={22} className="text-[#d4af37]" />
@@ -321,6 +271,56 @@ export default function ListingConfigPage() {
                 <span className="text-white">Schedule a quick pricing call before we publish</span>
               </div>
             </label>
+          </section>
+
+          {/* Section 3: Media Options */}
+          <section className="card-dark p-6">
+            <h2 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
+              <Camera size={22} className="text-[#d4af37]" />
+              Photography & Media
+            </h2>
+            <p className="text-zinc-500 text-sm mb-6">
+              Choose what visual content we'll create for your listing.
+            </p>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <MediaOption
+                icon={<Camera size={20} />}
+                title="Pro Photos"
+                description="HDR professional photography"
+                checked={mediaOptions.pro_photos}
+                onChange={(checked) => setMediaOptions({ ...mediaOptions, pro_photos: checked })}
+                required
+              />
+              <MediaOption
+                icon={<Sun size={20} />}
+                title="Twilight Photos"
+                description="Stunning dusk/evening shots"
+                checked={mediaOptions.twilight_photos}
+                onChange={(checked) => setMediaOptions({ ...mediaOptions, twilight_photos: checked })}
+              />
+              <MediaOption
+                icon={<Rotate3d size={20} />}
+                title="3D Virtual Tour"
+                description="Interactive walkthrough"
+                checked={mediaOptions.virtual_tour_3d}
+                onChange={(checked) => setMediaOptions({ ...mediaOptions, virtual_tour_3d: checked })}
+              />
+              <MediaOption
+                icon={<Plane size={20} />}
+                title="Drone Photos"
+                description="Aerial views of property"
+                checked={mediaOptions.drone_photos}
+                onChange={(checked) => setMediaOptions({ ...mediaOptions, drone_photos: checked })}
+              />
+              <MediaOption
+                icon={<Video size={20} />}
+                title="Video Tour"
+                description="Professional video walkthrough"
+                checked={mediaOptions.video_tour}
+                onChange={(checked) => setMediaOptions({ ...mediaOptions, video_tour: checked })}
+              />
+            </div>
           </section>
         </div>
 
