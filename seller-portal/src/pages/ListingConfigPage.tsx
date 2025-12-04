@@ -15,7 +15,8 @@ import {
   DollarSign,
   Phone,
   Check,
-  MapPin
+  MapPin,
+  Calculator
 } from 'lucide-react'
 import { formatCurrency } from '../lib/api'
 import type { ValuationResponse, MediaOptions, ListingStrategy, PricingStrategy } from '../types'
@@ -64,6 +65,7 @@ export default function ListingConfigPage() {
 
   const { property, valuation: result } = valuation
 
+
   const handleContinue = () => {
     // TODO: Save listing intake and proceed to account creation / e-sign
     console.log('Listing configuration:', {
@@ -110,6 +112,46 @@ export default function ListingConfigPage() {
           <MapPin size={16} />
           {property.address_full}
         </p>
+      </div>
+
+      {/* Big Seller Net Sheet Card */}
+      <div className="mb-10">
+        <div
+          className="relative overflow-hidden rounded-2xl border border-[#d4af37]/30 bg-gradient-to-br from-[#d4af37]/10 via-zinc-900/50 to-zinc-900/80 p-8 cursor-pointer hover:border-[#d4af37]/50 transition-all group"
+          onClick={() => navigate(`/net-sheet/${valuationId}`, { state: { valuation } })}
+        >
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#d4af37]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+
+          <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
+            {/* Left side - Icon and title */}
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-2xl bg-[#d4af37]/20 flex items-center justify-center">
+                <Calculator size={32} className="text-[#d4af37]" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-1">Calculate Your Net</h2>
+                <p className="text-zinc-400">How much will you actually walk away with?</p>
+              </div>
+            </div>
+
+            {/* Center - Mystery amount to entice click */}
+            <div className="text-center md:text-right">
+              <p className="text-sm text-zinc-500 uppercase tracking-wide mb-1">Your Seller Net</p>
+              <div className="flex items-center gap-2 justify-center md:justify-end">
+                <DollarSign size={28} className="text-[#d4af37]" />
+                <span className="text-5xl font-bold text-[#d4af37] tracking-wider">???????</span>
+              </div>
+              <p className="text-xs text-zinc-500 mt-1">Click to calculate your cash at closing</p>
+            </div>
+
+            {/* Right side - CTA */}
+            <button className="btn-gold px-6 py-3 rounded-xl font-semibold flex items-center gap-2 group-hover:scale-105 transition-transform">
+              Calculate Now
+              <ArrowRight size={18} />
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">

@@ -294,7 +294,7 @@ export default function ValuationPage() {
                 icon={<DollarSign size={18} />}
                 title="Net Sheet & Payout"
                 subtitle="See your cash at closing"
-                status="next"
+                status="locked"
               />
               <JourneyStep
                 icon={<Target size={18} />}
@@ -324,10 +324,10 @@ export default function ValuationPage() {
 
             {/* CTA */}
             <button
-              onClick={() => navigate(`/net-sheet/${valuation.id}`, { state: { valuation } })}
+              onClick={() => navigate(`/list/${valuation.id}`, { state: { valuation } })}
               className="w-full btn-gold py-4 rounded-xl text-lg font-semibold flex items-center justify-center gap-2 pulse-gold"
             >
-              Calculate My Payout
+              Enter Seller Portal
               <ArrowRight size={20} />
             </button>
 
