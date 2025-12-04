@@ -276,3 +276,31 @@ select:focus {
 input::placeholder {
   color: rgba(255, 255, 255, 0.4);
 }
+
+/* Print styles - preserve dark theme */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  body {
+    background-color: #000 !important;
+    color: #e5e5e5 !important;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%) !important;
+  }
+
+  /* Hide elements not needed in print */
+  .pulse-gold {
+    animation: none !important;
+  }
+}
