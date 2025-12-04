@@ -252,7 +252,7 @@ export default function SellerNetSheetPage() {
     <div className="max-w-6xl mx-auto px-6 py-12">
       {/* Back button */}
       <button
-        onClick={() => navigate(-1)}
+        onClick={() => navigate(`/valuation/${valuationId}`, { state: { valuation } })}
         className="flex items-center gap-2 text-zinc-400 hover:text-white mb-8 transition-colors"
       >
         <ArrowLeft size={20} />

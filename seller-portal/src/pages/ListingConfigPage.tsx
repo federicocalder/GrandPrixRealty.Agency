@@ -96,11 +96,11 @@ export default function ListingConfigPage() {
     <div className="max-w-5xl mx-auto px-6 py-12">
       {/* Back button */}
       <button
-        onClick={() => navigate(-1)}
+        onClick={() => navigate(`/net-sheet/${valuationId}`, { state: { valuation } })}
         className="flex items-center gap-2 text-zinc-400 hover:text-white mb-8 transition-colors"
       >
         <ArrowLeft size={20} />
-        Back to Estimate
+        Back to Net Sheet
       </button>
 
       {/* Header */}
