@@ -1,6 +1,6 @@
 # Grand Prix Realty - Project Roadmap
 
-Last updated: 2025-11-27
+Last updated: 2025-12-05
 
 ## Brand Experience Goals
 - Modern & minimal like Airbnb
@@ -18,7 +18,7 @@ Last updated: 2025-11-27
 
 ---
 
-## PHASE 1 — Core Search Engine (Foundation)
+## PHASE 1 — Core Search Engine (Foundation) ✅
 
 - [x] Connect Trestle API to search engine
 - [x] Live filters working (price, beds, baths, type, etc.)
@@ -28,13 +28,36 @@ Last updated: 2025-11-27
 - [x] Reset/Restart search button
 - [x] View All button per featured row
 - [x] Price reduced endpoint with discount badges
+- [x] Fix price slider state management issues
+- [x] Fix API URL mapping for production
 - [ ] Finalize UI style (fonts, color system, branding tone)
 - [ ] Optimize mobile layout
 - [ ] Property cards clickable → link to listing page
 
 ---
 
-## PHASE 2 — Listing Pages System
+## PHASE 2 — Seller Portal & AVM (Complete) ✅
+
+- [x] Create SEO-ready homeseller landing page (Hugo)
+- [x] Address input with Google Places autocomplete
+- [x] Unit number field for condos/townhomes
+- [x] AI-powered home valuation (LightGBM model)
+- [x] Comparable sales display with match scores
+- [x] Value factors analysis
+- [x] Confidence score and price range
+- [x] Seller Net Sheet calculator (Step 3)
+- [x] Listing configuration page (Step 4)
+- [x] PDF report generation (Puppeteer service)
+- [x] Download PDF for AVM reports
+- [x] Download PDF for Net Sheet
+- [x] Navigation flow between all steps
+- [x] "Estimated Price" wording for compliance
+- [x] Property type formatting (Attached, Single Family)
+- [x] AVM weighting improvements (bedroom match bonus, $10k adjustment)
+
+---
+
+## PHASE 3 — Listing Pages System
 
 - [x] Create SEO-ready Dynamic Listing Page Template (Hugo static)
 - [x] Add IDX attribution compliance block
@@ -59,15 +82,9 @@ Last updated: 2025-11-27
 - Meta tags with OG images for social sharing
 - Static generation for fast loads + crawlability
 
-### Photo Gallery Features
-- Ken Burns effect (subtle slow zoom/pan)
-- Smooth crossfade auto-rotate (5-6 seconds)
-- Parallax scroll on hero
-- Fullscreen lightbox with swipe navigation
-
 ---
 
-## PHASE 3 — Buyer Portal MVP
+## PHASE 4 — Buyer Portal MVP
 
 - [ ] User authentication (Supabase Auth)
 - [ ] Save properties (favorites)
@@ -78,7 +95,7 @@ Last updated: 2025-11-27
 
 ---
 
-## PHASE 4 — Social Layer
+## PHASE 5 — Social Layer
 
 - [ ] Commenting on homes
 - [ ] Reactions system (love / pass / considering)
@@ -88,7 +105,7 @@ Last updated: 2025-11-27
 
 ---
 
-## PHASE 5 — Mortgage Integration
+## PHASE 6 — Mortgage Integration
 
 - [ ] Soft credit pull system
 - [ ] Pre-qual flow embedded in portal
@@ -98,9 +115,9 @@ Last updated: 2025-11-27
 
 ---
 
-## PHASE 6 — AI Experience Layer
+## PHASE 7 — AI Experience Layer
 
-- [ ] AI Search Interface (C1 SDK)
+- [ ] AI Search Interface (Claude SDK)
 - [ ] Conversational search prompts
 - [ ] AI guide for buyer journey
 - [ ] Smart listing recommendations
@@ -108,7 +125,7 @@ Last updated: 2025-11-27
 
 ---
 
-## PHASE 7 — Pro Marketplace
+## PHASE 8 — Pro Marketplace
 
 - [ ] Pro account tier
 - [ ] Featured post system
@@ -119,14 +136,21 @@ Last updated: 2025-11-27
 
 ---
 
-## System Infrastructure
+## System Infrastructure ✅
 
 - [x] Hetzner Server
-- [x] Supabase Database
-- [x] Trestle MLS Feed
+- [x] Supabase Database (PostgreSQL + PostGIS)
+- [x] Trestle MLS Feed (Las Vegas REALTORS)
 - [x] Hugo Main Website
+- [x] React Seller Portal App (Vite)
 - [x] React Buyer Search App (Vite)
-- [ ] Deployment pipeline (Git → Hetzner)
+- [x] React SEO Lab App (Vite)
+- [x] AVM API (Python/FastAPI)
+- [x] Buyer Search API (Node/Express)
+- [x] SEO API (Python/FastAPI)
+- [x] PDF Service (Node/Puppeteer)
+- [x] GitHub Actions CI/CD pipeline
+- [x] Docker Compose deployment
 - [ ] Logging & performance monitoring
 
 ---
@@ -136,14 +160,20 @@ Last updated: 2025-11-27
 | Component | Technology |
 |-----------|------------|
 | Main Website | Hugo (static) |
-| Buyer Search App | React 19 + Vite + TypeScript |
-| Listing Pages | Hugo (static, SEO-optimized) |
-| API Proxy | Express 5 (Node.js) |
+| Seller Portal | React 18 + Vite + TypeScript |
+| Buyer Search App | React 18 + Vite + TypeScript |
+| SEO Lab | React 18 + Vite + TypeScript |
+| AVM API | Python 3.12 + FastAPI + LightGBM |
+| Buyer API | Node.js 22 + Express + TypeScript |
+| SEO API | Python 3.12 + FastAPI |
+| PDF Service | Node.js 22 + Express + Puppeteer |
 | MLS Data | Trestle API (RESO/OData) |
-| Database | Supabase (PostgreSQL) |
+| Database | PostgreSQL (Supabase self-hosted) |
 | Auth | Supabase Auth |
-| Hosting | Hetzner |
-| Future AI | Claude C1 SDK |
+| Maps | Google Maps API |
+| Hosting | Hetzner VPS + Docker |
+| CI/CD | GitHub Actions |
+| Future AI | Claude SDK |
 
 ---
 
@@ -153,7 +183,8 @@ Last updated: 2025-11-27
 - [x] Numeric filter validation (prevent NaN)
 - [x] Proper TypeScript types
 - [x] Frontend error handling
-- [ ] CORS tightening for production
+- [x] CORS configured per service
+- [x] Environment variables for secrets
 - [ ] Rate limiting middleware (protect Trestle quota: 7,200/hr)
 - [ ] Environment validation at startup
 
