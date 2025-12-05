@@ -152,7 +152,7 @@ export default function ValuationPage() {
           <span>{property.address_full}</span>
         </div>
         <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-white">
-          Your Home Value Estimate
+          Your Home Price Estimate
         </h1>
       </div>
 
@@ -166,7 +166,7 @@ export default function ValuationPage() {
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#d4af37]/5 rounded-full blur-3xl" />
 
             <div className="relative">
-              <p className="text-white/60 mb-2 text-lg">Estimated Value</p>
+              <p className="text-white/60 mb-2 text-lg">Estimated Price</p>
               <div className="flex items-baseline gap-4 mb-4">
                 <span className="text-5xl md:text-6xl font-bold text-gradient-gold price-display">
                   {formatCurrency(result.estimate)}
@@ -248,11 +248,11 @@ export default function ValuationPage() {
             </div>
           </div>
 
-          {/* Value Factors */}
+          {/* Price Factors */}
           {factors.length > 0 && (
             <div className="glass-card bg-white/5 rounded-[32px] p-6 md:p-8">
               <h2 className="font-cinzel text-xl font-semibold text-white mb-4">
-                What's Affecting Your Value
+                What's Affecting Your Price
               </h2>
               <div className="space-y-3">
                 {factors.map((factor, idx) => (
@@ -336,7 +336,7 @@ export default function ValuationPage() {
             <div className="space-y-3 mb-6">
               <JourneyStep
                 icon={<TrendingUp size={18} />}
-                title="Instant Value"
+                title="Instant Estimate"
                 subtitle="Where you are now"
                 status="complete"
               />
