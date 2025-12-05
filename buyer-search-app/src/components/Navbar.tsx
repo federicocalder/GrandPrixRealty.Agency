@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 
+// Base URL for the main Hugo site - uses relative paths in production
+const SITE_BASE_URL = import.meta.env.DEV ? '' : '';
+
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -20,11 +23,11 @@ export const Navbar = () => {
           <div className="flex justify-between items-center h-20">
             {/* Logo Section (Left) */}
             <div className="flex items-center space-x-3">
-              <a href="http://localhost:55966/" className="flex items-center space-x-3">
+              <a href={`${SITE_BASE_URL}/`} className="flex items-center space-x-3">
                 {/* Logo Image */}
                 <div className="w-16 h-16 flex items-center justify-center">
                   <img
-                    src="/images/logo.webp"
+                    src={`${import.meta.env.BASE_URL}images/logo.webp`}
                     alt="Grand Prix Realty Logo"
                     className="w-16 h-16 object-contain"
                   />
@@ -70,35 +73,35 @@ export const Navbar = () => {
         <div className="w-full h-full flex flex-col items-end justify-center space-y-6 px-8">
           {/* Navigation Links */}
           <a
-            href="http://localhost:55966/homebuyer/"
+            href={`${SITE_BASE_URL}/homebuyer/`}
             className="text-white hover:text-grand-silver font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300"
             onClick={() => setIsMenuOpen(false)}
           >
             Buy
           </a>
           <a
-            href="http://localhost:55966/homeseller/"
+            href={`${SITE_BASE_URL}/homeseller/`}
             className="text-white hover:text-grand-silver font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300"
             onClick={() => setIsMenuOpen(false)}
           >
             Sell
           </a>
           <a
-            href="http://localhost:55966/propertymanagement/"
+            href={`${SITE_BASE_URL}/propertymanagement/`}
             className="text-white hover:text-grand-silver font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300"
             onClick={() => setIsMenuOpen(false)}
           >
             Manage
           </a>
           <a
-            href="http://localhost:55966/about/"
+            href={`${SITE_BASE_URL}/about/`}
             className="text-white hover:text-grand-silver font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300"
             onClick={() => setIsMenuOpen(false)}
           >
             About Us
           </a>
           <a
-            href="http://localhost:55966/realtors/"
+            href={`${SITE_BASE_URL}/realtors/`}
             className="text-white hover:text-grand-silver font-sans font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300"
             onClick={() => setIsMenuOpen(false)}
           >

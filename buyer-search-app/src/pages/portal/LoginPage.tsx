@@ -49,7 +49,7 @@ export function LoginPage() {
         <div className="text-center mb-8">
           <a href="/" className="inline-flex items-center gap-3">
             <img
-              src="/images/logo.webp"
+              src={`${import.meta.env.BASE_URL}images/logo.webp`}
               alt="Grand Prix Realty"
               className="w-16 h-16"
             />

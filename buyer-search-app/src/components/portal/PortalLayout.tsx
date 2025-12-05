@@ -100,7 +100,7 @@ export function PortalLayout({ children, project, profile }: PortalLayoutProps) 
         <div className="h-16 flex items-center px-6 border-b border-[#e5e3df]">
           <Link to="/" className="flex items-center gap-3">
             <img
-              src="/images/logo.webp"
+              src={`${import.meta.env.BASE_URL}images/logo.webp`}
               alt="Grand Prix Realty"
               className="w-10 h-10"
             />

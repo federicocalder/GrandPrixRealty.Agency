@@ -34,11 +34,11 @@ interface TrestleListing {
   Media?: Array<{ MediaURL: string }>;
 }
 
-// Initial filter state
+// Initial filter state - start with empty/default values so slider begins at $0
 const initialFilters: FilterState = {
   city: '',
-  minPrice: '300000',
-  maxPrice: '800000',
+  minPrice: '',
+  maxPrice: '',
   beds: null,
   baths: null,
   propertyType: [],
@@ -229,7 +229,7 @@ function App() {
   // Count active filters for badge
   const activeFilterCount = [
     filters.city,
-    filters.minPrice !== '300000' || filters.maxPrice !== '800000',
+    filters.minPrice || filters.maxPrice, // Any price filter set
     filters.beds,
     filters.baths,
     filters.propertyType?.length,
@@ -372,7 +372,7 @@ function App() {
                       {filters.city}
                     </span>
                   )}
-                  {(filters.minPrice || filters.maxPrice) && (filters.minPrice !== '300000' || filters.maxPrice !== '800000') && (
+                  {(filters.minPrice || filters.maxPrice) && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#f8f7f4] border border-[#e5e3df] rounded-lg text-sm text-[#4a4a4a] tracking-wide">
                       ${filters.minPrice ? parseInt(filters.minPrice).toLocaleString() : '0'} – ${filters.maxPrice ? parseInt(filters.maxPrice).toLocaleString() : 'No max'}
                     </span>
