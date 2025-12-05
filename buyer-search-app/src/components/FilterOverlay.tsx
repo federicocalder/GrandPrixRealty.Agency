@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { GEOGRAPHIC_CONFIG, PROPERTY_TYPES } from '../config/geography';
 import { FILTER_INFO } from '../types/filters';
 
@@ -136,17 +136,29 @@ const DualRangeSlider = ({
   const sliderRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState<'min' | 'max' | null>(null);
 
+  // Use refs to avoid stale closure issues during drag
+  const onChangeRef = useRef(onChange);
+  const minValueRef = useRef(minValue);
+  const maxValueRef = useRef(maxValue);
+
+  // Keep refs updated
+  useEffect(() => {
+    onChangeRef.current = onChange;
+    minValueRef.current = minValue;
+    maxValueRef.current = maxValue;
+  }, [onChange, minValue, maxValue]);
+
   const getPercentage = (value: number) => {
     return ((value - min) / (max - min)) * 100;
   };
 
-  const getValueFromPosition = (clientX: number) => {
+  const getValueFromPosition = useCallback((clientX: number) => {
     if (!sliderRef.current) return min;
     const rect = sliderRef.current.getBoundingClientRect();
     const percentage = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
     const rawValue = (percentage / 100) * (max - min) + min;
     return Math.round(rawValue / step) * step;
-  };
+  }, [min, max, step]);
 
   const handleMouseDown = (type: 'min' | 'max') => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -163,9 +175,9 @@ const DualRangeSlider = ({
       const newValue = getValueFromPosition(e.clientX);
 
       if (isDragging === 'min') {
-        onChange(Math.min(newValue, maxValue - step), maxValue);
+        onChangeRef.current(Math.min(newValue, maxValueRef.current - step), maxValueRef.current);
       } else {
-        onChange(minValue, Math.max(newValue, minValue + step));
+        onChangeRef.current(minValueRef.current, Math.max(newValue, minValueRef.current + step));
       }
     };
 
@@ -174,9 +186,9 @@ const DualRangeSlider = ({
       const newValue = getValueFromPosition(e.touches[0].clientX);
 
       if (isDragging === 'min') {
-        onChange(Math.min(newValue, maxValue - step), maxValue);
+        onChangeRef.current(Math.min(newValue, maxValueRef.current - step), maxValueRef.current);
       } else {
-        onChange(minValue, Math.max(newValue, minValue + step));
+        onChangeRef.current(minValueRef.current, Math.max(newValue, minValueRef.current + step));
       }
     };
 
@@ -197,7 +209,7 @@ const DualRangeSlider = ({
       document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('touchend', handleEnd);
     };
-  }, [isDragging, minValue, maxValue, min, max, step, onChange]);
+  }, [isDragging, step, getValueFromPosition]);
 
   const minPercent = getPercentage(minValue);
   const maxPercent = getPercentage(maxValue);
@@ -470,8 +482,12 @@ export const FilterOverlay = ({
   const maxPrice = parseInt(filters.maxPrice) || 2000000;
 
   const handlePriceChange = (min: number, max: number) => {
-    updateFilter('minPrice', min === 0 ? '' : String(min));
-    updateFilter('maxPrice', max >= 2000000 ? '' : String(max));
+    // Update both price filters at once to avoid stale state issues
+    onFiltersChange({
+      ...filters,
+      minPrice: min === 0 ? '' : String(min),
+      maxPrice: max >= 2000000 ? '' : String(max),
+    });
   };
 
   if (!isOpen) return null;
