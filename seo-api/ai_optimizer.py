@@ -221,13 +221,26 @@ Respond in this exact JSON format:
         )
 
         try:
-            result = json.loads(response.content[0].text)
+            response_text = response.content[0].text.strip()
+            # Try to extract JSON from the response (in case there's extra text)
+            json_match = re.search(r'\{[^{}]*"title"[^{}]*\}', response_text)
+            if json_match:
+                result = json.loads(json_match.group())
+            else:
+                result = json.loads(response_text)
             optimized = result.get('title', current_title)
             explanation = result.get('changes', 'Title optimized')
-        except json.JSONDecodeError:
-            # Fallback if JSON parsing fails
-            optimized = response.content[0].text.strip().strip('"')
-            explanation = "Title optimized for SEO"
+        except (json.JSONDecodeError, AttributeError):
+            # Fallback if JSON parsing fails - try to extract just the title
+            response_text = response.content[0].text.strip()
+            # Look for quoted title after "title":
+            title_match = re.search(r'"title"\s*:\s*"([^"]+)"', response_text)
+            if title_match:
+                optimized = title_match.group(1)
+                explanation = "Title optimized for SEO"
+            else:
+                optimized = current_title
+                explanation = "Could not parse AI response, keeping original title"
 
         # Calculate confidence based on changes
         if optimized.lower() == current_title.lower():
