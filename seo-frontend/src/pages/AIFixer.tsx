@@ -501,16 +501,14 @@ export default function AIFixer() {
                           <div className="mt-3 space-y-3 border-t border-grand-steel/30 pt-3">
                             <div>
                               <p className="text-xs text-grand-silver/60 mb-1">Original:</p>
-                              <div className="text-sm text-red-400/70 bg-red-500/5 p-3 rounded max-h-48 overflow-y-auto whitespace-pre-wrap">
-                                {preview.original_content?.substring(0, 1000) || 'Not available'}
-                                {preview.original_content && preview.original_content.length > 1000 && '...'}
+                              <div className="text-sm text-red-400/70 bg-red-500/5 p-3 rounded max-h-96 overflow-y-auto whitespace-pre-wrap">
+                                {preview.original_content || 'Not available'}
                               </div>
                             </div>
                             <div>
                               <p className="text-xs text-grand-silver/60 mb-1">Optimized:</p>
-                              <div className="text-sm text-green-400 bg-green-500/10 p-3 rounded max-h-48 overflow-y-auto whitespace-pre-wrap">
-                                {preview.suggested_content?.substring(0, 1000) || 'Not available'}
-                                {preview.suggested_content && preview.suggested_content.length > 1000 && '...'}
+                              <div className="text-sm text-green-400 bg-green-500/10 p-3 rounded max-h-96 overflow-y-auto whitespace-pre-wrap">
+                                {preview.suggested_content || 'Not available'}
                               </div>
                             </div>
                           </div>
