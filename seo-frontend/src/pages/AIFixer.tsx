@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Sparkles, RefreshCw, Check, X, ChevronDown, ChevronUp, ExternalLink, Link as LinkIcon, FileText, Type, AlignLeft } from 'lucide-react'
-import { api, aiApi, OptimizationPreview, PostSummary } from '../lib/api'
+import { Sparkles, RefreshCw, Check, X, ChevronDown, ChevronUp, ExternalLink, Link as LinkIcon, FileText, Type, AlignLeft, Rocket, Eye } from 'lucide-react'
+import { api, aiApi, OptimizationPreview, PostSummary, DeployResponse } from '../lib/api'
 
 export default function AIFixer() {
   const [posts, setPosts] = useState<PostSummary[]>([])
@@ -23,6 +23,7 @@ export default function AIFixer() {
   const [previews, setPreviews] = useState<Record<string, OptimizationPreview>>({})
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set())
   const [applying, setApplying] = useState<string | null>(null)
+  const [lastAppliedSlug, setLastAppliedSlug] = useState<string | null>(null)
 
   // Selection state for approvals
   const [approvals, setApprovals] = useState<Record<string, {
@@ -31,6 +32,11 @@ export default function AIFixer() {
     content: boolean
     links: string[] // array of anchor texts to apply
   }>>({})
+
+  // Deployment state
+  const [deploying, setDeploying] = useState(false)
+  const [deployResult, setDeployResult] = useState<DeployResponse | null>(null)
+  const [pendingChanges, setPendingChanges] = useState(0) // Track how many changes need deployment
 
   useEffect(() => {
     loadPosts()
@@ -179,8 +185,11 @@ export default function AIFixer() {
         }).filter(Boolean) as Array<{ anchor_text: string; target_url: string }>
       })
 
-      setSuccessMessage(`Applied changes to ${slug}`)
-      setTimeout(() => setSuccessMessage(''), 3000)
+      setLastAppliedSlug(slug)
+      setSuccessMessage(`Changes applied to "${slug}"! The SEO Lab post page is updated. Click "Deploy Changes" to publish to the live blog.`)
+
+      // Track pending changes for deployment
+      setPendingChanges(prev => prev + 1)
 
       // Remove from previews
       setPreviews(prev => {
@@ -192,6 +201,29 @@ export default function AIFixer() {
       setError(err.message || 'Failed to apply changes')
     } finally {
       setApplying(null)
+    }
+  }
+
+  const deployChanges = async () => {
+    try {
+      setDeploying(true)
+      setError('')
+      setDeployResult(null)
+
+      const result = await aiApi.deploy()
+      setDeployResult(result)
+
+      if (result.status === 'success') {
+        setPendingChanges(0)
+        setSuccessMessage(`Site deployed successfully in ${result.build_time_seconds}s`)
+        setTimeout(() => setSuccessMessage(''), 5000)
+      } else {
+        setError(result.error || result.message)
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to deploy changes')
+    } finally {
+      setDeploying(false)
     }
   }
 
@@ -232,14 +264,28 @@ export default function AIFixer() {
           </h1>
           <p className="text-grand-silver mt-1">Humanize & optimize your blog posts with Claude AI</p>
         </div>
-        <button
-          onClick={buildIndex}
-          disabled={indexBuilding}
-          className="px-4 py-2 bg-grand-steel/50 text-white rounded-lg hover:bg-grand-steel transition-colors disabled:opacity-50 flex items-center gap-2"
-        >
-          <RefreshCw size={16} className={indexBuilding ? 'animate-spin' : ''} />
-          {indexBuilding ? 'Building...' : indexBuilt ? 'Rebuild Index' : 'Build Link Index'}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={buildIndex}
+            disabled={indexBuilding}
+            className="px-4 py-2 bg-grand-steel/50 text-white rounded-lg hover:bg-grand-steel transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            <RefreshCw size={16} className={indexBuilding ? 'animate-spin' : ''} />
+            {indexBuilding ? 'Building...' : indexBuilt ? 'Rebuild Index' : 'Build Link Index'}
+          </button>
+          <button
+            onClick={deployChanges}
+            disabled={deploying}
+            className={`px-4 py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2 ${
+              pendingChanges > 0
+                ? 'bg-green-600 text-white hover:bg-green-500 animate-pulse'
+                : 'bg-grand-steel/50 text-white hover:bg-grand-steel'
+            }`}
+          >
+            <Rocket size={16} className={deploying ? 'animate-bounce' : ''} />
+            {deploying ? 'Deploying...' : pendingChanges > 0 ? `Deploy (${pendingChanges} pending)` : 'Deploy Changes'}
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
@@ -249,8 +295,41 @@ export default function AIFixer() {
         </div>
       )}
       {successMessage && (
-        <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-green-400">
-          {successMessage}
+        <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-green-400">{successMessage}</span>
+            <div className="flex items-center gap-3">
+              {lastAppliedSlug && (
+                <>
+                  <Link
+                    to={`/posts/${lastAppliedSlug}`}
+                    className="text-grand-gold hover:text-grand-gold/80 flex items-center gap-1 text-sm"
+                  >
+                    <Eye size={14} />
+                    View in SEO Lab
+                  </Link>
+                  <a
+                    href={`https://grandprixrealty.agency/blog/${lastAppliedSlug}/`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-grand-gold hover:text-grand-gold/80 flex items-center gap-1 text-sm"
+                  >
+                    <ExternalLink size={14} />
+                    View Live (after deploy)
+                  </a>
+                </>
+              )}
+              <button
+                onClick={() => {
+                  setSuccessMessage('')
+                  setLastAppliedSlug(null)
+                }}
+                className="text-green-400/60 hover:text-green-400"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -566,29 +645,40 @@ export default function AIFixer() {
                     </div>
                   )}
 
-                  {/* Apply Button */}
-                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-grand-steel/30">
-                    <button
-                      onClick={() => {
-                        setPreviews(prev => {
-                          const next = { ...prev }
-                          delete next[slug]
-                          return next
-                        })
-                      }}
-                      className="px-4 py-2 text-grand-silver hover:text-white transition-colors flex items-center gap-2"
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-between gap-3 pt-4 border-t border-grand-steel/30">
+                    <a
+                      href={`https://grandprixrealty.agency/blog/${slug}/`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 text-grand-gold hover:text-grand-gold/80 transition-colors flex items-center gap-2"
                     >
-                      <X size={16} />
-                      Dismiss
-                    </button>
-                    <button
-                      onClick={() => applyOptimizations(slug)}
-                      disabled={applying === slug}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50 flex items-center gap-2"
-                    >
-                      <Check size={16} />
-                      {applying === slug ? 'Applying...' : 'Apply Selected Changes'}
-                    </button>
+                      <Eye size={16} />
+                      View Live
+                    </a>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => {
+                          setPreviews(prev => {
+                            const next = { ...prev }
+                            delete next[slug]
+                            return next
+                          })
+                        }}
+                        className="px-4 py-2 text-grand-silver hover:text-white transition-colors flex items-center gap-2"
+                      >
+                        <X size={16} />
+                        Dismiss
+                      </button>
+                      <button
+                        onClick={() => applyOptimizations(slug)}
+                        disabled={applying === slug}
+                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-500 transition-colors disabled:opacity-50 flex items-center gap-2"
+                      >
+                        <Check size={16} />
+                        {applying === slug ? 'Applying...' : 'Apply Selected Changes'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}

@@ -18,6 +18,9 @@ services:
       - gpr-buyer-api
       - gpr-seo-api
       - gpr-pdf-service
+    volumes:
+      # Mount hugo-output for runtime blog updates (SEO Lab deploy)
+      - hugo-output:/usr/share/nginx/html/blog-live:ro
     networks:
       - gpr-network
       - n8n-postgres-nginx_default
@@ -85,8 +88,12 @@ services:
       - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - CONTENT_PATH=/content/blog
+      - HUGO_SITE_PATH=/hugo-site
+      - HUGO_OUTPUT_PATH=/output
     volumes:
       - ./grandprixrealty.agency/content/blog:/content/blog:rw
+      - ./grandprixrealty.agency:/hugo-site:ro
+      - hugo-output:/output
     networks:
       - gpr-network
     healthcheck:
@@ -119,3 +126,7 @@ networks:
     external: true
   supabase_default:
     external: true
+
+volumes:
+  hugo-output:
+    driver: local

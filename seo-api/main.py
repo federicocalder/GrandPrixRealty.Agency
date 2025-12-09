@@ -772,26 +772,33 @@ async def apply_optimization(
     request: ApplyOptimizationRequest,
     supabase: Client = Depends(get_supabase)
 ):
-    """Apply approved optimizations to a blog post file."""
+    """Apply approved optimizations to a blog post file and update database."""
     try:
         # Read current file
         metadata, content = read_post_file(request.slug)
         changes_made = []
+        db_updates = {}
 
         # Apply meta description
         if request.apply_meta and request.new_meta:
             metadata['description'] = request.new_meta
             changes_made.append('meta_description')
+            db_updates['description'] = request.new_meta
 
         # Apply title
         if request.apply_title and request.new_title:
             metadata['title'] = request.new_title
             changes_made.append('title')
+            db_updates['title'] = request.new_title
 
         # Apply content
         if request.apply_content and request.new_content:
             content = request.new_content
             changes_made.append('content')
+            # Update word count in database
+            import re
+            words = re.findall(r'\b\w+\b', content)
+            db_updates['word_count'] = len(words)
 
         # Apply internal links
         if request.apply_links:
@@ -803,16 +810,29 @@ async def apply_optimization(
                     target_url=link['target_url']
                 )
             changes_made.append(f'internal_links ({len(request.apply_links)})')
+            # Update internal links count in database
+            db_updates['internal_links_out'] = len(request.apply_links)
 
         # Write updated file
         if changes_made:
             write_post_file(request.slug, metadata, content)
 
+            # Update Supabase database with changes
+            if db_updates:
+                db_updates['last_analyzed_at'] = datetime.utcnow().isoformat()
+                try:
+                    seo_table(supabase, 'posts').update(db_updates).eq('slug', request.slug).execute()
+                except Exception as db_err:
+                    # Log but don't fail - file was written successfully
+                    import logging
+                    logging.warning(f"Failed to update database for {request.slug}: {db_err}")
+
         return {
             "status": "success",
             "slug": request.slug,
             "changes_applied": changes_made,
-            "message": f"Applied {len(changes_made)} changes to {request.slug}"
+            "message": f"Applied {len(changes_made)} changes to {request.slug}",
+            "database_updated": bool(db_updates)
         }
 
     except HTTPException:
@@ -887,6 +907,145 @@ async def get_related_posts(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==========================================
+# DEPLOYMENT ENDPOINTS
+# ==========================================
+
+HUGO_SITE_PATH = Path(os.environ.get('HUGO_SITE_PATH', '/hugo-site'))
+HUGO_OUTPUT_PATH = Path(os.environ.get('HUGO_OUTPUT_PATH', '/output'))
+
+
+class DeployResponse(BaseModel):
+    status: str
+    message: str
+    build_time_seconds: Optional[float] = None
+    output_path: Optional[str] = None
+    error: Optional[str] = None
+
+
+@app.post("/seo/deploy", response_model=DeployResponse)
+async def deploy_changes():
+    """
+    Rebuild the Hugo site after content changes.
+    This runs `hugo --minify` to regenerate the static site.
+    """
+    import subprocess
+    import time
+
+    # Check Hugo site path exists
+    if not HUGO_SITE_PATH.exists():
+        return DeployResponse(
+            status="error",
+            message="Hugo site directory not found",
+            error=f"Path does not exist: {HUGO_SITE_PATH}"
+        )
+
+    # Check for config file
+    config_file = HUGO_SITE_PATH / "hugo.toml"
+    if not config_file.exists():
+        config_file = HUGO_SITE_PATH / "config.toml"
+    if not config_file.exists():
+        return DeployResponse(
+            status="error",
+            message="Hugo configuration not found",
+            error="Neither hugo.toml nor config.toml found in site directory"
+        )
+
+    # Ensure output directory exists
+    HUGO_OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
+
+    start_time = time.time()
+
+    try:
+        # Run Hugo build
+        result = subprocess.run(
+            [
+                "hugo",
+                "--minify",
+                "--source", str(HUGO_SITE_PATH),
+                "--destination", str(HUGO_OUTPUT_PATH),
+                "--baseURL", "https://grandprixrealty.agency/"
+            ],
+            capture_output=True,
+            text=True,
+            timeout=120,  # 2 minute timeout
+            cwd=str(HUGO_SITE_PATH)
+        )
+
+        build_time = time.time() - start_time
+
+        if result.returncode != 0:
+            return DeployResponse(
+                status="error",
+                message="Hugo build failed",
+                build_time_seconds=round(build_time, 2),
+                error=result.stderr or result.stdout
+            )
+
+        # Parse build stats from output
+        output_lines = result.stdout.strip().split('\n') if result.stdout else []
+        build_summary = output_lines[-1] if output_lines else "Build completed"
+
+        return DeployResponse(
+            status="success",
+            message=f"Site rebuilt successfully. {build_summary}",
+            build_time_seconds=round(build_time, 2),
+            output_path=str(HUGO_OUTPUT_PATH)
+        )
+
+    except subprocess.TimeoutExpired:
+        return DeployResponse(
+            status="error",
+            message="Build timed out",
+            error="Hugo build exceeded 2 minute timeout"
+        )
+    except FileNotFoundError:
+        return DeployResponse(
+            status="error",
+            message="Hugo not installed",
+            error="Hugo executable not found in container"
+        )
+    except Exception as e:
+        return DeployResponse(
+            status="error",
+            message="Build failed with unexpected error",
+            error=str(e)
+        )
+
+
+@app.get("/seo/deploy/status")
+async def deploy_status():
+    """Check the current deployment status and last build time."""
+    import os
+
+    # Check if output directory exists and has content
+    if not HUGO_OUTPUT_PATH.exists():
+        return {
+            "status": "not_built",
+            "message": "No build output found",
+            "output_path": str(HUGO_OUTPUT_PATH)
+        }
+
+    # Check for index.html
+    index_file = HUGO_OUTPUT_PATH / "index.html"
+    if not index_file.exists():
+        return {
+            "status": "incomplete",
+            "message": "Build output exists but index.html not found",
+            "output_path": str(HUGO_OUTPUT_PATH)
+        }
+
+    # Get last modified time
+    last_modified = datetime.fromtimestamp(os.path.getmtime(index_file))
+
+    return {
+        "status": "ready",
+        "message": "Site is built and ready",
+        "last_build": last_modified.isoformat(),
+        "output_path": str(HUGO_OUTPUT_PATH)
+    }
 
 
 if __name__ == "__main__":

@@ -280,5 +280,25 @@ export const aiApi = {
       url: string
       similarity: number
     }>
-  }>(`/seo/ai/related/${slug}${limit ? `?limit=${limit}` : ''}`)
+  }>(`/seo/ai/related/${slug}${limit ? `?limit=${limit}` : ''}`),
+
+  // Deploy changes (rebuild Hugo site)
+  deploy: () => fetchAPI<DeployResponse>('/seo/deploy', { method: 'POST' }),
+
+  // Get deploy status
+  getDeployStatus: () => fetchAPI<{
+    status: string
+    message: string
+    last_build?: string
+    output_path?: string
+  }>('/seo/deploy/status')
+}
+
+// Deploy response type
+export interface DeployResponse {
+  status: 'success' | 'error'
+  message: string
+  build_time_seconds?: number
+  output_path?: string
+  error?: string
 }

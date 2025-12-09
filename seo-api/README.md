@@ -217,6 +217,60 @@ The SEO Lab frontend is a React/Vite SPA at `/seo-lab/` with:
 - Post detail view with issue management
 - Internal link graph visualization
 
+## AI Content Optimizer
+
+The SEO Lab includes an AI-powered content optimizer using Claude API:
+
+### Features
+- **Meta Description Generation** (Haiku) - Creates SEO-optimized meta descriptions
+- **Title Optimization** (Haiku) - Improves titles for SEO and click-through rate
+- **Content Humanization** (Sonnet) - Rewrites AI-generated content to sound natural
+- **Internal Link Suggestions** - TF-IDF based semantic matching for link opportunities
+- **Las Vegas Localization** - Automatically removes/replaces non-Las Vegas city references
+
+### AI Endpoints
+- `POST /seo/ai/build-index` - Build TF-IDF index for internal linking
+- `POST /seo/ai/optimize` - Generate optimization suggestions for a post
+- `POST /seo/ai/apply` - Apply approved optimizations to markdown file
+- `POST /seo/ai/batch-optimize` - Batch optimize multiple posts (meta/title only)
+- `GET /seo/ai/related/{slug}` - Get semantically related posts
+
+---
+
+## Development Roadmap
+
+### Phase 1: Core Optimizer Fixes (Current)
+| Priority | Task | Status | Description |
+|----------|------|--------|-------------|
+| **P0** | Hugo Rebuild Endpoint | ✅ Done | Deploy button + Hugo rebuild endpoint added |
+| **P1** | View Live Button | ✅ Done | Added to results and success message |
+| **P2** | Issues Page Search | ✅ Done | Text search filter for posts/issues |
+| **P3** | Issues Page Pagination | ✅ Done | 50 items per page with navigation |
+| **P3.5** | Database Sync on Apply | ✅ Done | Updates Supabase when changes applied (title/meta/word_count) |
+
+### Phase 2: URL & Redirect Management
+| Priority | Task | Status | Description |
+|----------|------|--------|-------------|
+| **P4** | 301 Redirects System | ⏳ Pending | Database table + Hugo aliases for redirects |
+| **P5** | Slug/URL Optimization | ⏳ Pending | Generate clean slugs from titles + auto-create 301 redirects |
+
+### Phase 3: Content Silos
+| Priority | Task | Status | Description |
+|----------|------|--------|-------------|
+| **P6** | Content Silos | ⏳ Pending | Restructure URLs from `/blog/` to category silos |
+
+#### Silo Structure (P6)
+| Silo | URL Pattern | Category |
+|------|-------------|----------|
+| Home Buyers | `/homebuyer/{slug}/` | Home Buyer |
+| Home Sellers | `/homeseller/{slug}/` | Home Seller |
+| Property Management | `/propertymanagement/{slug}/` | Property Management |
+| Realtors/Careers | `/realtors/{slug}/` | Realtors |
+| Market Updates | `/market/{slug}/` | Market Updates |
+| Mortgage | `/mortgage/{slug}/` | Mortgage |
+
+---
+
 ## Live URL
 
 Production: https://grandprixrealty.agency/seo-lab/
