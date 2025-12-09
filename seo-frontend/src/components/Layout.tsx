@@ -77,6 +77,13 @@ export default function Layout({ user }: LayoutProps) {
             >
               Issues
             </NavLink>
+            <NavLink
+              to="/ai-fixer"
+              onClick={closeMenu}
+              className="text-grand-gold hover:text-grand-gold/80 font-black text-5xl lg:text-6xl xl:text-7xl uppercase transition-colors duration-300"
+            >
+              AI Fixer ✨
+            </NavLink>
 
             {/* Divider */}
             <div className="w-full max-w-md border-t border-white/20 my-4"></div>

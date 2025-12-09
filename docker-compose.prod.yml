@@ -83,9 +83,10 @@ services:
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - CONTENT_PATH=/content/blog
     volumes:
-      - ./grandprixrealty.agency/content/blog:/content/blog:ro
+      - ./grandprixrealty.agency/content/blog:/content/blog:rw
     networks:
       - gpr-network
     healthcheck:

@@ -9,20 +9,24 @@ Endpoints:
 - GET /seo/issues - List all issues
 - GET /seo/links - Internal links graph data
 - POST /seo/analyze - Trigger re-analysis
+- POST /seo/ai/optimize - AI-powered optimization
 """
 
 import os
 from datetime import datetime
 from typing import Optional, List
+from pathlib import Path
 from fastapi import FastAPI, HTTPException, Query, Depends, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from supabase import create_client, Client
+import frontmatter
 
 # Configuration
 SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://supabase.grandprixrealty.agency')
 SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY', '')
 SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY', '')
+CONTENT_PATH = Path(os.environ.get('CONTENT_PATH', '/content/blog'))
 
 app = FastAPI(
     title="Grand Prix Realty SEO Lab API",
@@ -537,6 +541,341 @@ async def trigger_analysis(
 
     except subprocess.TimeoutExpired:
         raise HTTPException(status_code=504, detail="Analysis timed out after 5 minutes")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==========================================
+# AI OPTIMIZATION ENDPOINTS
+# ==========================================
+
+from ai_optimizer import get_optimizer, SEOOptimizer, InternalLinkSuggestion
+
+
+class OptimizeRequest(BaseModel):
+    slug: str
+    optimize_meta: bool = True
+    optimize_title: bool = True
+    optimize_content: bool = False  # Expensive, off by default
+    suggest_links: bool = True
+
+
+class OptimizationPreview(BaseModel):
+    slug: str
+    title: str
+    original_meta: Optional[str]
+    suggested_meta: Optional[str]
+    meta_explanation: Optional[str]
+    original_title: str
+    suggested_title: Optional[str]
+    title_explanation: Optional[str]
+    original_content: Optional[str]
+    suggested_content: Optional[str]
+    content_explanation: Optional[str]
+    internal_links: List[dict]
+    confidence_scores: dict
+
+
+class ApplyOptimizationRequest(BaseModel):
+    slug: str
+    apply_meta: bool = False
+    new_meta: Optional[str] = None
+    apply_title: bool = False
+    new_title: Optional[str] = None
+    apply_content: bool = False
+    new_content: Optional[str] = None
+    apply_links: List[dict] = []  # [{anchor_text, target_url}]
+
+
+class BatchOptimizeRequest(BaseModel):
+    slugs: List[str]
+    optimize_meta: bool = True
+    optimize_title: bool = True
+    suggest_links: bool = True
+
+
+def read_post_file(slug: str) -> tuple[dict, str]:
+    """Read a blog post markdown file and return frontmatter + content."""
+    file_path = CONTENT_PATH / f"{slug}.md"
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"Post file not found: {slug}")
+
+    with open(file_path, 'r', encoding='utf-8') as f:
+        post = frontmatter.load(f)
+
+    return dict(post.metadata), post.content
+
+
+def write_post_file(slug: str, metadata: dict, content: str):
+    """Write updated blog post to markdown file."""
+    file_path = CONTENT_PATH / f"{slug}.md"
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail=f"Post file not found: {slug}")
+
+    post = frontmatter.Post(content, **metadata)
+
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(frontmatter.dumps(post))
+
+
+@app.post("/seo/ai/build-index")
+async def build_content_index(supabase: Client = Depends(get_supabase)):
+    """Build the content index for internal linking suggestions."""
+    try:
+        # Get all posts from database
+        result = seo_table(supabase, 'posts').select(
+            'slug, title, description, target_keyword, categories'
+        ).execute()
+
+        posts = []
+        for row in (result.data or []):
+            # Read content from file
+            try:
+                _, content = read_post_file(row['slug'])
+                posts.append({
+                    'slug': row['slug'],
+                    'title': row['title'],
+                    'content': content,
+                    'target_keyword': row.get('target_keyword', ''),
+                    'categories': row.get('categories', [])
+                })
+            except Exception:
+                continue  # Skip files that can't be read
+
+        optimizer = get_optimizer()
+        optimizer.build_content_index(posts)
+
+        return {
+            "status": "success",
+            "message": f"Built index for {len(posts)} posts",
+            "indexed_posts": len(posts)
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/seo/ai/optimize", response_model=OptimizationPreview)
+async def optimize_post(
+    request: OptimizeRequest,
+    supabase: Client = Depends(get_supabase)
+):
+    """Generate AI optimization suggestions for a single post."""
+    try:
+        # Get post data from database
+        post_result = seo_table(supabase, 'posts').select('*').eq('slug', request.slug).execute()
+        if not post_result.data:
+            raise HTTPException(status_code=404, detail="Post not found in database")
+
+        post_data = post_result.data[0]
+
+        # Read content from file
+        metadata, content = read_post_file(request.slug)
+
+        optimizer = get_optimizer()
+
+        result = OptimizationPreview(
+            slug=request.slug,
+            title=post_data['title'],
+            original_meta=post_data.get('description'),
+            suggested_meta=None,
+            meta_explanation=None,
+            original_title=post_data['title'],
+            suggested_title=None,
+            title_explanation=None,
+            original_content=content if request.optimize_content else None,
+            suggested_content=None,
+            content_explanation=None,
+            internal_links=[],
+            confidence_scores={}
+        )
+
+        target_keyword = post_data.get('target_keyword', '')
+
+        # Generate meta description
+        if request.optimize_meta:
+            meta_result = await optimizer.generate_meta_description(
+                title=post_data['title'],
+                content=content,
+                target_keyword=target_keyword
+            )
+            result.suggested_meta = meta_result.optimized
+            result.meta_explanation = meta_result.explanation
+            result.confidence_scores['meta'] = meta_result.confidence
+
+        # Optimize title
+        if request.optimize_title:
+            title_result = await optimizer.optimize_title(
+                current_title=post_data['title'],
+                content=content,
+                target_keyword=target_keyword
+            )
+            result.suggested_title = title_result.optimized
+            result.title_explanation = title_result.explanation
+            result.confidence_scores['title'] = title_result.confidence
+
+        # Improve content (expensive, use Sonnet)
+        if request.optimize_content:
+            content_result = await optimizer.improve_content(
+                content=content,
+                title=post_data['title'],
+                target_keyword=target_keyword
+            )
+            result.suggested_content = content_result.optimized
+            result.content_explanation = content_result.explanation
+            result.confidence_scores['content'] = content_result.confidence
+
+        # Suggest internal links
+        if request.suggest_links:
+            # Get existing internal links
+            links_result = seo_table(supabase, 'internal_links').select(
+                'target_url'
+            ).eq('source_slug', request.slug).execute()
+            existing_links = [l['target_url'] for l in (links_result.data or [])]
+
+            link_suggestions = await optimizer.suggest_internal_links(
+                slug=request.slug,
+                content=content,
+                existing_links=existing_links
+            )
+
+            result.internal_links = [
+                {
+                    'anchor_text': s.anchor_text,
+                    'target_url': s.target_url,
+                    'target_title': s.target_title,
+                    'context': s.context_sentence,
+                    'relevance_score': s.relevance_score
+                }
+                for s in link_suggestions
+            ]
+
+        return result
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/seo/ai/apply")
+async def apply_optimization(
+    request: ApplyOptimizationRequest,
+    supabase: Client = Depends(get_supabase)
+):
+    """Apply approved optimizations to a blog post file."""
+    try:
+        # Read current file
+        metadata, content = read_post_file(request.slug)
+        changes_made = []
+
+        # Apply meta description
+        if request.apply_meta and request.new_meta:
+            metadata['description'] = request.new_meta
+            changes_made.append('meta_description')
+
+        # Apply title
+        if request.apply_title and request.new_title:
+            metadata['title'] = request.new_title
+            changes_made.append('title')
+
+        # Apply content
+        if request.apply_content and request.new_content:
+            content = request.new_content
+            changes_made.append('content')
+
+        # Apply internal links
+        if request.apply_links:
+            optimizer = get_optimizer()
+            for link in request.apply_links:
+                content = optimizer.apply_internal_link(
+                    content=content,
+                    anchor_text=link['anchor_text'],
+                    target_url=link['target_url']
+                )
+            changes_made.append(f'internal_links ({len(request.apply_links)})')
+
+        # Write updated file
+        if changes_made:
+            write_post_file(request.slug, metadata, content)
+
+        return {
+            "status": "success",
+            "slug": request.slug,
+            "changes_applied": changes_made,
+            "message": f"Applied {len(changes_made)} changes to {request.slug}"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/seo/ai/batch-optimize")
+async def batch_optimize(
+    request: BatchOptimizeRequest,
+    supabase: Client = Depends(get_supabase)
+):
+    """Generate optimization suggestions for multiple posts."""
+    results = []
+
+    for slug in request.slugs:
+        try:
+            opt_request = OptimizeRequest(
+                slug=slug,
+                optimize_meta=request.optimize_meta,
+                optimize_title=request.optimize_title,
+                optimize_content=False,  # Never batch content optimization
+                suggest_links=request.suggest_links
+            )
+            result = await optimize_post(opt_request, supabase)
+            results.append({
+                "slug": slug,
+                "status": "success",
+                "preview": result
+            })
+        except Exception as e:
+            results.append({
+                "slug": slug,
+                "status": "error",
+                "error": str(e)
+            })
+
+    return {
+        "total": len(request.slugs),
+        "successful": len([r for r in results if r['status'] == 'success']),
+        "failed": len([r for r in results if r['status'] == 'error']),
+        "results": results
+    }
+
+
+@app.get("/seo/ai/related/{slug}")
+async def get_related_posts(
+    slug: str,
+    limit: int = Query(5, description="Number of related posts"),
+    supabase: Client = Depends(get_supabase)
+):
+    """Get semantically related posts for a given slug."""
+    try:
+        optimizer = get_optimizer()
+
+        # Check if index is built
+        if not optimizer.post_index:
+            raise HTTPException(
+                status_code=400,
+                detail="Content index not built. Call /seo/ai/build-index first."
+            )
+
+        related = optimizer.find_related_posts(slug, top_n=limit)
+
+        return {
+            "slug": slug,
+            "related_posts": related
+        }
+
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

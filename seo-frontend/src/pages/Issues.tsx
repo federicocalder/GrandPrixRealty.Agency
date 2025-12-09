@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { ExternalLink } from 'lucide-react'
 import { api, getSeverityClass } from '../lib/api'
 
 interface Issue {
@@ -171,19 +172,33 @@ export default function Issues() {
       ) : (
         <div className="bg-grand-charcoal rounded-xl border border-grand-steel/30 overflow-hidden">
           <div className="divide-y divide-grand-steel/30">
-            {issues.map((issue) => (
+            {issues.map((issue, index) => (
               <div key={issue.id} className="p-4 hover:bg-grand-steel/20">
                 <div className="flex items-start gap-3">
+                  <span className="text-grand-silver/50 text-sm font-mono w-8 flex-shrink-0 text-right">
+                    {index + 1}
+                  </span>
                   <span className={`px-2 py-0.5 text-xs rounded-full flex-shrink-0 ${getSeverityClass(issue.severity)}`}>
                     {issue.severity.toUpperCase()}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <Link
-                      to={`/posts/${issue.post_slug}`}
-                      className="text-white hover:text-grand-silver font-medium"
-                    >
-                      {issue.post_title || issue.post_slug}
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        to={`/posts/${issue.post_slug}`}
+                        className="text-white hover:text-grand-silver font-medium"
+                      >
+                        {issue.post_title || issue.post_slug}
+                      </Link>
+                      <a
+                        href={`https://grandprixrealty.agency/blog/${issue.post_slug}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-grand-gold hover:text-grand-gold/80 flex-shrink-0"
+                        title="View live post"
+                      >
+                        <ExternalLink size={14} />
+                      </a>
+                    </div>
                     <p className="text-grand-silver mt-1">{issue.message}</p>
                     {issue.suggestion && (
                       <p className="text-grand-silver/60 text-sm mt-1">

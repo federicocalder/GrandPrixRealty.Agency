@@ -187,3 +187,98 @@ export function getScoreBgClass(score: number): string {
 export function getSeverityClass(severity: string): string {
   return `severity-${severity}`
 }
+
+// AI Optimization Types
+export interface OptimizationPreview {
+  slug: string
+  title: string
+  original_meta: string | null
+  suggested_meta: string | null
+  meta_explanation: string | null
+  original_title: string
+  suggested_title: string | null
+  title_explanation: string | null
+  original_content: string | null
+  suggested_content: string | null
+  content_explanation: string | null
+  internal_links: Array<{
+    anchor_text: string
+    target_url: string
+    target_title: string
+    context: string
+    relevance_score: number
+  }>
+  confidence_scores: Record<string, number>
+}
+
+export interface ApplyOptimizationRequest {
+  slug: string
+  apply_meta?: boolean
+  new_meta?: string
+  apply_title?: boolean
+  new_title?: string
+  apply_content?: boolean
+  new_content?: string
+  apply_links?: Array<{ anchor_text: string; target_url: string }>
+}
+
+// AI Optimization API
+export const aiApi = {
+  // Build content index for internal linking
+  buildIndex: () => fetchAPI<{ status: string; indexed_posts: number }>('/seo/ai/build-index', { method: 'POST' }),
+
+  // Optimize single post
+  optimize: (params: {
+    slug: string
+    optimize_meta?: boolean
+    optimize_title?: boolean
+    optimize_content?: boolean
+    suggest_links?: boolean
+  }) => fetchAPI<OptimizationPreview>('/seo/ai/optimize', {
+    method: 'POST',
+    body: JSON.stringify(params)
+  }),
+
+  // Apply optimizations
+  apply: (request: ApplyOptimizationRequest) => fetchAPI<{
+    status: string
+    slug: string
+    changes_applied: string[]
+    message: string
+  }>('/seo/ai/apply', {
+    method: 'POST',
+    body: JSON.stringify(request)
+  }),
+
+  // Batch optimize multiple posts
+  batchOptimize: (params: {
+    slugs: string[]
+    optimize_meta?: boolean
+    optimize_title?: boolean
+    suggest_links?: boolean
+  }) => fetchAPI<{
+    total: number
+    successful: number
+    failed: number
+    results: Array<{
+      slug: string
+      status: string
+      preview?: OptimizationPreview
+      error?: string
+    }>
+  }>('/seo/ai/batch-optimize', {
+    method: 'POST',
+    body: JSON.stringify(params)
+  }),
+
+  // Get related posts
+  getRelated: (slug: string, limit?: number) => fetchAPI<{
+    slug: string
+    related_posts: Array<{
+      slug: string
+      title: string
+      url: string
+      similarity: number
+    }>
+  }>(`/seo/ai/related/${slug}${limit ? `?limit=${limit}` : ''}`)
+}

@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard'
 import Posts from './pages/Posts'
 import PostDetail from './pages/PostDetail'
 import Issues from './pages/Issues'
+import AIFixer from './pages/AIFixer'
 import Layout from './components/Layout'
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
           <Route path="posts" element={<Posts />} />
           <Route path="posts/:slug" element={<PostDetail />} />
           <Route path="issues" element={<Issues />} />
+          <Route path="ai-fixer" element={<AIFixer />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

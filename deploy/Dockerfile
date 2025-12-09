@@ -38,6 +38,9 @@ LABEL maintainer="Grand Prix Realty"
 # Copy nginx config
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
 
+# Copy under construction page
+COPY deploy/under-construction.html /usr/share/nginx/html/under-construction.html
+
 # Copy Hugo build
 COPY --from=hugo-builder /src/public /usr/share/nginx/html
 

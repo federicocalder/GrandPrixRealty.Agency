@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application
 COPY main.py .
 COPY analyzer.py .
+COPY ai_optimizer.py .
 
 # Content directory will be mounted at runtime
 # /content/blog -> Hugo blog content
