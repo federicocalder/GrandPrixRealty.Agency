@@ -1,7 +1,7 @@
 ---
 title: "Mastering Portfolio Management Real Estate - Your Investment Guide"
 date: 2023-11-11
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/mastering-portfolio-management-real-estate-your-investment-guide"

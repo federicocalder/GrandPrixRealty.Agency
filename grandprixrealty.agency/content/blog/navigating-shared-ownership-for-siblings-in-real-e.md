@@ -1,7 +1,7 @@
 ---
 title: "Navigating shared ownership for siblings in real estate"
 date: 2025-01-18
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/navigating-shared-ownership-for-siblings-in-real-estate"

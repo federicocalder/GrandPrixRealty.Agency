@@ -1,7 +1,7 @@
 ---
 title: "Landlord Rights And Responsibilities, and Tenants"
 date: 2023-10-30
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Landlord", "Property Management", "Rental Listings", "tenants"]
 wordpress_url: "https://grandprixrealty.agency/tenant-and-landlord-rights-and-responsibilities"

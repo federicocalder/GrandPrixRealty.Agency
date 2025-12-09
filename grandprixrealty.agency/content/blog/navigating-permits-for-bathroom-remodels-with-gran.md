@@ -1,7 +1,7 @@
 ---
 title: "Navigating permits for bathroom remodels with Grand Prix Realty"
 date: 2024-10-12
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/navigating-permits-for-bathroom-remodels-with-grand-prix-realty"

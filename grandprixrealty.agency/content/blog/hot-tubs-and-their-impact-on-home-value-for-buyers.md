@@ -1,7 +1,7 @@
 ---
 title: "Hot tubs and their impact on home value for buyers"
 date: 2025-01-17
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/hot-tubs-and-their-impact-on-home-value-for-buyers"

@@ -1,7 +1,7 @@
 ---
 title: "Out-of-state investing strategies for successful real estate buyers"
 date: 2025-10-19
-draft: true
+draft: false
 author: "The CyberPunk Realtor"
 categories: ["Buyer", "Landlord", "NewsFeed", "Real Estate Learning Center", "Real Wealth", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/out-of-state-investing-strategies-for-successful-real-estate-buyers"

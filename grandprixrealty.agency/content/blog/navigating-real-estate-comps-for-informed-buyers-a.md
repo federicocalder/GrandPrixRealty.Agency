@@ -1,7 +1,7 @@
 ---
 title: "Navigating real estate comps for informed buyers and sellers at Grand Prix Realty"
 date: 2024-12-15
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/navigating-real-estate-comps-for-informed-buyers-and-sellers-at-grand-prix-realty"

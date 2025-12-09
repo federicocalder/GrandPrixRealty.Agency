@@ -1,7 +1,7 @@
 ---
 title: "The Nevada 118A Law: Navigating Nevada's Rental Landscape with Confidence"
 date: 2023-10-15
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "New Agent", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/the-nevada-118a-law"

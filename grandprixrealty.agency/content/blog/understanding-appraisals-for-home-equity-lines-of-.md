@@ -1,7 +1,7 @@
 ---
 title: "Understanding appraisals for home equity lines of credit"
 date: 2024-10-30
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-appraisals-for-home-equity-lines-of-credit"

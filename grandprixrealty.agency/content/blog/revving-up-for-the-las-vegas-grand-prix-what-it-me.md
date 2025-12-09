@@ -1,7 +1,7 @@
 ---
 title: "Revving Up for the Las Vegas Grand Prix: What It Means for the City of Lights"
 date: 2023-11-12
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Las Vegas"]
 wordpress_url: "https://grandprixrealty.agency/revving-up-for-the-las-vegas-grand-prix-what-it-means-for-the-city-of-lights"

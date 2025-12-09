@@ -1,7 +1,7 @@
 ---
 title: "Changing your name on a house title after marriage and its impact on buyers"
 date: 2025-03-28
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/changing-your-name-on-a-house-title-after-marriage-and-its-impact-on-buyers"

@@ -1,7 +1,7 @@
 ---
 title: "How FastExpert connects home sellers with top realtors"
 date: 2024-11-20
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/how-fastexpert-connects-home-sellers-with-top-realtors"

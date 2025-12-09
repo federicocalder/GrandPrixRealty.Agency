@@ -1,7 +1,7 @@
 ---
 title: "Understanding tax deed sales as a pathway for buyers in real estate investment"
 date: 2025-04-25
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-tax-deed-sales-as-a-pathway-for-buyers-in-real-estate-investment"

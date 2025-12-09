@@ -1,7 +1,7 @@
 ---
 title: "Understanding Property Classes: A Comprehensive Guide for Investors and Property Managers"
 date: 2023-11-10
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/property-classes-a-guide-for-investors-and-property-managers"

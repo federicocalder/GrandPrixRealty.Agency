@@ -1,7 +1,7 @@
 ---
 title: "Choosing the right mortgage for buyers in the real estate landscape"
 date: 2025-06-13
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/choosing-the-right-mortgage-for-buyers-in-the-real-estate-landscape"

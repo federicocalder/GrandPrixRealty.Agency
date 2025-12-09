@@ -1,7 +1,7 @@
 ---
 title: "Leveraging Federal Programs for Real Estate Development: A Win for Affordable Housing 2024"
 date: 2023-11-10
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor"]
 wordpress_url: "https://grandprixrealty.agency/federal-programs-for-real-estate-development"

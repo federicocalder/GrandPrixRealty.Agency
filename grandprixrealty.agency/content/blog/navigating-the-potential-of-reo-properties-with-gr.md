@@ -1,7 +1,7 @@
 ---
 title: "Navigating the potential of REO properties with Grand Prix Realty"
 date: 2024-11-21
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/navigating-the-potential-of-reo-properties-with-grand-prix-realty"

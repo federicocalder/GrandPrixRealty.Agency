@@ -1,7 +1,7 @@
 ---
 title: "Equity Collateral Loans"
 date: 2023-12-20
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Loan Program"]
 wordpress_url: "https://grandprixrealty.agency/equity-collateral-loans"

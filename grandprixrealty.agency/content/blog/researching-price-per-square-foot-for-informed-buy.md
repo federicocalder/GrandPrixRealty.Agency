@@ -1,7 +1,7 @@
 ---
 title: "Researching price per square foot for informed buyers"
 date: 2024-09-30
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/researching-price-per-square-foot-for-informed-buyers"

@@ -1,7 +1,7 @@
 ---
 title: "Inspect your roof and gutters for essential homebuyer maintenance"
 date: 2024-11-05
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/inspect-your-roof-and-gutters-for-essential-homebuyer-maintenance"

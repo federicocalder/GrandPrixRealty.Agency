@@ -1,7 +1,7 @@
 ---
 title: "The Role Of A Property Manager Responsibilities And Daily Tasks"
 date: 2023-10-30
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Landlord", "Property Management", "Real Estate", "Rental Listings", "Short Term Rentals"]
 wordpress_url: "https://grandprixrealty.agency/the-role-of-a-property-manager-responsibilities-and-daily-tasks"

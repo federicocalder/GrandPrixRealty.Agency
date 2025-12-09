@@ -1,7 +1,7 @@
 ---
 title: "Understanding functional obsolescence for buyers in real estate"
 date: 2025-06-04
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-functional-obsolescence-for-buyers-in-real-estate"

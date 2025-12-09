@@ -1,7 +1,7 @@
 ---
 title: "Strategies for buyers of million-dollar homes"
 date: 2024-11-23
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/strategies-for-buyers-of-million-dollar-homes"

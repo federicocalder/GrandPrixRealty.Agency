@@ -1,7 +1,7 @@
 ---
 title: "Mastering Nevada Rentals: The Comprehensive Guide for Landlords on 118A and 645"
 date: 2023-10-15
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "New Agent", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/mastering-nevada-rentals"

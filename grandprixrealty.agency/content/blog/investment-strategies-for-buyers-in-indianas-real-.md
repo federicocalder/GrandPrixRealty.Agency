@@ -1,7 +1,7 @@
 ---
 title: "Investment strategies for buyers in Indiana's real estate market"
 date: 2025-10-20
-draft: true
+draft: false
 author: "The CyberPunk Realtor"
 categories: ["Buyer", "Landlord", "NewsFeed", "Real Estate Learning Center", "Real Wealth", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/investment-strategies-for-buyers-in-indianas-real-estate-market"

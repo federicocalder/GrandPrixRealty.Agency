@@ -1,7 +1,7 @@
 ---
 title: "Las Vegas Real Estate: The Top 7 Gated Communities"
 date: 2024-08-20
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Property Management", "Real Estate"]
 wordpress_url: "https://grandprixrealty.agency/las-vegas-real-estate-the-top-7-gated-communities-exclusive"

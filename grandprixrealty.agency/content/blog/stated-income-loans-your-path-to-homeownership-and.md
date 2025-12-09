@@ -1,7 +1,7 @@
 ---
 title: "Stated Income Loans: Your Path to Homeownership and Investment"
 date: 2024-01-07
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Loan Program"]
 wordpress_url: "https://grandprixrealty.agency/stated-income-loans-your-path-to-homeownership-and-investment"

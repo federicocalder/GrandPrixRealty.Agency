@@ -1,7 +1,7 @@
 ---
 title: "Unlocking the potential of your Roth IRA for first-time homebuyers"
 date: 2025-04-02
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/unlocking-the-potential-of-your-roth-ira-for-first-time-homebuyers"

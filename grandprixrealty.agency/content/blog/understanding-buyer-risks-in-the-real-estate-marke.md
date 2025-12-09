@@ -1,7 +1,7 @@
 ---
 title: "Understanding buyer risks in the real estate market"
 date: 2025-05-07
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-buyer-risks-in-the-real-estate-market"

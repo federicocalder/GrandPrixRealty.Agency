@@ -1,7 +1,7 @@
 ---
 title: "Enhancing curb appeal to maximize home appraisal value"
 date: 2025-08-09
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/enhancing-curb-appeal-to-maximize-home-appraisal-value"

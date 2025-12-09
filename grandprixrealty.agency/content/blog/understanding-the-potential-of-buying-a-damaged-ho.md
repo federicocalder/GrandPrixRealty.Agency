@@ -1,7 +1,7 @@
 ---
 title: "Understanding the potential of buying a damaged house as an investor"
 date: 2025-03-27
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-the-potential-of-buying-a-damaged-house-as-an-investor"

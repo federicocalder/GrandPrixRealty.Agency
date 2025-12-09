@@ -1,7 +1,7 @@
 ---
 title: "Understanding seller obligations for a successful real estate transaction"
 date: 2024-12-05
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-seller-obligations-for-a-successful-real-estate-transaction"

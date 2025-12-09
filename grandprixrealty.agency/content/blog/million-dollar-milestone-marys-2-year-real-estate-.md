@@ -1,7 +1,7 @@
 ---
 title: "Million-Dollar Milestone: Mary's 2-Year Real Estate Investment Journey"
 date: 2023-12-02
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Case Study", "Investor", "Landlord", "Property Management", "Seller", "Short Term Rentals"]
 wordpress_url: "https://grandprixrealty.agency/million-dollar-milestone-marys-2-year-real-estate-investment-journey"

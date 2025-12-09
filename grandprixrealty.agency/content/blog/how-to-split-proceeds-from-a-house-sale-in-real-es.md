@@ -1,7 +1,7 @@
 ---
 title: "How to split proceeds from a house sale in real estate"
 date: 2025-07-16
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/how-to-split-proceeds-from-a-house-sale-in-real-estate"

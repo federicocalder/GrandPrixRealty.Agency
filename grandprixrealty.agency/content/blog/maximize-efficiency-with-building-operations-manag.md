@@ -1,7 +1,7 @@
 ---
 title: "Maximize Efficiency with Building Operations Management"
 date: 2023-11-08
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/maximize-efficiency-with-building-operations-management"

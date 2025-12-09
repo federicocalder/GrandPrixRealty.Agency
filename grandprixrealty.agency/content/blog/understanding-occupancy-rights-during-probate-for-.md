@@ -1,7 +1,7 @@
 ---
 title: "Understanding occupancy rights during probate for buyers and landlords"
 date: 2025-06-16
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-occupancy-rights-during-probate-for-buyers-and-landlords"

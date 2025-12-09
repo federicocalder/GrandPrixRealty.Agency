@@ -1,7 +1,7 @@
 ---
 title: "The 5 Steps to Making Short Term Rental Millions"
 date: 2023-10-27
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "New Agent", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/short-term-rental-millions"

@@ -1,7 +1,7 @@
 ---
 title: "Understanding capital gains tax on real estate in California"
 date: 2024-09-19
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-capital-gains-tax-on-real-estate-in-california"

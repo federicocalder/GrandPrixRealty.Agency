@@ -1,7 +1,7 @@
 ---
 title: "Thorough inspection tips for buyers before falling in love with a home"
 date: 2025-06-28
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/thorough-inspection-tips-for-buyers-before-falling-in-love-with-a-home"

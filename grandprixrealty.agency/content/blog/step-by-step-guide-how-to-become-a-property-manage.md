@@ -1,7 +1,7 @@
 ---
 title: "Step-by-Step Guide: How to Become a Property Manager in Las Vegas."
 date: 2023-10-23
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["New Agent", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/how-to-become-a-property-manager-in-las-vegas"

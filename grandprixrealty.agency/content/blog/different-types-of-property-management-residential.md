@@ -1,7 +1,7 @@
 ---
 title: "Different Types Of Property Management Residential Commercial Industrial Etc"
 date: 2023-10-30
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Landlord", "Property Management", "Rental Listings", "Short Term Rentals"]
 wordpress_url: "https://grandprixrealty.agency/different-types-of-property-management-residential-commercial-industrial-etc"

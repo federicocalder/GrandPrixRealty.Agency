@@ -1,7 +1,7 @@
 ---
 title: "How First Time Home Buyers and Their Real Estate Agents Are Leveraging AI to Purchase a House"
 date: 2024-08-25
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "DownPayment Assistance", "Loan Program", "Real Estate", "Violet"]
 wordpress_url: "https://grandprixrealty.agency/how-first-time-home-buyers-and-their-real-estate-agents-are-leveraging-ai-to-purchase-a-house"

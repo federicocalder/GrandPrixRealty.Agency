@@ -1,7 +1,7 @@
 ---
 title: "Should you pay off your mortgage as a retirement strategy for buyers?"
 date: 2024-09-15
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/should-you-pay-off-your-mortgage-as-a-retirement-strategy-for-buyers"

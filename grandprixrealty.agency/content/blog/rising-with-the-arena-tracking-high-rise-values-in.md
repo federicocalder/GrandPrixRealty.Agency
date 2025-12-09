@@ -1,7 +1,7 @@
 ---
 title: "Rising with the Arena: Tracking High-Rise Values in Las Vegas' New Era"
 date: 2024-01-07
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Case Study", "Investor"]
 wordpress_url: "https://grandprixrealty.agency/rising-with-the-arena-tracking-high-rise-values-in-las-vegas-new-era"

@@ -1,7 +1,7 @@
 ---
 title: "Understanding real estate commissions and their impact on buyers"
 date: 2024-10-10
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-real-estate-commissions-and-their-impact-on-buyers"

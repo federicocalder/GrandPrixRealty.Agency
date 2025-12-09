@@ -1,7 +1,7 @@
 ---
 title: "Exploring Charter Schools in Las Vegas: A Growing Trend"
 date: 2024-08-21
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Uncategorized"]
 wordpress_url: "https://grandprixrealty.agency/exploring-charter-schools-in-las-vegas-a-growing-trend"

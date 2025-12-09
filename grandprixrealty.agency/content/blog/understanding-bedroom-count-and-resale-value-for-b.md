@@ -1,7 +1,7 @@
 ---
 title: "Understanding bedroom count and resale value for buyers"
 date: 2024-09-03
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-bedroom-count-and-resale-value-for-buyers"

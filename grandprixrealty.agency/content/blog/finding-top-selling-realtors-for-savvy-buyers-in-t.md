@@ -1,7 +1,7 @@
 ---
 title: "Finding top-selling realtors for savvy buyers in the digital age"
 date: 2024-11-08
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/finding-top-selling-realtors-for-savvy-buyers-in-the-digital-age"

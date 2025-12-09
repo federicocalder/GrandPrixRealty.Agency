@@ -1,7 +1,7 @@
 ---
 title: "The impact of property condition on buyer decisions"
 date: 2025-08-16
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/the-impact-of-property-condition-on-buyer-decisions"

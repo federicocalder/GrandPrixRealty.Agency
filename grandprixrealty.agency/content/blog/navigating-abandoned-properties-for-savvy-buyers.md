@@ -1,7 +1,7 @@
 ---
 title: "Navigating abandoned properties for savvy buyers"
 date: 2024-09-04
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/navigating-abandoned-properties-for-savvy-buyers"

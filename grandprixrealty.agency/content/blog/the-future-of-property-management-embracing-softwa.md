@@ -1,7 +1,7 @@
 ---
 title: "The Future of Property Management: Embracing Software Solutions"
 date: 2023-10-20
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "New Agent", "Property Management", "YT"]
 wordpress_url: "https://grandprixrealty.agency/property-management-software"

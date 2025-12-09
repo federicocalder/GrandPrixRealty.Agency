@@ -1,7 +1,7 @@
 ---
 title: "Unlocking Wealth: Your Guide to Investment Property Strategies"
 date: 2023-11-12
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/unlocking-wealth-your-guide-to-investment-property-strategies"

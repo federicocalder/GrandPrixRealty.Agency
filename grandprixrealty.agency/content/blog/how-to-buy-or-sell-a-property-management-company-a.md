@@ -1,7 +1,7 @@
 ---
 title: "How To Buy Or Sell A Property Management Company: A Comprehensive Guide (5 steps)"
 date: 2023-10-24
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Property Management", "YT"]
 wordpress_url: "https://grandprixrealty.agency/how-to-buy-or-sell-a-property-management-company"

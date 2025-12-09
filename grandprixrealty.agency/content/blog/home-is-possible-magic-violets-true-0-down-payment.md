@@ -1,7 +1,7 @@
 ---
 title: "Home Is Possible Magic: Violet’s True $0 Down  Payment Achievement in Home Buying [Case Study]"
 date: 2023-12-09
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Case Study", "DownPayment Assistance", "Violet"]
 wordpress_url: "https://grandprixrealty.agency/home-is-possible-magic-violets-true-0-down-achievement-in-home-buying"

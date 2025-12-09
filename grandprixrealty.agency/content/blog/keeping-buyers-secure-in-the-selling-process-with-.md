@@ -1,7 +1,7 @@
 ---
 title: "Keeping buyers secure in the selling process with a realtor"
 date: 2024-09-25
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/keeping-buyers-secure-in-the-selling-process-with-a-realtor"

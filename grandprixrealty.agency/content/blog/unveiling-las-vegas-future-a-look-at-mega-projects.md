@@ -1,7 +1,7 @@
 ---
 title: "Unveiling Las Vegas' Future: A Look at Mega Projects Redefining the City"
 date: 2023-11-11
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Location"]
 wordpress_url: "https://grandprixrealty.agency/las-vegas-mega-projects-redefining-the-city"

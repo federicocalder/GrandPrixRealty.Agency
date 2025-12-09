@@ -1,7 +1,7 @@
 ---
 title: "Investing in transitional neighborhoods for potential buyers"
 date: 2024-09-28
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/investing-in-transitional-neighborhoods-for-potential-buyers"

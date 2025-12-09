@@ -1,7 +1,7 @@
 ---
 title: "Maximizing portfolio growth through the 1031 exchange strategy"
 date: 2024-09-12
-draft: true
+draft: false
 author: "The CyberPunk Realtor"
 categories: ["Buyer", "Landlord", "NewsFeed", "Real Estate Learning Center", "Real Wealth", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/maximizing-portfolio-growth-through-the-1031-exchange-strategy"

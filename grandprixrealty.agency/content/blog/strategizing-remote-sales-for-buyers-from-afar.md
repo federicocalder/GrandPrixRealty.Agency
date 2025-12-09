@@ -1,7 +1,7 @@
 ---
 title: "Strategizing remote sales for buyers from afar"
 date: 2025-05-26
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/strategizing-remote-sales-for-buyers-from-afar"

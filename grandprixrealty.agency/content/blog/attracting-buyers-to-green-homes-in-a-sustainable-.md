@@ -1,7 +1,7 @@
 ---
 title: "Attracting buyers to green homes in a sustainable real estate market"
 date: 2025-08-26
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/attracting-buyers-to-green-homes-in-a-sustainable-real-estate-market"

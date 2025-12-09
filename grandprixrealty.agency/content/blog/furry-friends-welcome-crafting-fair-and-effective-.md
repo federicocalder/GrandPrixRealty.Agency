@@ -1,7 +1,7 @@
 ---
 title: "Furry Friends Welcome: Crafting Fair and Effective Pet Policies for Rental Properties"
 date: 2023-11-19
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Landlord", "Listings", "New Agent", "Property Management", "Rental Listings", "Short Term Rentals", "tenants"]
 wordpress_url: "https://grandprixrealty.agency/fair-and-effective-pet-policies-for-rental-properties"

@@ -1,7 +1,7 @@
 ---
 title: "Essential tax documents for homeowners navigating real estate expenses"
 date: 2025-04-29
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/essential-tax-documents-for-homeowners-navigating-real-estate-expenses"

@@ -1,7 +1,7 @@
 ---
 title: "Understanding Realtor fees and their impact on home sellers"
 date: 2024-10-09
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-realtor-fees-and-their-impact-on-home-sellers"

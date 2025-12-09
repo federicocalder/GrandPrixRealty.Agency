@@ -1,7 +1,7 @@
 ---
 title: "Understanding the Power of \"I Am\""
 date: 2024-10-18
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Uncategorized"]
 wordpress_url: "https://grandprixrealty.agency/understanding-the-power-of-i-am"

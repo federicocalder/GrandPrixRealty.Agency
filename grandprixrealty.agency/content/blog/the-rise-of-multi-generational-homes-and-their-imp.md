@@ -1,7 +1,7 @@
 ---
 title: "The rise of multi-generational homes and their impact on family dynamics"
 date: 2025-10-08
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/the-rise-of-multi-generational-homes-and-their-impact-on-family-dynamics"

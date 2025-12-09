@@ -1,7 +1,7 @@
 ---
 title: "Real estate syndications unlock opportunities for passive investors"
 date: 2025-10-17
-draft: true
+draft: false
 author: "The CyberPunk Realtor"
 categories: ["Buyer", "Landlord", "NewsFeed", "Real Estate Learning Center", "Real Wealth", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/real-estate-syndications-unlock-opportunities-for-passive-investors"

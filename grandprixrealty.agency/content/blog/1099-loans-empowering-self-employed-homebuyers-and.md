@@ -1,7 +1,7 @@
 ---
 title: "1099 Loans: Empowering Self-Employed Homebuyers and Investors"
 date: 2024-01-07
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Loan Program", "Self Employed Buyer"]
 wordpress_url: "https://grandprixrealty.agency/1099-loans-program-empowering-self-employed-homebuyers-and-investors"

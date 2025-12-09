@@ -1,7 +1,7 @@
 ---
 title: "Understanding your rights as a buyer in holdover situations"
 date: 2025-06-06
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-your-rights-as-a-buyer-in-holdover-situations"

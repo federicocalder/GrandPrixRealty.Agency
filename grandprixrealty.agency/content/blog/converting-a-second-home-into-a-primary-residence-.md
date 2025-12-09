@@ -1,7 +1,7 @@
 ---
 title: "Converting a second home into a primary residence for tax benefits"
 date: 2024-11-17
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/converting-a-second-home-into-a-primary-residence-for-tax-benefits"

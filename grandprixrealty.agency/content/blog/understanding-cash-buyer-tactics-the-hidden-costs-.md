@@ -1,7 +1,7 @@
 ---
 title: "Understanding cash buyer tactics: the hidden costs for sellers"
 date: 2025-05-18
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-cash-buyer-tactics-the-hidden-costs-for-sellers"

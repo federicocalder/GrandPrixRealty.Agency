@@ -1,7 +1,7 @@
 ---
 title: "HUD Section 184 Indian Housing Loan Guarantee Program: A Pathway to Homeownership"
 date: 2024-08-21
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer"]
 wordpress_url: "https://grandprixrealty.agency/hud-section-184-indian-housing-loan-guarantee-program-a-pathway-to-homeownership"

@@ -1,7 +1,7 @@
 ---
 title: "AI in Property Management: Transforming Grand Prix Realty"
 date: 2024-08-24
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Landlord", "Property Management", "Real Estate", "Rental Listings"]
 wordpress_url: "https://grandprixrealty.agency/ai-in-property-management-transforming-grand-prix-realty"

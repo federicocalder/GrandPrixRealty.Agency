@@ -1,7 +1,7 @@
 ---
 title: "Understanding buyer agreements in a post-settlement real estate landscape"
 date: 2024-11-01
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-buyer-agreements-in-a-post-settlement-real-estate-landscape"

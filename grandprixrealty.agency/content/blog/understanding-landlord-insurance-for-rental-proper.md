@@ -1,7 +1,7 @@
 ---
 title: "Understanding landlord insurance for rental properties to protect your investments"
 date: 2024-09-03
-draft: true
+draft: false
 author: "The CyberPunk Realtor"
 categories: ["Uncategorized"]
 wordpress_url: "https://grandprixrealty.agency/understanding-landlord-insurance-for-rental-properties-to-protect-your-investments"

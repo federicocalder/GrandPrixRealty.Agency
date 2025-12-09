@@ -1,7 +1,7 @@
 ---
 title: "Unlocking the Potential: Section 8 Investments for Real Estate Investors"
 date: 2023-10-24
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/section-8-investments"

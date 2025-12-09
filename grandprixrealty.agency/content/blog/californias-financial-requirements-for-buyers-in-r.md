@@ -1,7 +1,7 @@
 ---
 title: "California's financial requirements for buyers in real estate"
 date: 2025-06-05
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/californias-financial-requirements-for-buyers-in-real-estate"

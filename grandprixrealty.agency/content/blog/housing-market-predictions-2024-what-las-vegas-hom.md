@@ -1,7 +1,7 @@
 ---
 title: "Housing Market Predictions 2024: What Las Vegas Homeowners Need to Know"
 date: 2023-10-15
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Listings", "New Agent", "Seller", "tenants"]
 wordpress_url: "https://grandprixrealty.agency/housing-market-predictions-2024"

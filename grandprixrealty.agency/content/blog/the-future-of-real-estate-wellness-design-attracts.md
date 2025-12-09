@@ -1,7 +1,7 @@
 ---
 title: "The future of real estate: wellness design attracts buyers"
 date: 2025-08-18
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/the-future-of-real-estate-wellness-design-attracts-buyers"

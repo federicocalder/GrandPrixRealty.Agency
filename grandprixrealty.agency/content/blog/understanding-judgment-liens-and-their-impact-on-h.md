@@ -1,7 +1,7 @@
 ---
 title: "Understanding judgment liens and their impact on homeowners"
 date: 2024-12-17
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-judgment-liens-and-their-impact-on-homeowners"

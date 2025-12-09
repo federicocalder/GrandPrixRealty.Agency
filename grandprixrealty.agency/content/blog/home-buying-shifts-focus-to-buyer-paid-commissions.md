@@ -1,7 +1,7 @@
 ---
 title: "Home buying shifts focus to buyer-paid commissions"
 date: 2024-09-26
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/home-buying-shifts-focus-to-buyer-paid-commissions"

@@ -1,7 +1,7 @@
 ---
 title: "Unique properties near a cemetery appeal to buyers seeking tranquility"
 date: 2025-02-02
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/unique-properties-near-a-cemetery-appeal-to-buyers-seeking-tranquility"

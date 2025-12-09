@@ -1,7 +1,7 @@
 ---
 title: "7 Common Legal Questions Every Nevada Landlord Asks"
 date: 2023-10-05
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["New Agent", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/nevada-landlord"

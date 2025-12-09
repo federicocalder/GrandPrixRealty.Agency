@@ -1,7 +1,7 @@
 ---
 title: "Wellness design for home buyers in the digital age"
 date: 2025-08-17
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/wellness-design-for-home-buyers-in-the-digital-age"

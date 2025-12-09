@@ -1,7 +1,7 @@
 ---
 title: "Understanding the essential home inspection checklist for buyers in 2025"
 date: 2024-09-03
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-the-essential-home-inspection-checklist-for-buyers"

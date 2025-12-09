@@ -1,7 +1,7 @@
 ---
 title: "Navigating the Waters of Tenant and Landlord Relations"
 date: 2024-08-21
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Landlord", "Property Management", "tenants"]
 wordpress_url: "https://grandprixrealty.agency/navigating-the-waters-of-tenant-and-landlord-relations"

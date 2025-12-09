@@ -1,7 +1,7 @@
 ---
 title: "Navigating mortgage rate locks for buyers in the real estate market"
 date: 2025-06-15
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/navigating-mortgage-rate-locks-for-buyers-in-the-real-estate-market"

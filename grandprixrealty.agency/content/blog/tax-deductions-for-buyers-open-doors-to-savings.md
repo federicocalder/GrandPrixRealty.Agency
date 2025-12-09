@@ -1,7 +1,7 @@
 ---
 title: "Tax deductions for buyers open doors to savings"
 date: 2024-12-29
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/tax-deductions-for-buyers-open-doors-to-savings"

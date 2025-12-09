@@ -1,7 +1,7 @@
 ---
 title: "Converting a second home into an investment property for savvy landlords"
 date: 2025-06-21
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/converting-a-second-home-into-an-investment-property-for-savvy-landlords"

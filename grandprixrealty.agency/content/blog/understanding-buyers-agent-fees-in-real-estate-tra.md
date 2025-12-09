@@ -1,7 +1,7 @@
 ---
 title: "Understanding buyer's agent fees in real estate transactions"
 date: 2024-10-28
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-buyers-agent-fees-in-real-estate-transactions"

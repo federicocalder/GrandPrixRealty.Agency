@@ -1,7 +1,7 @@
 ---
 title: "Final walkthrough checklist for buyers before closing a home"
 date: 2025-08-07
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/final-walkthrough-checklist-for-buyers-before-closing-a-home"

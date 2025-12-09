@@ -1,7 +1,7 @@
 ---
 title: "Best places to retire in Washington for nature-loving buyers"
 date: 2024-09-27
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/best-places-to-retire-in-washington-for-nature-loving-buyers"

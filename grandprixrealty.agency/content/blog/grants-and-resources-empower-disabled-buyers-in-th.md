@@ -1,7 +1,7 @@
 ---
 title: "Grants and resources empower disabled buyers in the housing market"
 date: 2024-12-03
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/grants-and-resources-empower-disabled-buyers-in-the-housing-market"

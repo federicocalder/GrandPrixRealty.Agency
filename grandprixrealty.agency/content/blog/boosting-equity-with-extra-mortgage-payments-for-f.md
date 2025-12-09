@@ -1,7 +1,7 @@
 ---
 title: "Boosting equity with extra mortgage payments for future homeowners"
 date: 2024-10-02
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/boosting-equity-with-extra-mortgage-payments-for-future-homeowners"

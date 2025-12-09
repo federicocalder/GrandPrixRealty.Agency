@@ -1,7 +1,7 @@
 ---
 title: "Understanding real estate commission costs to maximize profits"
 date: 2025-06-14
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-real-estate-commission-costs-to-maximize-profits"

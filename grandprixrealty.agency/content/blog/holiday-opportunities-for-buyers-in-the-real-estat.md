@@ -1,7 +1,7 @@
 ---
 title: "Holiday opportunities for buyers in the real estate market"
 date: 2024-11-27
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/holiday-opportunities-for-buyers-in-the-real-estate-market"

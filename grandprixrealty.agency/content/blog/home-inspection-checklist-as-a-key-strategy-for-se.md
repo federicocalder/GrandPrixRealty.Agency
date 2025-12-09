@@ -1,7 +1,7 @@
 ---
 title: "Home inspection checklist as a key strategy for sellers in a competitive real estate market"
 date: 2025-08-06
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/home-inspection-checklist-as-a-key-strategy-for-sellers-in-a-competitive-real-estate-market"

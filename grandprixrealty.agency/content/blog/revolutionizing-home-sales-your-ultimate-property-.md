@@ -1,7 +1,7 @@
 ---
 title: "Revolutionizing Home Sales: Your Ultimate Property Marketing Plan"
 date: 2023-11-17
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Listings", "Seller"]
 wordpress_url: "https://grandprixrealty.agency/your-ultimate-property-marketing-plan"

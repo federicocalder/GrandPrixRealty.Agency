@@ -1,7 +1,7 @@
 ---
 title: "The History And Evolution Of Property Management"
 date: 2023-10-30
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Landlord", "New Agent", "Property Management", "Real Estate", "Rental Listings"]
 wordpress_url: "https://grandprixrealty.agency/the-history-and-evolution-of-property-management"

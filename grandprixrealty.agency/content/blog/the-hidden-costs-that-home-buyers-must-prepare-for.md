@@ -1,7 +1,7 @@
 ---
 title: "The hidden costs that home buyers must prepare for"
 date: 2025-06-24
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/the-hidden-costs-that-home-buyers-must-prepare-for"

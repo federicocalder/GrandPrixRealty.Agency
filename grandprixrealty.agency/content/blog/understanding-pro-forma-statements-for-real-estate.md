@@ -1,7 +1,7 @@
 ---
 title: "Understanding pro forma statements for real estate buyers"
 date: 2024-09-05
-draft: true
+draft: false
 author: "The CyberPunk Realtor"
 categories: ["Buyer", "Landlord", "NewsFeed", "Real Estate Learning Center", "Real Wealth", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-pro-forma-statements-for-real-estate-buyers"

@@ -1,7 +1,7 @@
 ---
 title: "Top Strategies for Commercial Property Operations: 2024 Success Guide"
 date: 2023-11-09
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/expertise-in-commercial-property-operations-your-success-guide"

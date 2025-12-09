@@ -1,7 +1,7 @@
 ---
 title: "Investing in metal roofs to attract buyers and enhance home value"
 date: 2025-02-04
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/investing-in-metal-roofs-to-attract-buyers-and-enhance-home-value"

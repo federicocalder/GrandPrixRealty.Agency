@@ -1,7 +1,7 @@
 ---
 title: "Analyzing real estate locations for savvy investors in 2025"
 date: 2024-09-03
-draft: true
+draft: false
 author: "The CyberPunk Realtor"
 categories: ["Uncategorized"]
 wordpress_url: "https://grandprixrealty.agency/analyzing-real-estate-locations-for-savvy-investors"

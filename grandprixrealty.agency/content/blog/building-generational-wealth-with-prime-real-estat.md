@@ -1,7 +1,7 @@
 ---
 title: "Building generational wealth with prime real estate investment strategies"
 date: 2024-09-06
-draft: true
+draft: false
 author: "The CyberPunk Realtor"
 categories: ["Buyer", "Landlord", "NewsFeed", "Real Estate Learning Center", "Real Wealth", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/building-generational-wealth-with-prime-real-estate-investment-strategies"

@@ -1,7 +1,7 @@
 ---
 title: "Boosting home value with a finished basement for savvy buyers"
 date: 2025-01-31
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/boosting-home-value-with-a-finished-basement-for-savvy-buyers"

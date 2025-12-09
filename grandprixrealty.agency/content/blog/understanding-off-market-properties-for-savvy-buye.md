@@ -1,7 +1,7 @@
 ---
 title: "Understanding off-market properties for savvy buyers at Grand Prix Realty"
 date: 2025-04-28
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Buyer", "Investor", "Landlord", "Las Vegas", "Listings", "NewsFeed", "Real Estate Learning Center", "Seller", "Updates"]
 wordpress_url: "https://grandprixrealty.agency/understanding-off-market-properties-for-savvy-buyers-at-grand-prix-realty"

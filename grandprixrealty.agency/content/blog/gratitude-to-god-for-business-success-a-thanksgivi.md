@@ -1,7 +1,7 @@
 ---
 title: "Gratitude to God for Business Success: A Thanksgiving Reflection in Real Estate"
 date: 2024-11-09
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Uncategorized"]
 wordpress_url: "https://grandprixrealty.agency/gratitude-to-god-for-business-success-a-thanksgiving-reflection-in-real-estate"

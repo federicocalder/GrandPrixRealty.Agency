@@ -1,7 +1,7 @@
 ---
 title: "Expert Tips for Efficient Rental Property Maintenance"
 date: 2023-11-07
-draft: true
+draft: false
 author: "fcmmtg@gmail.com"
 categories: ["Investor", "Property Management"]
 wordpress_url: "https://grandprixrealty.agency/expert-tips-for-efficient-rental-property-maintenance"
