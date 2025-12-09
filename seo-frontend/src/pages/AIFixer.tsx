@@ -469,6 +469,59 @@ export default function AIFixer() {
                     </div>
                   )}
 
+                  {/* Content */}
+                  {preview.suggested_content && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-semibold text-grand-silver flex items-center gap-2">
+                          <AlignLeft size={14} />
+                          Content Optimization
+                          <span className="text-xs text-grand-silver/60">
+                            (uses Sonnet - review carefully)
+                          </span>
+                        </h3>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={approvals[slug]?.content || false}
+                            onChange={() => toggleApproval(slug, 'content')}
+                            className="w-4 h-4 rounded border-grand-steel bg-grand-dark text-grand-gold focus:ring-grand-gold"
+                          />
+                          <span className="text-sm text-grand-silver">Apply</span>
+                        </label>
+                      </div>
+                      <div className="bg-grand-dark/50 p-3 rounded-lg">
+                        <p className="text-xs text-grand-silver/60 mb-2">
+                          Content has been humanized and optimized. Click "Show Preview" to review the changes.
+                        </p>
+                        <details className="group">
+                          <summary className="text-sm text-grand-gold cursor-pointer hover:underline">
+                            Show Preview
+                          </summary>
+                          <div className="mt-3 space-y-3 border-t border-grand-steel/30 pt-3">
+                            <div>
+                              <p className="text-xs text-grand-silver/60 mb-1">Original:</p>
+                              <div className="text-sm text-red-400/70 bg-red-500/5 p-3 rounded max-h-48 overflow-y-auto whitespace-pre-wrap">
+                                {preview.original_content?.substring(0, 1000) || 'Not available'}
+                                {preview.original_content && preview.original_content.length > 1000 && '...'}
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-xs text-grand-silver/60 mb-1">Optimized:</p>
+                              <div className="text-sm text-green-400 bg-green-500/10 p-3 rounded max-h-48 overflow-y-auto whitespace-pre-wrap">
+                                {preview.suggested_content?.substring(0, 1000) || 'Not available'}
+                                {preview.suggested_content && preview.suggested_content.length > 1000 && '...'}
+                              </div>
+                            </div>
+                          </div>
+                        </details>
+                      </div>
+                      {preview.content_explanation && (
+                        <p className="text-xs text-grand-silver/60">{preview.content_explanation}</p>
+                      )}
+                    </div>
+                  )}
+
                   {/* Internal Links */}
                   {preview.internal_links.length > 0 && (
                     <div className="space-y-2">

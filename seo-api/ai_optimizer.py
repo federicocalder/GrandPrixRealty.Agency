@@ -127,9 +127,15 @@ class SEOOptimizer:
     ) -> OptimizationResult:
         """Generate SEO-optimized meta description using Haiku"""
 
-        prompt = f"""You are an SEO expert writing meta descriptions for a Las Vegas real estate blog.
+        prompt = f"""You are an SEO expert writing meta descriptions for Grand Prix Realty, a Las Vegas real estate company.
 
 TASK: Write a compelling meta description (120-155 characters) for this blog post.
+
+CRITICAL LOCATION RULE:
+- This blog is EXCLUSIVELY about LAS VEGAS, Nevada real estate
+- NEVER mention other cities like Austin, Tampa, Miami, Phoenix, Denver, etc.
+- If the existing content mentions other cities, IGNORE those references
+- Focus ONLY on Las Vegas, Henderson, North Las Vegas, Summerlin, and Southern Nevada
 
 REQUIREMENTS:
 - Must be 120-155 characters (this is critical for Google)
@@ -138,6 +144,7 @@ REQUIREMENTS:
 - Include a subtle call-to-action
 - Sound human and conversational, NOT robotic or AI-generated
 - Focus on what the reader will learn or gain
+- Keep the Las Vegas focus even if content mentions other markets
 
 BLOG POST:
 Title: {title}
@@ -180,12 +187,18 @@ Respond with ONLY the meta description text, nothing else. No quotes, no explana
     ) -> OptimizationResult:
         """Optimize blog title for SEO using Haiku"""
 
-        prompt = f"""You are an SEO expert optimizing blog titles for a Las Vegas real estate website.
+        prompt = f"""You are an SEO expert optimizing blog titles for Grand Prix Realty, a Las Vegas real estate company.
 
 TASK: Optimize this title for SEO and click-through rate.
 
 CURRENT TITLE: {current_title}
 TARGET KEYWORD: {target_keyword or "None specified"}
+
+CRITICAL LOCATION RULE:
+- This blog is EXCLUSIVELY about LAS VEGAS, Nevada real estate
+- NEVER mention other cities like Austin, Tampa, Miami, Phoenix, Denver, etc.
+- If the existing title mentions other cities, REPLACE them with "Las Vegas" or remove them
+- Focus ONLY on Las Vegas, Henderson, North Las Vegas, Summerlin, and Southern Nevada
 
 REQUIREMENTS:
 - Keep it 50-60 characters (ideal for Google)
@@ -193,6 +206,7 @@ REQUIREMENTS:
 - Make it compelling and click-worthy
 - Sound natural and human, not keyword-stuffed
 - If the current title is already good, make minimal changes
+- Ensure the title reflects Las Vegas real estate focus
 
 CONTENT PREVIEW:
 {content[:1500]}
@@ -239,7 +253,7 @@ Respond in this exact JSON format:
     ) -> OptimizationResult:
         """Improve content quality and humanize using Sonnet"""
 
-        prompt = f"""You are an expert content editor for a Las Vegas real estate blog. Your job is to improve content quality while making it sound more human and less AI-generated.
+        prompt = f"""You are an expert content editor for Grand Prix Realty, a Las Vegas real estate company blog. Your job is to improve content quality while making it sound more human and less AI-generated.
 
 BLOG POST TITLE: {title}
 TARGET KEYWORD: {target_keyword or "Not specified"}
@@ -247,8 +261,20 @@ TARGET KEYWORD: {target_keyword or "Not specified"}
 CURRENT CONTENT:
 {content}
 
+CRITICAL LOCATION RULE - THIS IS MANDATORY:
+- This blog is EXCLUSIVELY about LAS VEGAS, Nevada real estate
+- REMOVE or REPLACE any mentions of other cities (Austin, Tampa, Miami, Phoenix, Denver, Dallas, Atlanta, etc.)
+- Replace other city references with Las Vegas equivalents or remove the sentences entirely
+- Focus ONLY on Las Vegas, Henderson, North Las Vegas, Summerlin, and Southern Nevada
+- If content compares markets, reframe it to focus on Las Vegas advantages
+
 TASKS:
-1. HUMANIZE the writing:
+1. LOCALIZE TO LAS VEGAS:
+   - Remove ALL mentions of non-Las Vegas cities and markets
+   - Replace with Las Vegas-specific information where possible
+   - Maintain focus on Southern Nevada real estate
+
+2. HUMANIZE the writing:
    - Add personality and conversational tone
    - Remove overly perfect or robotic phrasing
    - Add occasional contractions (don't, won't, it's)
@@ -256,21 +282,21 @@ TASKS:
    - Vary sentence structure and length
    - Add transitional phrases that feel natural
 
-2. SEO OPTIMIZATION:
+3. SEO OPTIMIZATION:
    - Ensure target keyword appears naturally 2-4 times
    - Improve heading structure (use H2, H3 appropriately)
    - Add semantic variations of the keyword
    - Ensure first paragraph hooks the reader
 
-3. READABILITY:
+4. READABILITY:
    - Break up long paragraphs (max 3-4 sentences)
    - Use bullet points or lists where appropriate
    - Ensure clear flow between sections
 
-4. DO NOT:
-   - Change the core information or facts
+5. DO NOT:
+   - Keep any references to cities outside of Las Vegas/Nevada
    - Add fake statistics or claims
-   - Remove important content
+   - Remove important Las Vegas-specific content
    - Over-optimize for keywords (no stuffing)
 
 Return the improved content in the same HTML format. Only return the improved content, no explanations."""
