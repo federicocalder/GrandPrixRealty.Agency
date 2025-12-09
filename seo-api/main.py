@@ -661,6 +661,9 @@ async def optimize_post(
     supabase: Client = Depends(get_supabase)
 ):
     """Generate AI optimization suggestions for a single post."""
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"Optimize request: slug={request.slug}, meta={request.optimize_meta}, title={request.optimize_title}, content={request.optimize_content}, links={request.suggest_links}")
     try:
         # Get post data from database
         post_result = seo_table(supabase, 'posts').select('*').eq('slug', request.slug).execute()
@@ -716,14 +719,20 @@ async def optimize_post(
 
         # Improve content (expensive, use Sonnet)
         if request.optimize_content:
-            content_result = await optimizer.improve_content(
-                content=content,
-                title=post_data['title'],
-                target_keyword=target_keyword
-            )
-            result.suggested_content = content_result.optimized
-            result.content_explanation = content_result.explanation
-            result.confidence_scores['content'] = content_result.confidence
+            logger.info(f"Starting content optimization for {request.slug}")
+            try:
+                content_result = await optimizer.improve_content(
+                    content=content,
+                    title=post_data['title'],
+                    target_keyword=target_keyword
+                )
+                result.suggested_content = content_result.optimized
+                result.content_explanation = content_result.explanation
+                result.confidence_scores['content'] = content_result.confidence
+                logger.info(f"Content optimization completed for {request.slug}, result length: {len(content_result.optimized) if content_result.optimized else 0}")
+            except Exception as content_error:
+                logger.error(f"Content optimization failed for {request.slug}: {str(content_error)}")
+                raise
 
         # Suggest internal links
         if request.suggest_links:
