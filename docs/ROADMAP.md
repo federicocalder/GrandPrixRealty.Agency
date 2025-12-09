@@ -1,6 +1,6 @@
 # Grand Prix Realty - Project Roadmap
 
-Last updated: 2025-12-05
+Last updated: 2025-12-08
 
 ## Brand Experience Goals
 - Modern & minimal like Airbnb
@@ -117,6 +117,25 @@ Last updated: 2025-12-05
 
 ## PHASE 7 — AI Experience Layer
 
+### SEO Lab AI (Complete) ✅
+- [x] Claude API integration for SEO optimization
+- [x] Meta description generation (Haiku model)
+- [x] Title optimization (Haiku model)
+- [x] Content rewriting (Sonnet model)
+- [x] Internal link suggestions with relevance scoring
+- [x] Batch optimization for multiple posts
+- [x] AI Fixer UI in SEO Lab dashboard
+
+### Automated Blog Generation (In Progress)
+- [ ] Perplexity API integration for topic research
+- [ ] Claude API for content generation
+- [ ] Topic queue management UI
+- [ ] On-demand blog generation from SEO Lab
+- [ ] Scheduled automation (daily/weekly via n8n or cron)
+- [ ] Research → Outline → Draft → SEO → Review → Publish workflow
+- [ ] Auto-internal linking to existing content
+
+### Future AI Features
 - [ ] AI Search Interface (Claude SDK)
 - [ ] Conversational search prompts
 - [ ] AI guide for buyer journey
@@ -147,10 +166,13 @@ Last updated: 2025-12-05
 - [x] React SEO Lab App (Vite)
 - [x] AVM API (Python/FastAPI)
 - [x] Buyer Search API (Node/Express)
-- [x] SEO API (Python/FastAPI)
+- [x] SEO API (Python/FastAPI + Anthropic SDK)
 - [x] PDF Service (Node/Puppeteer)
 - [x] GitHub Actions CI/CD pipeline
 - [x] Docker Compose deployment
+- [x] SSH key authentication for GitHub on Hetzner
+- [x] Under Construction mode with cookie bypass
+- [x] Environment variable update helper script
 - [ ] Logging & performance monitoring
 
 ---
@@ -162,18 +184,19 @@ Last updated: 2025-12-05
 | Main Website | Hugo (static) |
 | Seller Portal | React 18 + Vite + TypeScript |
 | Buyer Search App | React 18 + Vite + TypeScript |
-| SEO Lab | React 18 + Vite + TypeScript |
+| SEO Lab | React 19 + Vite + TypeScript + D3.js |
 | AVM API | Python 3.12 + FastAPI + LightGBM |
 | Buyer API | Node.js 22 + Express + TypeScript |
-| SEO API | Python 3.12 + FastAPI |
+| SEO API | Python 3.12 + FastAPI + Anthropic SDK |
 | PDF Service | Node.js 22 + Express + Puppeteer |
 | MLS Data | Trestle API (RESO/OData) |
 | Database | PostgreSQL (Supabase self-hosted) |
 | Auth | Supabase Auth |
 | Maps | Google Maps API |
+| AI (SEO) | Anthropic Claude (Haiku + Sonnet) |
+| AI (Research) | Perplexity API (planned) |
 | Hosting | Hetzner VPS + Docker |
-| CI/CD | GitHub Actions |
-| Future AI | Claude SDK |
+| CI/CD | GitHub Actions (SSH deployment) |
 
 ---
 
@@ -196,3 +219,28 @@ Last updated: 2025-12-05
 - [ ] Add integration tests for API endpoints
 - [ ] Add React component tests
 - [ ] Document API endpoints (OpenAPI/Swagger)
+
+---
+
+## Deployment Notes
+
+### GitHub SSH Authentication
+The Hetzner server uses SSH key authentication for GitHub:
+- SSH key is configured in `~/.ssh/id_rsa`
+- `github.com` is in `~/.ssh/known_hosts`
+- Git remote uses SSH URL: `git@github.com:federicocalder/GrandPrixRealty.Agency.git`
+
+### Environment Variables
+**Important**: `docker restart` does NOT reload `.env` files!
+
+After editing `.env` on Hetzner, always use:
+```bash
+./update-env.sh gpr-seo-api  # For specific service
+./update-env.sh              # For all services
+```
+
+### Under Construction Mode
+- All pages show under construction by default
+- Bypass: Visit any URL with `?access=gpr2025`
+- Sets 30-day cookie `gpr_access=authorized`
+- Configured in `deploy/nginx.conf`

@@ -1,6 +1,6 @@
 # Grand Prix Realty - Project Architecture
 
-**Last Updated:** December 5, 2025
+**Last Updated:** December 8, 2025
 
 ## Overview
 
@@ -123,12 +123,22 @@ Live MLS property search:
 **Location**: `/seo-frontend/`
 **URL**: https://grandprixrealty.agency/seo-lab/
 
-Protected SEO management tool:
-- Blog post management
-- SEO keyword tracking
-- Content optimization
+Comprehensive SEO management dashboard:
+- **Dashboard**: Overview stats with score distributions, issue counts, word counts
+- **Posts List**: All blog posts with SEO scores, filtering by category/score
+- **Post Detail**: Per-post analysis with sub-scores (Title, Description, Keyword, Content, Links, Readability)
+- **Issues View**: Aggregated issues across all posts with row numbers and severity levels
+- **AI Fixer**: Claude-powered optimization suggestions for meta descriptions, titles, and content
+- **Links Graph**: Internal linking visualization (D3.js force-directed graph)
 
-**Tech**: React 18 + TypeScript + Vite + Supabase Auth
+**AI Optimization Features** (Claude API):
+- Meta description generation (Haiku model)
+- Title optimization (Haiku model)
+- Content rewriting (Sonnet model)
+- Internal link suggestions
+- Batch optimization for multiple posts
+
+**Tech**: React 19 + TypeScript + Vite + TailwindCSS + Recharts + D3.js
 
 ### 5. AVM API Backend
 **Location**: `/avm-api/`
@@ -166,12 +176,27 @@ MLS listings API:
 ### 7. SEO API Backend
 **Location**: `/seo-api/`
 
-SEO management API:
-- Blog content CRUD
-- SEO metrics tracking
-- Supabase integration
+SEO management and AI optimization API:
+- Blog post SEO analysis (scores for title, description, keywords, content, links, readability)
+- Issue tracking with severity levels (critical, warning, info)
+- Internal linking graph data
+- AI-powered optimization via Claude API (Anthropic)
+- Content index for semantic similarity matching
+- Batch optimization support
 
-**Tech**: Python 3.12 + FastAPI
+**Endpoints**:
+- `GET /seo/dashboard` - Dashboard summary stats
+- `GET /seo/posts` - List posts with SEO scores
+- `GET /seo/posts/{slug}` - Detailed post analysis
+- `GET /seo/issues` - All issues across posts
+- `GET /seo/links` - Internal links graph data
+- `POST /seo/analyze` - Trigger re-analysis
+- `POST /seo/ai/optimize` - AI optimization for single post
+- `POST /seo/ai/batch-optimize` - Batch AI optimization
+- `POST /seo/ai/apply` - Apply AI suggestions to content files
+- `POST /seo/ai/build-index` - Build content embeddings index
+
+**Tech**: Python 3.12 + FastAPI + Anthropic SDK
 
 ### 8. PDF Service
 **Location**: `/pdf-service/`
@@ -210,6 +235,7 @@ PDF generation service:
 | Supabase (self-hosted) | PostgreSQL database with PostGIS |
 | Trestle/Cotality | MLS API (Las Vegas REALTORS) |
 | Google Maps | Geocoding & Places API |
+| Anthropic Claude | AI optimization for SEO (Haiku + Sonnet models) |
 
 ### CI/CD
 - **Platform**: GitHub Actions
@@ -291,6 +317,14 @@ docker compose -f docker-compose.prod.yml up -d
 docker network connect supabase_default gpr-avm-api
 ```
 
+### Updating Environment Variables
+```bash
+# IMPORTANT: docker restart does NOT reload .env files!
+# After editing .env, you must recreate the container:
+./update-env.sh gpr-seo-api  # Recreates specific service
+./update-env.sh              # Recreates all services
+```
+
 ## Environment Variables
 
 ### Production (.env on server)
@@ -304,10 +338,33 @@ TRESTLE_ODATA_URL=https://api.cotality.com/trestle/odata/Property
 SUPABASE_URL=http://supabase-kong:8000
 SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_KEY=...
+ANTHROPIC_API_KEY=...  # For SEO AI optimization
 ```
 
 ## Recent Updates (December 2025)
 
+### December 8, 2025
+- **SEO Lab AI Fixer**: Added Claude-powered AI optimization for blog posts
+  - Meta description generation (Haiku model - fast, cost-effective)
+  - Title optimization (Haiku model)
+  - Content rewriting (Sonnet model - for longer content)
+  - Internal link suggestions with relevance scoring
+  - Batch optimization for multiple posts
+- **SEO Lab UI Improvements**:
+  - Issues page now shows row numbers for easier tracking
+  - External links filter added to issues
+  - Fixed button visibility on AI Fixer page
+- **Under Construction Mode**: Cookie-based bypass system
+  - Visit any page with `?access=gpr2025` to bypass
+  - Sets 30-day cookie for authorized access
+- **GitHub SSH Authentication**: Configured SSH key for Hetzner deployment
+  - Added github.com to known_hosts
+  - Using SSH URLs for git operations
+- **Environment Variable Helper**: Added `update-env.sh` script
+  - Properly recreates containers when .env changes
+  - `docker restart` does NOT reload env vars - must use this script
+
+### December 5, 2025
 - **PDF Service**: Added Puppeteer-based PDF generation for AVM reports and Net Sheets
 - **AVM Improvements**: Bedroom match bonus (3x weight), $10k/bed adjustment
 - **Compliance**: Changed "Estimated Value" to "Estimated Price"
@@ -315,6 +372,18 @@ SUPABASE_SERVICE_KEY=...
 - **Navigation Fixes**: Fixed back navigation to preserve valuation state
 - **Buyer Search**: Fixed API URL mapping, price slider state issues
 - **CI/CD**: GitHub Actions deployment to Hetzner
+
+## Upcoming Features (Planned)
+
+### Automated Blog Post Generation
+Integration of Perplexity + Claude for automated blog content creation:
+- **Perplexity API**: Research trending real estate topics, gather current market data
+- **Claude API**: Generate SEO-optimized blog posts from research
+- **Automation Options**:
+  - On-demand generation via SEO Lab UI
+  - Scheduled automation (daily/weekly) via n8n or cron
+  - Topic queue with priority scheduling
+- **Workflow**: Research → Outline → Draft → SEO Optimization → Review → Publish
 
 ---
 **GitHub**: https://github.com/federicocalder/GrandPrixRealty.Agency
