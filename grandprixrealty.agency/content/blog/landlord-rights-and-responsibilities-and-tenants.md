@@ -161,59 +161,59 @@ If tenants believe their rights are being violated, they should take certain ste
 
 <a href="https://grandprixrealty.agency/">Grand Prix Realty excels in offering bespoke real estate solutions</a>, <a href="https://grandprixrealty.agency/exclusive-4-plex-investment-opportunity">specializing in high-yield investment properties such as 4-plexes</a> that promise both substantial returns and sustainable growth. With a keen focus on customer satisfaction, their <a href="https://grandprixrealty.agency/invest-smarter">services are tailored to meet the unique needs of each investor</a>, ensuring a smooth, profitable <a href="https://grandprixrealty.agency/case-studies">real estate experience</a> from start to finish.
 
-<script type="application/ld+json"><br />
-{<br />
-  "@context": "https://schema.org",<br />
-  "@type": "FAQPage",<br />
-  "mainEntity": [<br />
-    {<br />
-      "@type": "Question",<br />
-      "name": "Can a landlord increase the rent whenever they want?",<br />
-      "acceptedAnswer": {<br />
-        "@type": "Answer",<br />
-        "text": "No, a landlord cannot increase the rent whenever they want. In most cases, there are specific rules and regulations that govern rent increases."<br />
-      }<br />
-    },<br />
-    {<br />
-      "@type": "Question",<br />
-      "name": "Can a tenant be evicted without any reason?",<br />
-      "acceptedAnswer": {<br />
-        "@type": "Answer",<br />
-        "text": "In some situations, yes, a tenant can be evicted without any specific reason. However, many jurisdictions have laws that protect tenants from unfair evictions, and landlords are typically required to provide a valid reason for eviction."<br />
-      }<br />
-    },<br />
-    {<br />
-      "@type": "Question",<br />
-      "name": "Are landlords responsible for maintaining the property?",<br />
-      "acceptedAnswer": {<br />
-        "@type": "Answer",<br />
-        "text": "Yes, landlords are generally responsible for maintaining the rental property in a habitable condition. This includes ensuring that essential services such as heating, plumbing, and electricity are in working order."<br />
-      }<br />
-    },<br />
-    {<br />
-      "@type": "Question",<br />
-      "name": "Can a tenant break a lease early?",<br />
-      "acceptedAnswer": {<br />
-        "@type": "Answer",<br />
-        "text": "Breaking a lease early can have implications for both tenants and landlords. In most cases, tenants are legally obligated to fulfill the terms of the lease, including paying rent for the entire lease term. However, there are certain situations where a tenant may be able to break the lease early."<br />
-      }<br />
-    },<br />
-    {<br />
-      "@type": "Question",<br />
-      "name": "Can a landlord enter the rental unit without permission?",<br />
-      "acceptedAnswer": {<br />
-        "@type": "Answer",<br />
-        "text": "No, a landlord typically cannot enter a rental unit without proper notice and permission from the tenant, except in emergency situations. Most jurisdictions have laws that regulate landlords' entry into rental units."<br />
-      }<br />
-    },<br />
-    {<br />
-      "@type": "Question",<br />
-      "name": "What can tenants do if they believe their rights are being violated?",<br />
-      "acceptedAnswer": {<br />
-        "@type": "Answer",<br />
-        "text": "If tenants believe their rights are being violated, they should review their lease agreement, try to communicate and resolve the issue directly with the landlord, and if needed, file a complaint with the appropriate local housing authority or seek legal advice from an attorney."<br />
-      }<br />
-    }<br />
-  ]<br />
-}<br />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can a landlord increase the rent whenever they want?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, a landlord cannot increase the rent whenever they want. In most cases, there are specific rules and regulations that govern rent increases."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can a tenant be evicted without any reason?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In some situations, yes, a tenant can be evicted without any specific reason. However, many jurisdictions have laws that protect tenants from unfair evictions, and landlords are typically required to provide a valid reason for eviction."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are landlords responsible for maintaining the property?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, landlords are generally responsible for maintaining the rental property in a habitable condition. This includes ensuring that essential services such as heating, plumbing, and electricity are in working order."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can a tenant break a lease early?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Breaking a lease early can have implications for both tenants and landlords. In most cases, tenants are legally obligated to fulfill the terms of the lease, including paying rent for the entire lease term. However, there are certain situations where a tenant may be able to break the lease early."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can a landlord enter the rental unit without permission?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, a landlord typically cannot enter a rental unit without proper notice and permission from the tenant, except in emergency situations. Most jurisdictions have laws that regulate landlords' entry into rental units."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What can tenants do if they believe their rights are being violated?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "If tenants believe their rights are being violated, they should review their lease agreement, try to communicate and resolve the issue directly with the landlord, and if needed, file a complaint with the appropriate local housing authority or seek legal advice from an attorney."
+      }
+    }
+  ]
+}
 </script>
