@@ -39,7 +39,6 @@ export default function Posts() {
       const params: any = {
         sort_by: sortBy,
         sort_order: sortOrder,
-        is_draft: false,
         limit: 200,
       }
 

@@ -324,6 +324,18 @@ export default function AIFixer() {
           </div>
         </div>
 
+        {/* Optimize Button - Above post list */}
+        <div className="mb-4 pb-4 border-b border-grand-steel/30">
+          <button
+            onClick={optimizeSelected}
+            disabled={optimizing || selectedPosts.length === 0}
+            className="w-full py-3 bg-grand-gold text-white font-semibold rounded-lg hover:bg-grand-gold/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            <Sparkles size={18} />
+            {optimizing ? 'Optimizing...' : `Optimize ${selectedPosts.length} Post${selectedPosts.length !== 1 ? 's' : ''}`}
+          </button>
+        </div>
+
         {loading ? (
           <div className="flex items-center justify-center h-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-grand-silver"></div>
@@ -355,17 +367,6 @@ export default function AIFixer() {
             ))}
           </div>
         )}
-
-        <div className="mt-4 pt-4 border-t border-grand-steel/30">
-          <button
-            onClick={optimizeSelected}
-            disabled={optimizing || selectedPosts.length === 0}
-            className="w-full py-3 bg-grand-gold text-grand-dark font-semibold rounded-lg hover:bg-grand-gold/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            <Sparkles size={18} />
-            {optimizing ? 'Optimizing...' : `Optimize ${selectedPosts.length} Post${selectedPosts.length !== 1 ? 's' : ''}`}
-          </button>
-        </div>
       </div>
 
       {/* Results */}
