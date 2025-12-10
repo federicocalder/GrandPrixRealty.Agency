@@ -71,26 +71,7 @@ jobs:
             if git diff --name-only HEAD~1 | grep -q "seo-api/"; then
               echo "Rebuilding SEO API..."
               docker-compose -f docker-compose.prod.yml build gpr-seo-api
-              docker stop gpr-seo-api || true
-              docker rm gpr-seo-api || true
-
-              # Create hugo-output volume if not exists
-              docker volume create hugo-output || true
-
-              docker run -d \
-                --name gpr-seo-api \
-                --restart unless-stopped \
-                --network grandprixrealtyagency_gpr-network \
-                -e SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
-                -e SUPABASE_SERVICE_KEY=${{ secrets.SUPABASE_SERVICE_KEY }} \
-                -e ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }} \
-                -e CONTENT_PATH=/content/blog \
-                -e HUGO_SITE_PATH=/hugo-site \
-                -e HUGO_OUTPUT_PATH=/output \
-                -v /root/GrandPrixRealty.Agency/grandprixrealty.agency/content/blog:/content/blog:rw \
-                -v /root/GrandPrixRealty.Agency/grandprixrealty.agency:/hugo-site:ro \
-                -v hugo-output:/output \
-                grandprixrealtyagency-gpr-seo-api
+              docker-compose -f docker-compose.prod.yml up -d gpr-seo-api
             fi
 
             echo "Deployment complete!"
