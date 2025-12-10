@@ -2,6 +2,8 @@
 SEO Lab API for Grand Prix Realty
 FastAPI backend for SEO monitoring and analysis
 
+Version: 1.1.0 - Database sync on apply
+
 Endpoints:
 - GET /seo/dashboard - Dashboard summary stats
 - GET /seo/posts - List all posts with scores
@@ -10,6 +12,8 @@ Endpoints:
 - GET /seo/links - Internal links graph data
 - POST /seo/analyze - Trigger re-analysis
 - POST /seo/ai/optimize - AI-powered optimization
+- POST /seo/ai/apply - Apply optimizations (now updates Supabase)
+- POST /seo/deploy - Rebuild Hugo site
 """
 
 import os
