@@ -92,7 +92,7 @@ services:
       - HUGO_OUTPUT_PATH=/output
     volumes:
       - ./grandprixrealty.agency/content/blog:/content/blog:rw
-      - ./grandprixrealty.agency:/hugo-site:ro
+      - ./grandprixrealty.agency:/hugo-site:rw
       - hugo-output:/output
     networks:
       - gpr-network
