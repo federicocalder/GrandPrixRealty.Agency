@@ -35,7 +35,7 @@ export default function AIFixer() {
 
   // Deployment state
   const [deploying, setDeploying] = useState(false)
-  const [deployResult, setDeployResult] = useState<DeployResponse | null>(null)
+  const [_deployResult, setDeployResult] = useState<DeployResponse | null>(null) // eslint-disable-line @typescript-eslint/no-unused-vars
   const [pendingChanges, setPendingChanges] = useState(0) // Track how many changes need deployment
 
   useEffect(() => {
