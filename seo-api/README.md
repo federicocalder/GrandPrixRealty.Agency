@@ -274,3 +274,4 @@ The SEO Lab includes an AI-powered content optimizer using Claude API:
 ## Live URL
 
 Production: https://grandprixrealty.agency/seo-lab/
+# Deployment trigger: Tue Dec  9 20:39:06 PST 2025
