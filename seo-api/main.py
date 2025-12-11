@@ -778,6 +778,13 @@ async def apply_optimization(
 ):
     """Apply approved optimizations to a blog post file and update database."""
     try:
+        # Log the incoming request for debugging
+        logger.info(f"Apply request for {request.slug}:")
+        logger.info(f"  - apply_meta: {request.apply_meta}, new_meta length: {len(request.new_meta) if request.new_meta else 0}")
+        logger.info(f"  - apply_title: {request.apply_title}, new_title: {request.new_title}")
+        logger.info(f"  - apply_content: {request.apply_content}, new_content length: {len(request.new_content) if request.new_content else 0}")
+        logger.info(f"  - apply_links count: {len(request.apply_links)}")
+
         # Read current file
         metadata, content = read_post_file(request.slug)
         changes_made = []
@@ -797,12 +804,18 @@ async def apply_optimization(
 
         # Apply content
         if request.apply_content and request.new_content:
+            logger.info(f"Applying content change - old length: {len(content)}, new length: {len(request.new_content)}")
             content = request.new_content
             changes_made.append('content')
             # Update word count in database
             import re
             words = re.findall(r'\b\w+\b', content)
             db_updates['word_count'] = len(words)
+            logger.info(f"Content applied successfully, new word count: {len(words)}")
+        elif request.apply_content:
+            logger.warning(f"apply_content is True but new_content is empty/None!")
+        elif request.new_content:
+            logger.info(f"new_content provided but apply_content is False (user didn't check the box)")
 
         # Apply internal links
         if request.apply_links:
