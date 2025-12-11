@@ -936,6 +936,76 @@ async def get_related_posts(
 HUGO_SITE_PATH = Path(os.environ.get('HUGO_SITE_PATH', '/hugo-site'))
 HUGO_OUTPUT_PATH = Path(os.environ.get('HUGO_OUTPUT_PATH', '/output'))
 
+# Cloudflare configuration for cache purging
+CLOUDFLARE_ZONE_ID = os.environ.get('CLOUDFLARE_ZONE_ID', '')
+CLOUDFLARE_API_TOKEN = os.environ.get('CLOUDFLARE_API_TOKEN', '')
+
+
+async def purge_cloudflare_cache(urls: List[str] = None, purge_everything: bool = False) -> dict:
+    """
+    Purge Cloudflare cache for specific URLs or everything.
+
+    Args:
+        urls: List of URLs to purge (e.g., ["https://grandprixrealty.agency/blog/post-slug/"])
+        purge_everything: If True, purge entire cache (use with caution)
+
+    Returns:
+        dict with 'success', 'message', and optionally 'error'
+    """
+    import httpx
+
+    if not CLOUDFLARE_ZONE_ID or not CLOUDFLARE_API_TOKEN:
+        return {
+            "success": False,
+            "message": "Cloudflare not configured",
+            "error": "Missing CLOUDFLARE_ZONE_ID or CLOUDFLARE_API_TOKEN"
+        }
+
+    try:
+        async with httpx.AsyncClient() as client:
+            headers = {
+                "Authorization": f"Bearer {CLOUDFLARE_API_TOKEN}",
+                "Content-Type": "application/json"
+            }
+
+            if purge_everything:
+                payload = {"purge_everything": True}
+            elif urls:
+                payload = {"files": urls}
+            else:
+                # Default: purge all blog pages
+                payload = {"prefixes": ["https://grandprixrealty.agency/blog/"]}
+
+            response = await client.post(
+                f"https://api.cloudflare.com/client/v4/zones/{CLOUDFLARE_ZONE_ID}/purge_cache",
+                headers=headers,
+                json=payload,
+                timeout=30.0
+            )
+
+            result = response.json()
+
+            if result.get("success"):
+                return {
+                    "success": True,
+                    "message": f"Cache purged successfully"
+                }
+            else:
+                errors = result.get("errors", [])
+                error_msg = errors[0].get("message") if errors else "Unknown error"
+                return {
+                    "success": False,
+                    "message": "Cache purge failed",
+                    "error": error_msg
+                }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "Cache purge request failed",
+            "error": str(e)
+        }
+
 
 class DeployResponse(BaseModel):
     status: str
@@ -943,6 +1013,8 @@ class DeployResponse(BaseModel):
     build_time_seconds: Optional[float] = None
     output_path: Optional[str] = None
     error: Optional[str] = None
+    cache_purged: Optional[bool] = None
+    cache_purge_error: Optional[str] = None
 
 
 @app.post("/seo/deploy", response_model=DeployResponse)
@@ -1008,11 +1080,16 @@ async def deploy_changes():
         output_lines = result.stdout.strip().split('\n') if result.stdout else []
         build_summary = output_lines[-1] if output_lines else "Build completed"
 
+        # Purge Cloudflare cache after successful build
+        cache_result = await purge_cloudflare_cache()
+
         return DeployResponse(
             status="success",
             message=f"Site rebuilt successfully. {build_summary}",
             build_time_seconds=round(build_time, 2),
-            output_path=str(HUGO_OUTPUT_PATH)
+            output_path=str(HUGO_OUTPUT_PATH),
+            cache_purged=cache_result.get("success", False),
+            cache_purge_error=cache_result.get("error")
         )
 
     except subprocess.TimeoutExpired:

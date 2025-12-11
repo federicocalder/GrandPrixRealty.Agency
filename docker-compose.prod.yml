@@ -90,6 +90,8 @@ services:
       - CONTENT_PATH=/content/blog
       - HUGO_SITE_PATH=/hugo-site
       - HUGO_OUTPUT_PATH=/output
+      - CLOUDFLARE_ZONE_ID=${CLOUDFLARE_ZONE_ID}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
     volumes:
       - ./grandprixrealty.agency/content/blog:/content/blog:rw
       - ./grandprixrealty.agency:/hugo-site:rw
