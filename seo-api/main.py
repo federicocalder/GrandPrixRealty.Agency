@@ -777,6 +777,9 @@ async def apply_optimization(
     supabase: Client = Depends(get_supabase)
 ):
     """Apply approved optimizations to a blog post file and update database."""
+    import logging
+    logger = logging.getLogger(__name__)
+
     try:
         # Log the incoming request for debugging
         logger.info(f"Apply request for {request.slug}:")
