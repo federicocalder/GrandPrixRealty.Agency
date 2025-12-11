@@ -973,8 +973,9 @@ async def purge_cloudflare_cache(urls: List[str] = None, purge_everything: bool 
             elif urls:
                 payload = {"files": urls}
             else:
-                # Default: purge all blog pages
-                payload = {"prefixes": ["https://grandprixrealty.agency/blog/"]}
+                # Default: purge all blog pages using prefix without scheme
+                # Cloudflare prefixes don't accept URI schemes
+                payload = {"prefixes": ["grandprixrealty.agency/blog/"]}
 
             response = await client.post(
                 f"https://api.cloudflare.com/client/v4/zones/{CLOUDFLARE_ZONE_ID}/purge_cache",
