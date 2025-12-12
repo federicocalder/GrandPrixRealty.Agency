@@ -3,13 +3,15 @@ languageCode = 'en-us'
 title = 'Grand Prix Realty - Las Vegas Real Estate & Property Management'
 theme = 'grandprix'
 
-# Permalinks for silo sections - keep URLs clean without /blog/
+# Permalinks for silo sections - use :filename for stable URLs
+# :filename = the markdown filename (stable, never changes)
+# :slug = derived from title (changes when title changes - DON'T USE)
 [permalinks]
-  homebuyer = '/homebuyer/:slug/'
-  homeseller = '/homeseller/:slug/'
-  propertymanagement = '/propertymanagement/:slug/'
-  realtors = '/realtors/:slug/'
-  lasvegas = '/lasvegas/:slug/'
+  homebuyer = '/homebuyer/:filename/'
+  homeseller = '/homeseller/:filename/'
+  propertymanagement = '/propertymanagement/:filename/'
+  realtors = '/realtors/:filename/'
+  lasvegas = '/lasvegas/:filename/'
 
 [params]
   description = "Professional real estate services in Las Vegas - Home buying, selling, property management, and mortgage assistance"
