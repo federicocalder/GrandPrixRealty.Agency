@@ -125,6 +125,23 @@ def parse_front_matter(content: str) -> Tuple[Dict, str]:
     return {}, content
 
 
+def slugify(text: str) -> str:
+    """Convert text to URL-friendly slug (mimics Hugo's slugify behavior)."""
+    if not text:
+        return ""
+    # Convert to lowercase
+    slug = text.lower()
+    # Replace spaces and underscores with hyphens
+    slug = re.sub(r'[\s_]+', '-', slug)
+    # Remove non-alphanumeric characters except hyphens
+    slug = re.sub(r'[^a-z0-9\-]', '', slug)
+    # Remove consecutive hyphens
+    slug = re.sub(r'-+', '-', slug)
+    # Remove leading/trailing hyphens
+    slug = slug.strip('-')
+    return slug
+
+
 def extract_text_from_html(html_content: str) -> str:
     """Extract plain text from HTML content."""
     soup = BeautifulSoup(html_content, 'html.parser')
@@ -637,8 +654,9 @@ def analyze_post(filepath: Path, section: str = None) -> Optional[PostAnalysis]:
         return None
 
     # Extract basic info
-    slug = filepath.stem
     title = front_matter.get('title', '')
+    # Use title-based slug to match Hugo's URL generation behavior
+    slug = slugify(title) if title else filepath.stem
     description = front_matter.get('description')
     target_keyword = front_matter.get('target_keyword')
     categories = front_matter.get('categories', [])
