@@ -434,6 +434,133 @@ If no good linking opportunities exist, return {{"suggestions": []}}"""
 
         return link_suggestions
 
+    async def suggest_target_keyword(
+        self,
+        title: str,
+        content: str,
+        current_keyword: str = ""
+    ) -> OptimizationResult:
+        """Suggest optimal target keyword using Haiku"""
+
+        prompt = f"""You are an SEO keyword research expert for Grand Prix Realty, a Las Vegas real estate company.
+
+TASK: Suggest the best target keyword for this blog post.
+
+BLOG POST TITLE: {title}
+CURRENT KEYWORD: {current_keyword or "None"}
+
+CONTENT PREVIEW:
+{content[:2500]}
+
+REQUIREMENTS:
+- Keyword should be 2-4 words (long-tail preferred)
+- Must be relevant to Las Vegas real estate
+- Should have search intent (what people actually search)
+- Be specific, not generic (e.g., "las vegas first time homebuyer" not just "homebuyer")
+- Consider: buyer intent, seller intent, location-specific, property type
+
+EXAMPLES OF GOOD KEYWORDS:
+- "las vegas home inspection"
+- "henderson nv property management"
+- "sell house fast las vegas"
+- "summerlin homes for sale"
+- "las vegas real estate market 2025"
+
+Respond in JSON format:
+{{"keyword": "your suggested keyword", "reasoning": "brief explanation"}}"""
+
+        response = self.client.messages.create(
+            model=HAIKU_MODEL,
+            max_tokens=200,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        try:
+            result = json.loads(response.content[0].text.strip())
+            keyword = result.get('keyword', current_keyword or '')
+            explanation = result.get('reasoning', 'Keyword suggested based on content analysis')
+        except json.JSONDecodeError:
+            keyword = current_keyword or ''
+            explanation = 'Could not parse AI response'
+
+        return OptimizationResult(
+            original=current_keyword or '',
+            optimized=keyword,
+            explanation=explanation,
+            confidence=0.85 if keyword else 0.0
+        )
+
+    async def suggest_category(
+        self,
+        title: str,
+        content: str,
+        current_categories: list[str] = None
+    ) -> OptimizationResult:
+        """Suggest single best category from silo structure using Haiku"""
+
+        current_categories = current_categories or []
+
+        prompt = f"""You are an SEO content strategist for Grand Prix Realty, a Las Vegas real estate company.
+
+TASK: Choose the SINGLE best category for this blog post.
+
+AVAILABLE CATEGORIES (pick exactly ONE):
+- Buyers (homebuyer content, buying guides, financing, first-time buyers)
+- Sellers (selling guides, home prep, pricing, staging, market timing)
+- Property Management (landlord content, rental management, tenant screening)
+- Realtors (agent resources, industry news, professional development)
+- Las Vegas (local market news, neighborhood guides, community info)
+
+BLOG POST TITLE: {title}
+CURRENT CATEGORIES: {', '.join(current_categories) if current_categories else 'None'}
+
+CONTENT PREVIEW:
+{content[:2000]}
+
+RULES:
+- Pick the PRIMARY audience/topic, not secondary themes
+- "Buyers" = content primarily helping people BUY homes
+- "Sellers" = content primarily helping people SELL homes
+- "Property Management" = content for landlords/investors managing rentals
+- "Realtors" = content for real estate professionals
+- "Las Vegas" = general local content not specific to buying/selling/managing
+
+Respond in JSON format:
+{{"category": "Buyers", "reasoning": "brief explanation"}}"""
+
+        response = self.client.messages.create(
+            model=HAIKU_MODEL,
+            max_tokens=200,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        try:
+            result = json.loads(response.content[0].text.strip())
+            category = result.get('category', '')
+            explanation = result.get('reasoning', 'Category suggested based on content analysis')
+
+            # Validate category is one of allowed values
+            allowed = ['Buyers', 'Sellers', 'Property Management', 'Realtors', 'Las Vegas']
+            if category not in allowed:
+                # Try to match partial
+                for a in allowed:
+                    if a.lower() in category.lower():
+                        category = a
+                        break
+                else:
+                    category = current_categories[0] if current_categories else 'Property Management'
+
+        except json.JSONDecodeError:
+            category = current_categories[0] if current_categories else 'Property Management'
+            explanation = 'Could not parse AI response, using default'
+
+        return OptimizationResult(
+            original=', '.join(current_categories) if current_categories else '',
+            optimized=category,
+            explanation=explanation,
+            confidence=0.9
+        )
+
     def apply_internal_link(
         self,
         content: str,

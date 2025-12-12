@@ -897,7 +897,8 @@ def print_analysis_summary(analysis: PostAnalysis):
 def main():
     parser = argparse.ArgumentParser(description='SEO Analyzer for Grand Prix Realty Blog')
     parser.add_argument('--dry-run', action='store_true', help='Analyze without saving to database')
-    parser.add_argument('--file', type=str, help='Analyze a specific file')
+    parser.add_argument('--file', type=str, help='Analyze a specific file by name')
+    parser.add_argument('--single', type=str, help='Analyze a single file by full path')
     parser.add_argument('--section', type=str, help='Analyze only a specific section')
     parser.add_argument('--limit', type=int, help='Limit number of files to analyze')
     parser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
@@ -923,7 +924,24 @@ def main():
     # Collect files from all silo directories
     files_with_sections = []  # List of (filepath, section) tuples
 
-    if args.file:
+    if args.single:
+        # Single file mode with full path
+        single_path = Path(args.single)
+        if not single_path.exists():
+            print(f"Error: File not found: {args.single}")
+            return
+
+        # Determine section from path
+        section = None
+        for sec_name in SILO_SECTIONS:
+            if f'/{sec_name}/' in str(single_path):
+                section = sec_name
+                break
+
+        files_with_sections.append((single_path, section))
+        print(f"Single file mode: {single_path.name}")
+
+    elif args.file:
         # Single file mode - try to find it in any section
         for section in SILO_SECTIONS:
             section_path = CONTENT_BASE / section / args.file

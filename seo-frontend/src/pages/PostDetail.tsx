@@ -1,12 +1,32 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { api, PostDetail as PostDetailType, getScoreClass, getScoreBgClass, getSeverityClass } from '../lib/api'
+import { api, aiApi, PostDetail as PostDetailType, OptimizationPreview, getScoreClass, getScoreBgClass, getSeverityClass } from '../lib/api'
 
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>()
   const [post, setPost] = useState<PostDetailType | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  // Optimizer state
+  const [showOptimizer, setShowOptimizer] = useState(false)
+  const [optimizing, setOptimizing] = useState(false)
+  const [preview, setPreview] = useState<OptimizationPreview | null>(null)
+  const [applying, setApplying] = useState(false)
+  const [reanalyzing, setReanalyzing] = useState(false)
+  const [deploying, setDeploying] = useState(false)
+  const [optimizerMessage, setOptimizerMessage] = useState('')
+
+  // Checkboxes for applying changes
+  const [applyTitle, setApplyTitle] = useState(false)
+  const [applyMeta, setApplyMeta] = useState(false)
+  const [applyKeyword, setApplyKeyword] = useState(false)
+  const [applyCategory, setApplyCategory] = useState(false)
+  const [applyContent, setApplyContent] = useState(false)
+  const [selectedLinks, setSelectedLinks] = useState<Set<number>>(new Set())
+
+  // Content optimization toggle
+  const [includeContent, setIncludeContent] = useState(false)
 
   useEffect(() => {
     if (slug) loadPost()
@@ -47,6 +67,133 @@ Please fix these SEO issues.`
 
     navigator.clipboard.writeText(prompt)
     alert('Copied to clipboard!')
+  }
+
+  // Run AI optimization
+  const runOptimize = async () => {
+    if (!slug) return
+    setOptimizing(true)
+    setOptimizerMessage('')
+    setPreview(null)
+
+    // Reset checkboxes
+    setApplyTitle(false)
+    setApplyMeta(false)
+    setApplyKeyword(false)
+    setApplyCategory(false)
+    setApplyContent(false)
+    setSelectedLinks(new Set())
+
+    try {
+      const result = await aiApi.optimize({
+        slug,
+        optimize_meta: true,
+        optimize_title: true,
+        optimize_content: includeContent,
+        suggest_links: true,
+        suggest_keyword: true,
+        suggest_category: true
+      })
+      setPreview(result)
+      setOptimizerMessage('AI optimization complete! Review suggestions below.')
+    } catch (err: any) {
+      setOptimizerMessage(`Error: ${err.message || 'Failed to optimize'}`)
+    } finally {
+      setOptimizing(false)
+    }
+  }
+
+  // Apply selected changes
+  const applyChanges = async () => {
+    if (!slug || !preview) return
+
+    const hasChanges = applyTitle || applyMeta || applyKeyword || applyCategory || applyContent || selectedLinks.size > 0
+    if (!hasChanges) {
+      setOptimizerMessage('Please select at least one change to apply')
+      return
+    }
+
+    setApplying(true)
+    setOptimizerMessage('')
+
+    try {
+      const linksToApply = preview.internal_links
+        .filter((_, i) => selectedLinks.has(i))
+        .map(l => ({ anchor_text: l.anchor_text, target_url: l.target_url }))
+
+      const result = await aiApi.apply({
+        slug,
+        apply_title: applyTitle,
+        new_title: applyTitle ? preview.suggested_title || undefined : undefined,
+        apply_meta: applyMeta,
+        new_meta: applyMeta ? preview.suggested_meta || undefined : undefined,
+        apply_keyword: applyKeyword,
+        new_keyword: applyKeyword ? preview.suggested_keyword || undefined : undefined,
+        apply_category: applyCategory,
+        new_category: applyCategory ? preview.suggested_category || undefined : undefined,
+        apply_content: applyContent,
+        new_content: applyContent ? preview.suggested_content || undefined : undefined,
+        apply_links: linksToApply.length > 0 ? linksToApply : undefined
+      })
+
+      setOptimizerMessage(`Applied: ${result.changes_applied.join(', ')}`)
+      // Reload post data to show updated values
+      await loadPost()
+      // Clear the preview since changes were applied
+      setPreview(null)
+    } catch (err: any) {
+      setOptimizerMessage(`Error applying: ${err.message || 'Failed'}`)
+    } finally {
+      setApplying(false)
+    }
+  }
+
+  // Reanalyze post to refresh scores
+  const reanalyzePost = async () => {
+    if (!slug) return
+    setReanalyzing(true)
+    setOptimizerMessage('')
+
+    try {
+      const result = await aiApi.reanalyze(slug)
+      setOptimizerMessage(`Reanalyzed! New score: ${result.overall_score || 'N/A'}`)
+      // Reload post data to show updated scores
+      await loadPost()
+    } catch (err: any) {
+      setOptimizerMessage(`Error reanalyzing: ${err.message || 'Failed'}`)
+    } finally {
+      setReanalyzing(false)
+    }
+  }
+
+  // Deploy changes to live site
+  const deployChanges = async () => {
+    setDeploying(true)
+    setOptimizerMessage('')
+
+    try {
+      const result = await aiApi.deploy()
+      if (result.status === 'success') {
+        setOptimizerMessage(`Deployed in ${result.build_time_seconds}s! ${result.cache_purged ? 'Cache purged.' : ''}`)
+      } else {
+        setOptimizerMessage(`Deploy error: ${result.error || result.message}`)
+      }
+    } catch (err: any) {
+      setOptimizerMessage(`Deploy error: ${err.message || 'Failed'}`)
+    } finally {
+      setDeploying(false)
+    }
+  }
+
+  // Toggle link selection
+  const toggleLink = (index: number) => {
+    const newSelected = new Set(selectedLinks)
+    if (newSelected.has(index)) {
+      newSelected.delete(index)
+    } else {
+      newSelected.add(index)
+    }
+    setSelectedLinks(newSelected)
   }
 
   if (loading) {
@@ -102,6 +249,16 @@ Please fix these SEO issues.`
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-2">
         <button
+          onClick={() => setShowOptimizer(!showOptimizer)}
+          className={`px-4 py-2 rounded-lg transition-colors ${
+            showOptimizer
+              ? 'bg-blue-600 text-white'
+              : 'bg-grand-steel text-white hover:bg-grand-charcoal'
+          }`}
+        >
+          {showOptimizer ? 'Hide Optimizer' : 'AI Optimizer'}
+        </button>
+        <button
           onClick={copyForClaude}
           className="px-4 py-2 bg-grand-steel text-white rounded-lg hover:bg-grand-charcoal transition-colors"
         >
@@ -116,6 +273,182 @@ Please fix these SEO issues.`
           View Live
         </a>
       </div>
+
+      {/* AI Optimizer Panel */}
+      {showOptimizer && (
+        <div className="bg-grand-charcoal rounded-xl p-6 border border-blue-500/30">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-semibold text-lg text-white">AI Optimizer</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={reanalyzePost}
+                disabled={reanalyzing}
+                className="px-3 py-1.5 bg-grand-steel text-white text-sm rounded-lg hover:bg-grand-charcoal disabled:opacity-50"
+              >
+                {reanalyzing ? 'Analyzing...' : 'Re-score'}
+              </button>
+              <button
+                onClick={deployChanges}
+                disabled={deploying}
+                className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 disabled:opacity-50"
+              >
+                {deploying ? 'Deploying...' : 'Deploy'}
+              </button>
+            </div>
+          </div>
+
+          {/* Optimizer Controls */}
+          <div className="flex items-center gap-4 mb-4">
+            <label className="flex items-center gap-2 text-grand-silver text-sm">
+              <input
+                type="checkbox"
+                checked={includeContent}
+                onChange={(e) => setIncludeContent(e.target.checked)}
+                className="rounded"
+              />
+              Include content optimization (slower)
+            </label>
+            <button
+              onClick={runOptimize}
+              disabled={optimizing}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {optimizing ? 'Optimizing...' : 'Run AI Optimize'}
+            </button>
+          </div>
+
+          {/* Status Message */}
+          {optimizerMessage && (
+            <div className={`p-3 rounded-lg mb-4 ${
+              optimizerMessage.includes('Error') ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'
+            }`}>
+              {optimizerMessage}
+            </div>
+          )}
+
+          {/* Optimization Preview */}
+          {preview && (
+            <div className="space-y-4">
+              {/* Title Suggestion */}
+              {preview.suggested_title && preview.suggested_title !== preview.original_title && (
+                <SuggestionCard
+                  label="Title"
+                  original={preview.original_title}
+                  suggested={preview.suggested_title}
+                  explanation={preview.title_explanation}
+                  confidence={preview.confidence_scores?.title}
+                  checked={applyTitle}
+                  onChange={setApplyTitle}
+                />
+              )}
+
+              {/* Meta Description Suggestion */}
+              {preview.suggested_meta && preview.suggested_meta !== preview.original_meta && (
+                <SuggestionCard
+                  label="Meta Description"
+                  original={preview.original_meta || '(none)'}
+                  suggested={preview.suggested_meta}
+                  explanation={preview.meta_explanation}
+                  confidence={preview.confidence_scores?.meta}
+                  checked={applyMeta}
+                  onChange={setApplyMeta}
+                />
+              )}
+
+              {/* Keyword Suggestion */}
+              {preview.suggested_keyword && preview.suggested_keyword !== preview.original_keyword && (
+                <SuggestionCard
+                  label="Target Keyword"
+                  original={preview.original_keyword || '(none)'}
+                  suggested={preview.suggested_keyword}
+                  explanation={preview.keyword_explanation}
+                  confidence={preview.confidence_scores?.keyword}
+                  checked={applyKeyword}
+                  onChange={setApplyKeyword}
+                />
+              )}
+
+              {/* Category Suggestion */}
+              {preview.suggested_category && (
+                <SuggestionCard
+                  label="Category"
+                  original={preview.original_categories?.join(', ') || '(none)'}
+                  suggested={preview.suggested_category}
+                  explanation={preview.category_explanation}
+                  confidence={preview.confidence_scores?.category}
+                  checked={applyCategory}
+                  onChange={setApplyCategory}
+                />
+              )}
+
+              {/* Content Suggestion */}
+              {preview.suggested_content && (
+                <div className="p-4 rounded-lg bg-grand-steel/30 border border-grand-steel/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={applyContent}
+                        onChange={(e) => setApplyContent(e.target.checked)}
+                        className="rounded"
+                      />
+                      <span className="font-semibold text-white">Content Optimization</span>
+                    </label>
+                    {preview.confidence_scores?.content && (
+                      <span className="text-xs text-grand-silver">
+                        Confidence: {Math.round(preview.confidence_scores.content * 100)}%
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-grand-silver text-sm">{preview.content_explanation}</p>
+                  <details className="mt-2">
+                    <summary className="text-blue-400 text-sm cursor-pointer">View suggested content</summary>
+                    <pre className="mt-2 p-3 bg-grand-charcoal rounded text-xs text-white overflow-x-auto max-h-64 overflow-y-auto">
+                      {preview.suggested_content.slice(0, 2000)}...
+                    </pre>
+                  </details>
+                </div>
+              )}
+
+              {/* Internal Links Suggestions */}
+              {preview.internal_links.length > 0 && (
+                <div className="p-4 rounded-lg bg-grand-steel/30 border border-grand-steel/50">
+                  <p className="font-semibold text-white mb-3">Internal Link Suggestions ({preview.internal_links.length})</p>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {preview.internal_links.map((link, i) => (
+                      <label key={i} className="flex items-start gap-2 p-2 rounded bg-grand-charcoal/50">
+                        <input
+                          type="checkbox"
+                          checked={selectedLinks.has(i)}
+                          onChange={() => toggleLink(i)}
+                          className="rounded mt-1"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white text-sm">"{link.anchor_text}" → {link.target_title}</p>
+                          <p className="text-grand-silver text-xs truncate">{link.target_url}</p>
+                          <p className="text-grand-silver/60 text-xs">{link.context?.slice(0, 100)}...</p>
+                        </div>
+                        <span className="text-xs text-grand-silver">{Math.round(link.relevance_score * 100)}%</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Apply Button */}
+              <div className="flex justify-end gap-2 pt-4 border-t border-grand-steel/30">
+                <button
+                  onClick={applyChanges}
+                  disabled={applying || (!applyTitle && !applyMeta && !applyKeyword && !applyCategory && !applyContent && selectedLinks.size === 0)}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {applying ? 'Applying...' : 'Apply Selected Changes'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Scores Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -286,6 +619,59 @@ function StatItem({ label, value, warning = false }: { label: string; value: str
     <div className="p-3 bg-grand-steel/30 rounded-lg">
       <p className="text-grand-silver/60 text-xs">{label}</p>
       <p className={`text-lg font-semibold ${warning ? 'text-yellow-400' : 'text-white'}`}>{value}</p>
+    </div>
+  )
+}
+
+// Helper component for AI suggestion cards
+function SuggestionCard({
+  label,
+  original,
+  suggested,
+  explanation,
+  confidence,
+  checked,
+  onChange
+}: {
+  label: string
+  original: string
+  suggested: string
+  explanation: string | null
+  confidence?: number
+  checked: boolean
+  onChange: (checked: boolean) => void
+}) {
+  return (
+    <div className="p-4 rounded-lg bg-grand-steel/30 border border-grand-steel/50">
+      <div className="flex items-center justify-between mb-2">
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={checked}
+            onChange={(e) => onChange(e.target.checked)}
+            className="rounded"
+          />
+          <span className="font-semibold text-white">{label}</span>
+        </label>
+        {confidence !== undefined && (
+          <span className="text-xs text-grand-silver">
+            Confidence: {Math.round(confidence * 100)}%
+          </span>
+        )}
+      </div>
+      <div className="grid gap-2 text-sm">
+        <div>
+          <span className="text-grand-silver/60">Current: </span>
+          <span className="text-red-400 line-through">{original}</span>
+        </div>
+        <div>
+          <span className="text-grand-silver/60">Suggested: </span>
+          <span className="text-green-400">{suggested}</span>
+        </div>
+        {explanation && (
+          <p className="text-grand-silver text-xs mt-1">{explanation}</p>
+        )}
+      </div>
     </div>
   )
 }

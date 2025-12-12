@@ -557,6 +557,70 @@ async def trigger_analysis(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# Reanalyze a single post
+@app.post("/seo/analyze/{slug}")
+async def reanalyze_single_post(
+    slug: str,
+    supabase: Client = Depends(get_supabase)
+):
+    """
+    Re-analyze a single blog post and update its scores in the database.
+    This is faster than running full analysis on all posts.
+    """
+    import subprocess
+    import logging
+    logger = logging.getLogger(__name__)
+
+    try:
+        # Find the markdown file
+        file_path = find_post_file(slug)
+        logger.info(f"Reanalyzing single post: {slug} at {file_path}")
+
+        # Run the analyzer script with single file mode
+        result = subprocess.run(
+            ["python", "/app/analyzer.py", "--single", str(file_path)],
+            capture_output=True,
+            text=True,
+            timeout=60,  # 1 minute timeout for single file
+            env={
+                **os.environ,
+                'CONTENT_BASE': str(CONTENT_BASE),
+                'CONTENT_PATH': str(CONTENT_PATH),
+                'SUPABASE_URL': SUPABASE_URL,
+                'SUPABASE_SERVICE_KEY': SUPABASE_SERVICE_KEY
+            }
+        )
+
+        if result.returncode != 0:
+            logger.error(f"Analyzer error: {result.stderr}")
+            return {
+                "status": "error",
+                "slug": slug,
+                "message": "Analysis completed with errors",
+                "details": result.stderr or result.stdout
+            }
+
+        # Get the updated post data from database
+        post_result = seo_table(supabase, 'posts').select('*').eq('slug', slug).execute()
+        post_data = post_result.data[0] if post_result.data else None
+
+        return {
+            "status": "completed",
+            "slug": slug,
+            "message": f"Successfully reanalyzed {slug}",
+            "overall_score": post_data.get('overall_score') if post_data else None,
+            "details": result.stdout[-500:] if len(result.stdout) > 500 else result.stdout
+        }
+
+    except HTTPException:
+        raise
+    except subprocess.TimeoutExpired:
+        raise HTTPException(status_code=504, detail="Analysis timed out after 1 minute")
+    except Exception as e:
+        logger.error(f"Reanalyze error for {slug}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==========================================
 # AI OPTIMIZATION ENDPOINTS
 # ==========================================
@@ -570,6 +634,8 @@ class OptimizeRequest(BaseModel):
     optimize_title: bool = True
     optimize_content: bool = False  # Expensive, off by default
     suggest_links: bool = True
+    suggest_keyword: bool = True  # Suggest target keyword
+    suggest_category: bool = True  # Suggest single category
 
 
 class OptimizationPreview(BaseModel):
@@ -586,6 +652,13 @@ class OptimizationPreview(BaseModel):
     content_explanation: Optional[str]
     internal_links: List[dict]
     confidence_scores: dict
+    # New fields for keyword and category
+    original_keyword: Optional[str] = None
+    suggested_keyword: Optional[str] = None
+    keyword_explanation: Optional[str] = None
+    original_categories: List[str] = []
+    suggested_category: Optional[str] = None
+    category_explanation: Optional[str] = None
 
 
 class ApplyOptimizationRequest(BaseModel):
@@ -597,6 +670,11 @@ class ApplyOptimizationRequest(BaseModel):
     apply_content: bool = False
     new_content: Optional[str] = None
     apply_links: List[dict] = []  # [{anchor_text, target_url}]
+    # New fields for keyword and category
+    apply_keyword: bool = False
+    new_keyword: Optional[str] = None
+    apply_category: bool = False
+    new_category: Optional[str] = None
 
 
 class BatchOptimizeRequest(BaseModel):
@@ -619,12 +697,13 @@ def slugify(text: str) -> str:
     return slug
 
 
-def find_post_file(slug: str) -> Path:
+def find_post_file(slug: str, supabase: Client = None) -> Path:
     """Find a blog post markdown file in any silo directory.
 
     Searches by:
     1. Direct filename match (slug.md)
-    2. Title-based match (slugify the title from frontmatter)
+    2. Database filename lookup (when slug != filename)
+    3. Title-based match (slugify the title from frontmatter)
     """
     # First try direct filename match in all silo directories
     for section in SILO_SECTIONS:
@@ -636,6 +715,29 @@ def find_post_file(slug: str) -> Path:
     legacy_path = CONTENT_PATH / f"{slug}.md"
     if legacy_path.exists():
         return legacy_path
+
+    # Try looking up the filename from database (handles title changes)
+    if supabase is None:
+        try:
+            supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+        except Exception:
+            pass
+
+    if supabase:
+        try:
+            result = seo_table(supabase, 'posts').select('filename').eq('slug', slug).execute()
+            if result.data and result.data[0].get('filename'):
+                filename = result.data[0]['filename']
+                for section in SILO_SECTIONS:
+                    file_path = CONTENT_BASE / section / f"{filename}.md"
+                    if file_path.exists():
+                        return file_path
+                # Also check legacy
+                legacy_path = CONTENT_PATH / f"{filename}.md"
+                if legacy_path.exists():
+                    return legacy_path
+        except Exception:
+            pass
 
     # If not found by filename, search by title match
     # This handles the case where slug is title-based but filename is different
@@ -749,7 +851,10 @@ async def optimize_post(
             suggested_content=None,
             content_explanation=None,
             internal_links=[],
-            confidence_scores={}
+            confidence_scores={},
+            # Keyword and category fields
+            original_keyword=post_data.get('target_keyword'),
+            original_categories=post_data.get('categories', [])
         )
 
         target_keyword = post_data.get('target_keyword', '')
@@ -817,6 +922,28 @@ async def optimize_post(
                 }
                 for s in link_suggestions
             ]
+
+        # Suggest target keyword
+        if request.suggest_keyword:
+            keyword_result = await optimizer.suggest_target_keyword(
+                title=post_data['title'],
+                content=content,
+                current_keyword=target_keyword
+            )
+            result.suggested_keyword = keyword_result.optimized
+            result.keyword_explanation = keyword_result.explanation
+            result.confidence_scores['keyword'] = keyword_result.confidence
+
+        # Suggest single category
+        if request.suggest_category:
+            category_result = await optimizer.suggest_category(
+                title=post_data['title'],
+                content=content,
+                current_categories=post_data.get('categories', [])
+            )
+            result.suggested_category = category_result.optimized
+            result.category_explanation = category_result.explanation
+            result.confidence_scores['category'] = category_result.confidence
 
         return result
 
@@ -887,6 +1014,28 @@ async def apply_optimization(
             changes_made.append(f'internal_links ({len(request.apply_links)})')
             # Update internal links count in database
             db_updates['internal_links_out'] = len(request.apply_links)
+
+        # Apply target keyword
+        if request.apply_keyword and request.new_keyword:
+            metadata['target_keyword'] = request.new_keyword
+            changes_made.append('target_keyword')
+            db_updates['target_keyword'] = request.new_keyword
+
+        # Apply category (single category replaces all categories)
+        if request.apply_category and request.new_category:
+            # Map category name to silo section for URL
+            category_to_silo = {
+                'Buyers': 'homebuyer',
+                'Sellers': 'homeseller',
+                'Property Management': 'propertymanagement',
+                'Realtors': 'realtors',
+                'Las Vegas': 'lasvegas'
+            }
+            metadata['categories'] = [request.new_category]
+            changes_made.append('categories')
+            db_updates['categories'] = [request.new_category]
+            # Note: URL change requires file move - log a warning
+            logger.info(f"Category changed to {request.new_category}. Note: File may need to be moved to {category_to_silo.get(request.new_category, 'unknown')} silo directory.")
 
         # Write updated file
         if changes_made:

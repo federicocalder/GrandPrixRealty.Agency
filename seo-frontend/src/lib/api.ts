@@ -209,6 +209,13 @@ export interface OptimizationPreview {
     relevance_score: number
   }>
   confidence_scores: Record<string, number>
+  // New fields for keyword and category
+  original_keyword: string | null
+  suggested_keyword: string | null
+  keyword_explanation: string | null
+  original_categories: string[]
+  suggested_category: string | null
+  category_explanation: string | null
 }
 
 export interface ApplyOptimizationRequest {
@@ -220,6 +227,11 @@ export interface ApplyOptimizationRequest {
   apply_content?: boolean
   new_content?: string
   apply_links?: Array<{ anchor_text: string; target_url: string }>
+  // New fields for keyword and category
+  apply_keyword?: boolean
+  new_keyword?: string
+  apply_category?: boolean
+  new_category?: string
 }
 
 // AI Optimization API
@@ -234,6 +246,8 @@ export const aiApi = {
     optimize_title?: boolean
     optimize_content?: boolean
     suggest_links?: boolean
+    suggest_keyword?: boolean
+    suggest_category?: boolean
   }) => fetchAPI<OptimizationPreview>('/seo/ai/optimize', {
     method: 'POST',
     body: JSON.stringify(params)
@@ -282,6 +296,15 @@ export const aiApi = {
     }>
   }>(`/seo/ai/related/${slug}${limit ? `?limit=${limit}` : ''}`),
 
+  // Reanalyze single post (recalculate scores)
+  reanalyze: (slug: string) => fetchAPI<{
+    status: string
+    slug: string
+    message: string
+    overall_score: number | null
+    details?: string
+  }>(`/seo/analyze/${slug}`, { method: 'POST' }),
+
   // Deploy changes (rebuild Hugo site)
   deploy: () => fetchAPI<DeployResponse>('/seo/deploy', { method: 'POST' }),
 
@@ -301,4 +324,5 @@ export interface DeployResponse {
   build_time_seconds?: number
   output_path?: string
   error?: string
+  cache_purged?: boolean
 }
