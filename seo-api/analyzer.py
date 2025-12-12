@@ -78,6 +78,7 @@ class SEOIssue:
 @dataclass
 class PostAnalysis:
     """Complete analysis result for a post"""
+    filename: str  # Stable identifier (markdown filename without extension)
     slug: str
     url: str
     title: str
@@ -744,6 +745,7 @@ def analyze_post(filepath: Path, section: str = None) -> Optional[PostAnalysis]:
         url = f"/blog/{slug}/"  # Legacy fallback
 
     return PostAnalysis(
+        filename=filepath.stem,  # Stable identifier
         slug=slug,
         url=url,
         title=title,
@@ -782,6 +784,7 @@ def save_to_supabase(
     try:
         # Prepare post data
         post_data = {
+            'filename': analysis.filename,  # Stable identifier
             'slug': analysis.slug,
             'url': analysis.url,
             'title': analysis.title,
@@ -815,10 +818,11 @@ def save_to_supabase(
         # Use schema('seo') to access tables in the seo schema
         seo = supabase.schema('seo')
 
-        # Upsert post
+        # Upsert post using filename as stable identifier
+        # This ensures title/slug changes UPDATE existing rows instead of creating duplicates
         seo.table('posts').upsert(
             post_data,
-            on_conflict='slug'
+            on_conflict='filename'
         ).execute()
 
         # Delete old links for this post
