@@ -62,10 +62,10 @@ Add AI optimization controls directly to the single post detail page (`/posts/:s
 ## Files Modified
 
 1. ✅ `seo-api/ai_optimizer.py` - Added `suggest_target_keyword()` and `suggest_category()` methods
-2. ✅ `seo-api/main.py` - Added reanalyze endpoint, updated OptimizationPreview, ApplyOptimizationRequest
+2. ✅ `seo-api/main.py` - Added reanalyze endpoint, updated OptimizationPreview, ApplyOptimizationRequest, fixed `find_post_file()` to use filename from DB
 3. ✅ `seo-api/analyzer.py` - Added `--single` flag for single file analysis
-4. 🔄 `seo-frontend/src/pages/PostDetail.tsx` - Add optimizer UI (IN PROGRESS)
-5. [ ] `seo-frontend/src/api/seo.ts` - Add reanalyze API call
+4. ✅ `seo-frontend/src/pages/PostDetail.tsx` - Added full optimizer UI with checkboxes
+5. ✅ `seo-frontend/src/lib/api.ts` - Added reanalyze API call, keyword/category types, cache_purged field
 
 ## Implementation Status
 
@@ -73,9 +73,9 @@ Add AI optimization controls directly to the single post detail page (`/posts/:s
 2. ✅ API: Add keyword/category to optimize response
 3. ✅ API: Add reanalyze endpoint (`/seo/analyze/{slug}`)
 4. ✅ API: Update apply endpoint for keyword/category
-5. 🔄 Frontend: Add optimizer section to PostDetail (IN PROGRESS)
-6. [ ] Test locally
-7. [ ] Deploy to Hetzner
+5. ✅ Frontend: Add optimizer section to PostDetail
+6. ✅ Deploy to Hetzner
+7. ⚠️ **BUG: Title changes create new slug, orphaning old DB entry**
 
 ## Category to Silo Mapping
 
@@ -86,3 +86,47 @@ Add AI optimization controls directly to the single post detail page (`/posts/:s
 | Property Management | propertymanagement | /propertymanagement/ |
 | Realtors | realtors | /realtors/ |
 | Las Vegas | lasvegas | /lasvegas/ |
+
+---
+
+## Known Issues / TODO
+
+### 🔴 CRITICAL: Slug Changes When Title Changes
+
+**Problem:** When a title is changed via AI optimizer:
+1. The markdown file is updated with the new title
+2. When re-analyzed, the slug is recalculated from the NEW title
+3. This creates a NEW database entry with the new slug
+4. The OLD entry becomes orphaned (old issues reference it, causing FK errors)
+5. The SEO Lab URL changes, breaking bookmarks
+
+**Current Behavior:**
+- `slug` = `slugify(title)` - changes every time title changes
+- `filename` = original filename (stable, never changes)
+
+**Recommended Fix:**
+Use `filename` as the stable identifier, NOT title-based slug:
+1. Change analyzer to use `filename` as slug (not `slugify(title)`)
+2. Update `apply` endpoint to NOT change slug when title changes
+3. Add cleanup to delete orphaned entries when title changes
+4. Store both `slug` (stable, filename-based) and `display_title` (can change)
+
+**Files to Modify:**
+- `seo-api/analyzer.py` - Change slug generation to use filename
+- `seo-api/main.py` - Update apply endpoint to preserve slug
+- Database migration may be needed to fix existing entries
+
+### 🟡 MEDIUM: Re-analyze returns wrong data after title change
+
+After applying a title change, the `reanalyze` endpoint tries to query by the OLD slug but the analyzer creates a NEW slug. Need to:
+1. Return the new slug in the apply response
+2. Frontend should navigate to new URL after title change
+
+### 🟡 MEDIUM: Category change doesn't move file
+
+When category changes (e.g., from "Property Management" to "Buyers"):
+- The frontmatter is updated
+- But the file stays in `/propertymanagement/` instead of moving to `/homebuyer/`
+- Hugo URL will still be `/propertymanagement/...`
+
+**Fix:** Add file move logic when category changes, or warn user that manual move is needed.
