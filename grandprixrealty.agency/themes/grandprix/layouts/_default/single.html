@@ -1,39 +1,709 @@
 {{ define "main" }}
-<div class="min-h-screen">
-    <!-- Page Header -->
-    <section class="bg-gradient-to-r from-grand-blue to-blue-700 py-20">
+
+<style>
+    /* Blog-specific styles */
+    .blog-prose {
+        color: #d1d5db;
+    }
+
+    .blog-prose h1,
+    .blog-prose h2,
+    .blog-prose h3,
+    .blog-prose h4,
+    .blog-prose h5,
+    .blog-prose h6 {
+        font-family: 'Cinzel', serif;
+        color: #ffffff;
+        font-weight: 700;
+        margin-top: 2em;
+        margin-bottom: 0.75em;
+        line-height: 1.3;
+    }
+
+    .blog-prose h1 { font-size: 2.25rem; }
+    .blog-prose h2 { font-size: 1.875rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; }
+    .blog-prose h3 { font-size: 1.5rem; }
+    .blog-prose h4 { font-size: 1.25rem; }
+
+    .blog-prose p {
+        margin-bottom: 1.5em;
+        line-height: 1.8;
+    }
+
+    .blog-prose a {
+        color: #22d3ee;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        transition: color 0.2s;
+    }
+
+    .blog-prose a:hover {
+        color: #67e8f9;
+    }
+
+    .blog-prose strong {
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .blog-prose em {
+        color: #e5e7eb;
+    }
+
+    .blog-prose ul,
+    .blog-prose ol {
+        margin-bottom: 1.5em;
+        padding-left: 1.5em;
+    }
+
+    .blog-prose ul {
+        list-style-type: disc;
+    }
+
+    .blog-prose ol {
+        list-style-type: decimal;
+    }
+
+    .blog-prose li {
+        margin-bottom: 0.5em;
+        line-height: 1.7;
+    }
+
+    .blog-prose blockquote {
+        border-left: 4px solid #22d3ee;
+        padding-left: 1.5rem;
+        margin: 2rem 0;
+        font-style: italic;
+        color: #9ca3af;
+        background: rgba(255,255,255,0.02);
+        padding: 1.5rem;
+        border-radius: 0 0.5rem 0.5rem 0;
+    }
+
+    .blog-prose code {
+        background: rgba(255,255,255,0.1);
+        padding: 0.2em 0.4em;
+        border-radius: 0.25rem;
+        font-size: 0.875em;
+        color: #f9fafb;
+    }
+
+    .blog-prose pre {
+        background: rgba(0,0,0,0.5);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        overflow-x: auto;
+        margin: 2rem 0;
+    }
+
+    .blog-prose pre code {
+        background: transparent;
+        padding: 0;
+    }
+
+    .blog-prose img {
+        border-radius: 0.75rem;
+        margin: 2rem 0;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .blog-prose table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 2rem 0;
+    }
+
+    .blog-prose th,
+    .blog-prose td {
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 0.75rem 1rem;
+        text-align: left;
+    }
+
+    .blog-prose th {
+        background: rgba(255,255,255,0.05);
+        color: #ffffff;
+        font-weight: 600;
+    }
+
+    .blog-prose hr {
+        border: none;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        margin: 3rem 0;
+    }
+
+    /* Table of Contents */
+    .toc-item {
+        transition: all 0.2s;
+    }
+
+    .toc-item:hover {
+        color: #22d3ee;
+        padding-left: 0.5rem;
+    }
+
+    .toc-item.active {
+        color: #22d3ee;
+        border-left: 2px solid #22d3ee;
+        padding-left: 0.75rem;
+        margin-left: -2px;
+    }
+
+    /* Glass Card */
+    .glass-card {
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(2.5px);
+        -webkit-backdrop-filter: blur(2.5px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        pointer-events: none;
+    }
+
+    /* Sheen effect */
+    .sheen {
+        position: absolute;
+        top: -50%;
+        left: -100%;
+        width: 100%;
+        height: 200%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        transform: rotate(25deg);
+        transition: left 0.6s ease;
+    }
+
+    .glass-card:hover .sheen {
+        left: 100%;
+    }
+
+    /* Category badge colors */
+    .badge-buyers { background: rgba(34, 197, 94, 0.2); color: #4ade80; border-color: rgba(34, 197, 94, 0.3); }
+    .badge-sellers { background: rgba(168, 85, 247, 0.2); color: #c084fc; border-color: rgba(168, 85, 247, 0.3); }
+    .badge-propertymanagement { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
+    .badge-careers { background: rgba(251, 146, 60, 0.2); color: #fb923c; border-color: rgba(251, 146, 60, 0.3); }
+    .badge-lasvegas { background: rgba(236, 72, 153, 0.2); color: #f472b6; border-color: rgba(236, 72, 153, 0.3); }
+
+    /* Background patterns */
+    .diagonal-pattern {
+        background-image: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 50px,
+            rgba(255, 255, 255, 0.02) 50px,
+            rgba(255, 255, 255, 0.02) 51px
+        );
+    }
+
+    .gradient-mesh {
+        background:
+            radial-gradient(at 40% 20%, rgba(120, 119, 198, 0.08) 0px, transparent 50%),
+            radial-gradient(at 80% 0%, rgba(75, 85, 99, 0.1) 0px, transparent 50%),
+            radial-gradient(at 0% 50%, rgba(120, 119, 198, 0.08) 0px, transparent 50%);
+    }
+
+    /* Reading progress */
+    .reading-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #22d3ee, #06b6d4);
+        z-index: 100;
+        transition: width 0.1s;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+</style>
+
+<!-- Reading Progress Bar -->
+<div class="reading-progress" id="reading-progress"></div>
+
+<div class="min-h-screen bg-black relative overflow-hidden">
+
+    <!-- Background Effects -->
+    <div class="diagonal-pattern fixed inset-0 pointer-events-none opacity-30"></div>
+    <div class="gradient-mesh fixed inset-0 pointer-events-none opacity-50"></div>
+
+    <!-- Breadcrumbs with Schema.org -->
+    <nav class="relative z-10 pt-24 pb-4" aria-label="Breadcrumb">
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": "{{ .Site.BaseURL }}"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "{{ .Section | humanize | title }}",
+                    "item": "{{ .Site.BaseURL }}{{ .Section }}/"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": "{{ .Title }}"
+                }
+            ]
+        }
+        </script>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center text-white space-y-4">
-                <h1 class="font-display font-bold text-4xl lg:text-5xl">{{ .Title }}</h1>
-                {{ if .Description }}
-                <p class="text-xl text-blue-100 max-w-3xl mx-auto">{{ .Description }}</p>
+            <ol class="flex items-center space-x-2 text-sm text-gray-400">
+                <li>
+                    <a href="/" class="hover:text-white transition-colors">Home</a>
+                </li>
+                <li>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </li>
+                <li>
+                    <a href="/{{ .Section }}/" class="hover:text-white transition-colors">
+                        {{ with eq .Section "homebuyer" }}Home Buyers{{ end }}
+                        {{ with eq .Section "homeseller" }}Home Sellers{{ end }}
+                        {{ with eq .Section "propertymanagement" }}Property Management{{ end }}
+                        {{ with eq .Section "realtors" }}Real Estate Careers{{ end }}
+                        {{ with eq .Section "lasvegas" }}Las Vegas{{ end }}
+                    </a>
+                </li>
+                <li>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </li>
+                <li class="text-gray-500 truncate max-w-xs">{{ .Title }}</li>
+            </ol>
+        </div>
+    </nav>
+
+    <!-- Article Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "{{ .Title }}",
+        "description": "{{ with .Description }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 160 }}{{ end }}",
+        "datePublished": "{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}",
+        "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}",
+        "author": {
+            "@type": "Organization",
+            "name": "Grand Prix Realty",
+            "url": "{{ .Site.BaseURL }}"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Grand Prix Realty",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ .Site.BaseURL }}images/logo.png"
+            }
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "{{ .Permalink }}"
+        }
+    }
+    </script>
+
+    <!-- Main Content Area -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-12">
+
+            <!-- Main Article Column -->
+            <article class="lg:col-span-8">
+
+                <!-- Article Header -->
+                <header class="mb-12 animate-fade-in-up">
+                    <!-- Categories -->
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        {{ range .Params.categories }}
+                        {{ $section := cond (eq . "Buyers") "homebuyer" (cond (eq . "Sellers") "homeseller" (cond (eq . "Property Management") "propertymanagement" (cond (eq . "Careers") "realtors" (cond (eq . "Las Vegas") "lasvegas" (. | urlize))))) }}
+                        {{ $badge := cond (eq . "Buyers") "badge-buyers" (cond (eq . "Sellers") "badge-sellers" (cond (eq . "Property Management") "badge-propertymanagement" (cond (eq . "Careers") "badge-careers" (cond (eq . "Las Vegas") "badge-lasvegas" "")))) }}
+                        <a href="/{{ $section }}/"
+                           class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border {{ $badge }} hover:opacity-80 transition-opacity">
+                            {{ . }}
+                        </a>
+                        {{ end }}
+                    </div>
+
+                    <!-- Title -->
+                    <h1 class="font-cinzel font-bold text-3xl lg:text-4xl xl:text-5xl text-white leading-tight mb-6">
+                        {{ .Title }}
+                    </h1>
+
+                    <!-- Meta Info -->
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-400">
+                        <time datetime="{{ .Date.Format "2006-01-02" }}" class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            {{ .Date.Format "January 2, 2006" }}
+                        </time>
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            {{ math.Round (div (countwords .Content) 200.0) }} min read
+                        </span>
+                    </div>
+                </header>
+
+                <!-- Featured Image (if exists) -->
+                {{ with .Params.image }}
+                <div class="mb-12 animate-fade-in-up delay-100">
+                    <img src="{{ . }}" alt="{{ $.Title }}" class="w-full rounded-2xl border border-white/10">
+                </div>
                 {{ end }}
-            </div>
-        </div>
-    </section>
 
-    <!-- Page Content -->
-    <section class="py-16">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="prose prose-lg prose-blue max-w-none">
-                {{ .Content }}
-            </div>
-        </div>
-    </section>
+                <!-- Table of Contents (Mobile) -->
+                <div class="lg:hidden mb-8 animate-fade-in-up delay-200">
+                    <details class="glass-card bg-white/5 rounded-xl">
+                        <summary class="cursor-pointer px-6 py-4 text-white font-semibold flex items-center justify-between">
+                            <span>Table of Contents</span>
+                            <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </summary>
+                        <nav class="px-6 pb-4" id="toc-mobile">
+                            {{ .TableOfContents }}
+                        </nav>
+                    </details>
+                </div>
 
-    <!-- CTA Section -->
-    <section class="py-16 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="space-y-6">
-                <h2 class="font-display font-bold text-3xl text-gray-900">Ready to Work Together?</h2>
-                <p class="text-lg text-gray-600">
-                    Contact Grand Prix Realty today for professional real estate services in Las Vegas.
-                </p>
-                <a href="/contact/" class="inline-block bg-gradient-to-r from-grand-blue to-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300">
-                    Get In Touch
-                </a>
-            </div>
+                <!-- Article Content -->
+                <div class="blog-prose animate-fade-in-up delay-200" id="article-content">
+                    {{ .Content }}
+                </div>
+
+                <!-- Tags -->
+                {{ with .Params.tags }}
+                <div class="mt-12 pt-8 border-t border-white/10">
+                    <div class="flex flex-wrap gap-2">
+                        {{ range . }}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs bg-white/5 text-gray-400 border border-white/10">
+                            #{{ . }}
+                        </span>
+                        {{ end }}
+                    </div>
+                </div>
+                {{ end }}
+
+                <!-- Author Box -->
+                <div class="mt-12 glass-card bg-white/5 rounded-2xl p-8">
+                    <div class="sheen"></div>
+                    <div class="relative z-10 flex items-start gap-6">
+                        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-xl text-white font-bold mb-2">Grand Prix Realty</h3>
+                            <p class="text-gray-400 mb-4">
+                                Your trusted Las Vegas real estate experts. We specialize in helping buyers, sellers, and investors achieve their property goals with data-driven precision and personalized service.
+                            </p>
+                            <a href="/contact/" class="inline-flex items-center text-cyan-400 hover:text-cyan-300 transition-colors">
+                                Get in Touch
+                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category-Specific CTA -->
+                <div class="mt-12 glass-card rounded-2xl p-8 relative overflow-hidden
+                            {{ with eq .Section "homebuyer" }}bg-gradient-to-br from-green-900/20 to-green-800/10{{ end }}
+                            {{ with eq .Section "homeseller" }}bg-gradient-to-br from-purple-900/20 to-purple-800/10{{ end }}
+                            {{ with eq .Section "propertymanagement" }}bg-gradient-to-br from-blue-900/20 to-blue-800/10{{ end }}
+                            {{ with eq .Section "realtors" }}bg-gradient-to-br from-orange-900/20 to-orange-800/10{{ end }}
+                            {{ with eq .Section "lasvegas" }}bg-gradient-to-br from-pink-900/20 to-pink-800/10{{ end }}">
+                    <div class="sheen"></div>
+                    <div class="relative z-10 text-center">
+                        {{ if eq .Section "homebuyer" }}
+                        <h3 class="font-cinzel text-2xl text-white font-bold mb-4">Ready to Find Your Dream Home?</h3>
+                        <p class="text-gray-400 mb-6">Search our exclusive listings and get personalized buyer representation.</p>
+                        <a href="/buyer-search/" class="inline-flex items-center px-8 py-4 bg-green-600 hover:bg-green-500 text-white rounded-full font-semibold transition-all transform hover:scale-105">
+                            Search Homes Now
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
+                        {{ else if eq .Section "homeseller" }}
+                        <h3 class="font-cinzel text-2xl text-white font-bold mb-4">Thinking About Selling?</h3>
+                        <p class="text-gray-400 mb-6">Get a free home valuation and see what your property is worth today.</p>
+                        <a href="/homeseller/" class="inline-flex items-center px-8 py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-full font-semibold transition-all transform hover:scale-105">
+                            Get Free Valuation
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
+                        {{ else if eq .Section "propertymanagement" }}
+                        <h3 class="font-cinzel text-2xl text-white font-bold mb-4">Need Property Management?</h3>
+                        <p class="text-gray-400 mb-6">Let us handle your rental property while you collect passive income.</p>
+                        <a href="/propertymanagement/" class="inline-flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-full font-semibold transition-all transform hover:scale-105">
+                            Learn More
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
+                        {{ else if eq .Section "realtors" }}
+                        <h3 class="font-cinzel text-2xl text-white font-bold mb-4">Start Your Real Estate Career</h3>
+                        <p class="text-gray-400 mb-6">Join Grand Prix Realty and access training, leads, and mentorship.</p>
+                        <a href="/realtors/" class="inline-flex items-center px-8 py-4 bg-orange-600 hover:bg-orange-500 text-white rounded-full font-semibold transition-all transform hover:scale-105">
+                            Join Our Team
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
+                        {{ else }}
+                        <h3 class="font-cinzel text-2xl text-white font-bold mb-4">Explore Las Vegas Real Estate</h3>
+                        <p class="text-gray-400 mb-6">Discover the best neighborhoods and investment opportunities.</p>
+                        <a href="/contact/" class="inline-flex items-center px-8 py-4 bg-pink-600 hover:bg-pink-500 text-white rounded-full font-semibold transition-all transform hover:scale-105">
+                            Contact Us
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
+                        {{ end }}
+                    </div>
+                </div>
+
+            </article>
+
+            <!-- Sidebar -->
+            <aside class="lg:col-span-4 mt-12 lg:mt-0">
+                <div class="lg:sticky lg:top-24 space-y-8">
+
+                    <!-- Table of Contents (Desktop) -->
+                    <div class="hidden lg:block glass-card bg-white/5 rounded-2xl p-6">
+                        <h3 class="font-cinzel text-lg text-white font-bold mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                            </svg>
+                            Contents
+                        </h3>
+                        <nav class="text-sm space-y-2 text-gray-400" id="toc-desktop">
+                            {{ .TableOfContents }}
+                        </nav>
+                    </div>
+
+                    <!-- Featured Listing (placeholder for API integration) -->
+                    <div class="glass-card bg-white/5 rounded-2xl p-6">
+                        <h3 class="font-cinzel text-lg text-white font-bold mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            </svg>
+                            Featured Listing
+                        </h3>
+                        <div id="featured-listing" class="text-center py-8">
+                            <div class="animate-pulse">
+                                <div class="h-32 bg-white/10 rounded-xl mb-4"></div>
+                                <div class="h-4 bg-white/10 rounded w-3/4 mx-auto mb-2"></div>
+                                <div class="h-4 bg-white/10 rounded w-1/2 mx-auto"></div>
+                            </div>
+                        </div>
+                        <a href="/buyer-search/" class="block text-center text-cyan-400 hover:text-cyan-300 text-sm transition-colors">
+                            View All Listings →
+                        </a>
+                    </div>
+
+                    <!-- Related Posts -->
+                    <div class="glass-card bg-white/5 rounded-2xl p-6">
+                        <h3 class="font-cinzel text-lg text-white font-bold mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                            </svg>
+                            Related Articles
+                        </h3>
+                        <div class="space-y-4">
+                            {{ $related := .Site.RegularPages.Related . | first 5 }}
+                            {{ range $related }}
+                            <a href="{{ .Permalink }}" class="block group">
+                                <h4 class="text-sm text-gray-300 group-hover:text-white transition-colors line-clamp-2">
+                                    {{ .Title }}
+                                </h4>
+                                <p class="text-xs text-gray-500 mt-1">{{ .Date.Format "Jan 2, 2006" }}</p>
+                            </a>
+                            {{ else }}
+                            {{ $section := $.Section }}
+                            {{ range first 5 (where $.Site.RegularPages "Section" $section) }}
+                            {{ if ne .Permalink $.Permalink }}
+                            <a href="{{ .Permalink }}" class="block group">
+                                <h4 class="text-sm text-gray-300 group-hover:text-white transition-colors line-clamp-2">
+                                    {{ .Title }}
+                                </h4>
+                                <p class="text-xs text-gray-500 mt-1">{{ .Date.Format "Jan 2, 2006" }}</p>
+                            </a>
+                            {{ end }}
+                            {{ end }}
+                            {{ end }}
+                        </div>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="glass-card bg-white/5 rounded-2xl p-6">
+                        <h3 class="font-cinzel text-lg text-white font-bold mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            </svg>
+                            Browse Topics
+                        </h3>
+                        <div class="space-y-2">
+                            <a href="/homebuyer/" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/5 transition-colors group">
+                                <span class="text-gray-400 group-hover:text-white">Home Buyers</span>
+                                <span class="text-xs text-gray-600">{{ len (where .Site.RegularPages "Section" "homebuyer") }}</span>
+                            </a>
+                            <a href="/homeseller/" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/5 transition-colors group">
+                                <span class="text-gray-400 group-hover:text-white">Home Sellers</span>
+                                <span class="text-xs text-gray-600">{{ len (where .Site.RegularPages "Section" "homeseller") }}</span>
+                            </a>
+                            <a href="/propertymanagement/" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/5 transition-colors group">
+                                <span class="text-gray-400 group-hover:text-white">Property Management</span>
+                                <span class="text-xs text-gray-600">{{ len (where .Site.RegularPages "Section" "propertymanagement") }}</span>
+                            </a>
+                            <a href="/realtors/" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/5 transition-colors group">
+                                <span class="text-gray-400 group-hover:text-white">Careers</span>
+                                <span class="text-xs text-gray-600">{{ len (where .Site.RegularPages "Section" "realtors") }}</span>
+                            </a>
+                            <a href="/lasvegas/" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-white/5 transition-colors group">
+                                <span class="text-gray-400 group-hover:text-white">Las Vegas</span>
+                                <span class="text-xs text-gray-600">{{ len (where .Site.RegularPages "Section" "lasvegas") }}</span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </aside>
+
         </div>
-    </section>
+    </div>
+
 </div>
+
+<script>
+// Reading progress bar
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBar = document.getElementById('reading-progress');
+    const article = document.getElementById('article-content');
+
+    if (progressBar && article) {
+        window.addEventListener('scroll', function() {
+            const articleRect = article.getBoundingClientRect();
+            const articleTop = window.scrollY + articleRect.top;
+            const articleHeight = article.offsetHeight;
+            const windowHeight = window.innerHeight;
+            const scrollY = window.scrollY;
+
+            const progress = Math.min(100, Math.max(0,
+                ((scrollY - articleTop + windowHeight) / (articleHeight + windowHeight)) * 100
+            ));
+
+            progressBar.style.width = progress + '%';
+        });
+    }
+
+    // TOC active state
+    const tocLinks = document.querySelectorAll('#toc-desktop a, #toc-mobile a');
+    const headings = document.querySelectorAll('.blog-prose h2, .blog-prose h3');
+
+    if (tocLinks.length && headings.length) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    tocLinks.forEach(link => {
+                        link.classList.remove('active', 'text-cyan-400');
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.classList.add('active', 'text-cyan-400');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.5, rootMargin: '-100px 0px -66%' });
+
+        headings.forEach(heading => observer.observe(heading));
+    }
+});
+
+// Fetch featured listing from API
+async function loadFeaturedListing() {
+    const container = document.getElementById('featured-listing');
+    if (!container) return;
+
+    try {
+        const response = await fetch('https://seo-api.grandprixrealty.agency/buyer-search?limit=1&page=' + Math.floor(Math.random() * 10));
+        const data = await response.json();
+
+        if (data.listings && data.listings.length > 0) {
+            const listing = data.listings[0];
+            const price = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(listing.listPrice || listing.price);
+
+            container.innerHTML = `
+                <a href="/buyer-search/" class="block group">
+                    <div class="aspect-video rounded-xl overflow-hidden mb-4 bg-white/10">
+                        ${listing.photos && listing.photos[0]
+                            ? `<img src="${listing.photos[0]}" alt="${listing.address || 'Featured listing'}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
+                            : `<div class="w-full h-full flex items-center justify-center text-gray-600">
+                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                                </svg>
+                            </div>`
+                        }
+                    </div>
+                    <p class="text-white font-bold text-lg">${price}</p>
+                    <p class="text-gray-400 text-sm truncate">${listing.address || listing.streetAddress || 'Las Vegas, NV'}</p>
+                    <p class="text-gray-500 text-xs mt-1">${listing.beds || '?'} bed · ${listing.baths || '?'} bath · ${listing.sqft ? listing.sqft.toLocaleString() + ' sqft' : ''}</p>
+                </a>
+            `;
+        }
+    } catch (e) {
+        container.innerHTML = `
+            <a href="/buyer-search/" class="block text-center py-4">
+                <svg class="w-12 h-12 mx-auto text-gray-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <p class="text-gray-400">Browse Available Listings</p>
+            </a>
+        `;
+    }
+}
+
+loadFeaturedListing();
+</script>
+
 {{ end }}
