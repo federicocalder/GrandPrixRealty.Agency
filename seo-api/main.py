@@ -30,6 +30,12 @@ import frontmatter
 SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://supabase.grandprixrealty.agency')
 SUPABASE_SERVICE_KEY = os.environ.get('SUPABASE_SERVICE_KEY', '')
 SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY', '')
+
+# Silo-based content directories (new structure)
+CONTENT_BASE = Path(os.environ.get('CONTENT_BASE', '/content'))
+SILO_SECTIONS = ['homebuyer', 'homeseller', 'propertymanagement', 'realtors', 'lasvegas']
+
+# Legacy support - will be removed
 CONTENT_PATH = Path(os.environ.get('CONTENT_PATH', '/content/blog'))
 
 app = FastAPI(
@@ -493,26 +499,27 @@ async def trigger_analysis(
     background_tasks: BackgroundTasks,
     supabase: Client = Depends(get_supabase)
 ):
-    """Trigger a re-analysis of all posts."""
+    """Trigger a re-analysis of all posts across all silo directories."""
     import subprocess
     from pathlib import Path
 
-    content_path = Path(os.environ.get('CONTENT_PATH', '/content/blog'))
+    # Collect markdown files from all silo directories
+    md_files = []
+    for section in SILO_SECTIONS:
+        section_path = CONTENT_BASE / section
+        if section_path.exists():
+            section_files = [f for f in section_path.glob("*.md") if f.name != "_index.md"]
+            md_files.extend(section_files)
 
-    if not content_path.exists():
-        raise HTTPException(
-            status_code=500,
-            detail=f"Content path not found: {content_path}. Ensure the Hugo content directory is mounted."
-        )
-
-    # Count markdown files
-    md_files = list(content_path.glob("*.md"))
-    md_files = [f for f in md_files if f.name != "_index.md"]
+    # Also check legacy blog directory
+    if CONTENT_PATH.exists():
+        legacy_files = [f for f in CONTENT_PATH.glob("*.md") if f.name != "_index.md"]
+        md_files.extend(legacy_files)
 
     if not md_files:
         raise HTTPException(
             status_code=404,
-            detail="No blog posts found to analyze"
+            detail="No blog posts found to analyze in any silo directory"
         )
 
     try:
@@ -524,7 +531,8 @@ async def trigger_analysis(
             timeout=300,  # 5 minute timeout
             env={
                 **os.environ,
-                'CONTENT_PATH': str(content_path),
+                'CONTENT_BASE': str(CONTENT_BASE),
+                'CONTENT_PATH': str(CONTENT_PATH),  # Legacy
                 'SUPABASE_URL': SUPABASE_URL,
                 'SUPABASE_SERVICE_KEY': SUPABASE_SERVICE_KEY
             }
@@ -598,11 +606,25 @@ class BatchOptimizeRequest(BaseModel):
     suggest_links: bool = True
 
 
+def find_post_file(slug: str) -> Path:
+    """Find a blog post markdown file in any silo directory."""
+    # Check all silo directories
+    for section in SILO_SECTIONS:
+        file_path = CONTENT_BASE / section / f"{slug}.md"
+        if file_path.exists():
+            return file_path
+
+    # Legacy: check old blog directory
+    legacy_path = CONTENT_PATH / f"{slug}.md"
+    if legacy_path.exists():
+        return legacy_path
+
+    raise HTTPException(status_code=404, detail=f"Post file not found: {slug}")
+
+
 def read_post_file(slug: str) -> tuple[dict, str]:
     """Read a blog post markdown file and return frontmatter + content."""
-    file_path = CONTENT_PATH / f"{slug}.md"
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail=f"Post file not found: {slug}")
+    file_path = find_post_file(slug)
 
     with open(file_path, 'r', encoding='utf-8') as f:
         post = frontmatter.load(f)
@@ -612,9 +634,7 @@ def read_post_file(slug: str) -> tuple[dict, str]:
 
 def write_post_file(slug: str, metadata: dict, content: str):
     """Write updated blog post to markdown file."""
-    file_path = CONTENT_PATH / f"{slug}.md"
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail=f"Post file not found: {slug}")
+    file_path = find_post_file(slug)  # Use find_post_file to locate in silos
 
     post = frontmatter.Post(content, **metadata)
 
@@ -973,9 +993,16 @@ async def purge_cloudflare_cache(urls: List[str] = None, purge_everything: bool 
             elif urls:
                 payload = {"files": urls}
             else:
-                # Default: purge all blog pages using prefix without scheme
+                # Default: purge all silo pages using prefixes without scheme
                 # Cloudflare prefixes don't accept URI schemes
-                payload = {"prefixes": ["grandprixrealty.agency/blog/"]}
+                payload = {"prefixes": [
+                    "grandprixrealty.agency/homebuyer/",
+                    "grandprixrealty.agency/homeseller/",
+                    "grandprixrealty.agency/propertymanagement/",
+                    "grandprixrealty.agency/realtors/",
+                    "grandprixrealty.agency/lasvegas/",
+                    "grandprixrealty.agency/blog/",  # Legacy
+                ]}
 
             response = await client.post(
                 f"https://api.cloudflare.com/client/v4/zones/{CLOUDFLARE_ZONE_ID}/purge_cache",

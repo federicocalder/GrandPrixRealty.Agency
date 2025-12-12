@@ -29,7 +29,17 @@ except ImportError:
     print("Warning: supabase package not installed. Use --dry-run mode.")
 
 # Configuration - use environment variable or fallback to mounted path
-CONTENT_PATH = Path(os.environ.get('CONTENT_PATH', '/content/blog'))
+CONTENT_BASE = Path(os.environ.get('CONTENT_BASE', '/content'))
+CONTENT_PATH = Path(os.environ.get('CONTENT_PATH', '/content/blog'))  # Legacy
+
+# Silo sections with their URL prefixes
+SILO_SECTIONS = {
+    'homebuyer': '/homebuyer/',
+    'homeseller': '/homeseller/',
+    'propertymanagement': '/propertymanagement/',
+    'realtors': '/realtors/',
+    'lasvegas': '/lasvegas/',
+}
 
 # Landing pages for internal link analysis
 PRIORITY_PAGES = {
@@ -605,8 +615,14 @@ def calculate_readability_score(content_text: str) -> int:
     return min(score, 100)
 
 
-def analyze_post(filepath: Path) -> Optional[PostAnalysis]:
-    """Complete SEO analysis of a single blog post."""
+def analyze_post(filepath: Path, section: str = None) -> Optional[PostAnalysis]:
+    """Complete SEO analysis of a single blog post.
+
+    Args:
+        filepath: Path to the markdown file
+        section: The silo section (e.g., 'homebuyer', 'propertymanagement')
+                 If None, defaults to 'blog' for legacy URLs
+    """
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -703,9 +719,15 @@ def analyze_post(filepath: Path) -> Optional[PostAnalysis]:
         overall=overall
     )
 
+    # Determine URL based on section
+    if section and section in SILO_SECTIONS:
+        url = f"{SILO_SECTIONS[section]}{slug}/"
+    else:
+        url = f"/blog/{slug}/"  # Legacy fallback
+
     return PostAnalysis(
         slug=slug,
-        url=f"/blog/{slug}/",
+        url=url,
         title=title,
         seo_title=front_matter.get('seo_title'),
         description=description,
@@ -854,14 +876,10 @@ def main():
     parser = argparse.ArgumentParser(description='SEO Analyzer for Grand Prix Realty Blog')
     parser.add_argument('--dry-run', action='store_true', help='Analyze without saving to database')
     parser.add_argument('--file', type=str, help='Analyze a specific file')
+    parser.add_argument('--section', type=str, help='Analyze only a specific section')
     parser.add_argument('--limit', type=int, help='Limit number of files to analyze')
     parser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
     args = parser.parse_args()
-
-    # Check content path
-    if not CONTENT_PATH.exists():
-        print(f"Error: Content path not found: {CONTENT_PATH}")
-        return
 
     # Initialize Supabase client
     supabase = None
@@ -880,16 +898,48 @@ def main():
 
         supabase = create_client(supabase_url, supabase_key)
 
-    # Get files to analyze
+    # Collect files from all silo directories
+    files_with_sections = []  # List of (filepath, section) tuples
+
     if args.file:
-        md_files = [CONTENT_PATH / args.file]
+        # Single file mode - try to find it in any section
+        for section in SILO_SECTIONS:
+            section_path = CONTENT_BASE / section / args.file
+            if section_path.exists():
+                files_with_sections.append((section_path, section))
+                break
+        # Also check legacy path
+        legacy_path = CONTENT_PATH / args.file
+        if legacy_path.exists() and not files_with_sections:
+            files_with_sections.append((legacy_path, None))
     else:
-        md_files = sorted([f for f in CONTENT_PATH.glob("*.md") if f.name != "_index.md"])
+        # Scan all silo directories
+        sections_to_scan = [args.section] if args.section else list(SILO_SECTIONS.keys())
+
+        for section in sections_to_scan:
+            section_path = CONTENT_BASE / section
+            if section_path.exists():
+                section_files = sorted([f for f in section_path.glob("*.md") if f.name != "_index.md"])
+                for f in section_files:
+                    files_with_sections.append((f, section))
+                print(f"Found {len(section_files)} posts in /{section}/")
+
+        # Also check legacy blog directory if no section filter
+        if not args.section and CONTENT_PATH.exists():
+            legacy_files = sorted([f for f in CONTENT_PATH.glob("*.md") if f.name != "_index.md"])
+            for f in legacy_files:
+                files_with_sections.append((f, None))
+            if legacy_files:
+                print(f"Found {len(legacy_files)} posts in legacy /blog/")
+
+    if not files_with_sections:
+        print("Error: No blog posts found in any silo directory")
+        return
 
     if args.limit:
-        md_files = md_files[:args.limit]
+        files_with_sections = files_with_sections[:args.limit]
 
-    print(f"{'[DRY RUN] ' if args.dry_run else ''}Analyzing {len(md_files)} blog posts...\n")
+    print(f"\n{'[DRY RUN] ' if args.dry_run else ''}Analyzing {len(files_with_sections)} blog posts...\n")
 
     # Track statistics
     total_analyzed = 0
@@ -898,10 +948,11 @@ def main():
     score_distribution = {'excellent': 0, 'good': 0, 'needs_work': 0, 'poor': 0}
     severity_counts = {'critical': 0, 'warning': 0, 'info': 0}
 
-    for filepath in md_files:
-        print(f"Analyzing: {filepath.name}")
+    for filepath, section in files_with_sections:
+        section_label = f"/{section}/" if section else "/blog/"
+        print(f"Analyzing: {section_label}{filepath.name}")
 
-        analysis = analyze_post(filepath)
+        analysis = analyze_post(filepath, section)
 
         if not analysis:
             print("  ⚠️  Skipped (could not analyze)\n")
