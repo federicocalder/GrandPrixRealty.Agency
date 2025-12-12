@@ -625,7 +625,7 @@ async def reanalyze_single_post(
 # AI OPTIMIZATION ENDPOINTS
 # ==========================================
 
-from ai_optimizer import get_optimizer, SEOOptimizer, InternalLinkSuggestion
+from ai_optimizer import get_optimizer, SEOOptimizer, InternalLinkSuggestion, UnifiedSEOResult
 
 
 class OptimizeRequest(BaseModel):
@@ -636,6 +636,8 @@ class OptimizeRequest(BaseModel):
     suggest_links: bool = True
     suggest_keyword: bool = True  # Suggest target keyword
     suggest_category: bool = True  # Suggest single category
+    use_unified_seo: bool = True  # NEW: Use unified SEO optimization (keyword+title+desc together)
+    expand_content: bool = False  # NEW: Iteratively expand content to 800+ words
 
 
 class OptimizationPreview(BaseModel):
@@ -659,6 +661,14 @@ class OptimizationPreview(BaseModel):
     original_categories: List[str] = []
     suggested_category: Optional[str] = None
     category_explanation: Optional[str] = None
+    # NEW: Unified SEO alignment indicators
+    keyword_in_title: bool = False
+    keyword_in_description: bool = False
+    unified_seo_used: bool = False
+    # NEW: Content expansion info
+    original_word_count: int = 0
+    expanded_word_count: int = 0
+    sections_added: List[str] = []
 
 
 class ApplyOptimizationRequest(BaseModel):
@@ -768,8 +778,9 @@ async def optimize_post(
 ):
     """Generate AI optimization suggestions for a single post."""
     import logging
+    import re
     logger = logging.getLogger(__name__)
-    logger.info(f"Optimize request: slug={request.slug}, meta={request.optimize_meta}, title={request.optimize_title}, content={request.optimize_content}, links={request.suggest_links}")
+    logger.info(f"Optimize request: slug={request.slug}, meta={request.optimize_meta}, title={request.optimize_title}, content={request.optimize_content}, links={request.suggest_links}, unified={request.use_unified_seo}")
     try:
         # Get post data from database
         post_result = seo_table(supabase, 'posts').select('*').eq('slug', request.slug).execute()
@@ -783,6 +794,9 @@ async def optimize_post(
 
         optimizer = get_optimizer()
 
+        # Calculate original word count
+        original_word_count = len(re.findall(r'\b\w+\b', content))
+
         result = OptimizationPreview(
             slug=request.slug,
             title=post_data['title'],
@@ -792,43 +806,132 @@ async def optimize_post(
             original_title=post_data['title'],
             suggested_title=None,
             title_explanation=None,
-            original_content=content if request.optimize_content else None,
+            original_content=content if request.optimize_content or request.expand_content else None,
             suggested_content=None,
             content_explanation=None,
             internal_links=[],
             confidence_scores={},
             # Keyword and category fields
             original_keyword=post_data.get('target_keyword'),
-            original_categories=post_data.get('categories', [])
+            original_categories=post_data.get('categories', []),
+            # Word count
+            original_word_count=original_word_count
         )
 
         target_keyword = post_data.get('target_keyword', '')
 
-        # Generate meta description
-        if request.optimize_meta:
-            meta_result = await optimizer.generate_meta_description(
-                title=post_data['title'],
-                content=content,
-                target_keyword=target_keyword
-            )
-            result.suggested_meta = meta_result.optimized
-            result.meta_explanation = meta_result.explanation
-            result.confidence_scores['meta'] = meta_result.confidence
+        # ===========================================
+        # UNIFIED SEO OPTIMIZATION (NEW - PREFERRED)
+        # ===========================================
+        if request.use_unified_seo and (request.optimize_meta or request.optimize_title or request.suggest_keyword):
+            logger.info(f"Using UNIFIED SEO optimization for {request.slug}")
 
-        # Optimize title
-        if request.optimize_title:
-            title_result = await optimizer.optimize_title(
+            # Get category for context
+            categories = post_data.get('categories', [])
+            category = categories[0] if categories else ''
+
+            unified_result = await optimizer.generate_unified_seo(
+                content=content,
                 current_title=post_data['title'],
-                content=content,
-                target_keyword=target_keyword
+                current_description=post_data.get('description', ''),
+                current_keyword=target_keyword,
+                category=category
             )
-            result.suggested_title = title_result.optimized
-            result.title_explanation = title_result.explanation
-            result.confidence_scores['title'] = title_result.confidence
 
-        # Improve content (expensive, use Sonnet)
-        if request.optimize_content:
-            logger.info(f"Starting content optimization for {request.slug}")
+            # Apply unified results
+            result.suggested_keyword = unified_result.keyword
+            result.keyword_explanation = unified_result.keyword_explanation
+            result.suggested_title = unified_result.title
+            result.title_explanation = unified_result.title_explanation
+            result.suggested_meta = unified_result.description
+            result.meta_explanation = unified_result.description_explanation
+
+            # Set alignment indicators
+            result.keyword_in_title = unified_result.keyword_in_title
+            result.keyword_in_description = unified_result.keyword_in_description
+            result.unified_seo_used = True
+            result.confidence_scores['unified'] = unified_result.confidence
+            result.confidence_scores['keyword'] = unified_result.confidence
+            result.confidence_scores['title'] = unified_result.confidence
+            result.confidence_scores['meta'] = unified_result.confidence
+
+            # Use the unified keyword for subsequent operations
+            target_keyword = unified_result.keyword
+
+            logger.info(f"Unified SEO: keyword='{unified_result.keyword}', in_title={unified_result.keyword_in_title}, in_desc={unified_result.keyword_in_description}")
+
+        else:
+            # ===========================================
+            # LEGACY: SEPARATE OPTIMIZATION (OLD METHOD)
+            # ===========================================
+            result.unified_seo_used = False
+
+            # Generate meta description
+            if request.optimize_meta:
+                meta_result = await optimizer.generate_meta_description(
+                    title=post_data['title'],
+                    content=content,
+                    target_keyword=target_keyword
+                )
+                result.suggested_meta = meta_result.optimized
+                result.meta_explanation = meta_result.explanation
+                result.confidence_scores['meta'] = meta_result.confidence
+
+            # Optimize title
+            if request.optimize_title:
+                title_result = await optimizer.optimize_title(
+                    current_title=post_data['title'],
+                    content=content,
+                    target_keyword=target_keyword
+                )
+                result.suggested_title = title_result.optimized
+                result.title_explanation = title_result.explanation
+                result.confidence_scores['title'] = title_result.confidence
+
+            # Suggest target keyword
+            if request.suggest_keyword:
+                keyword_result = await optimizer.suggest_target_keyword(
+                    title=post_data['title'],
+                    content=content,
+                    current_keyword=target_keyword
+                )
+                result.suggested_keyword = keyword_result.optimized
+                result.keyword_explanation = keyword_result.explanation
+                result.confidence_scores['keyword'] = keyword_result.confidence
+
+        # ===========================================
+        # CONTENT EXPANSION (NEW)
+        # ===========================================
+        if request.expand_content:
+            logger.info(f"Starting content expansion for {request.slug}, current words: {original_word_count}")
+
+            # Use the suggested keyword if available, otherwise use original
+            expansion_keyword = result.suggested_keyword or target_keyword or ''
+            expansion_title = result.suggested_title or post_data['title']
+
+            expanded_content, sections_added = await optimizer.expand_content_iteratively(
+                content=content,
+                keyword=expansion_keyword,
+                title=expansion_title,
+                min_words=800
+            )
+
+            if sections_added:
+                result.suggested_content = expanded_content
+                result.sections_added = sections_added
+                result.expanded_word_count = len(re.findall(r'\b\w+\b', expanded_content))
+                result.content_explanation = f"Added {', '.join(sections_added)}. Words: {original_word_count} → {result.expanded_word_count}"
+                result.confidence_scores['content'] = 0.9
+                logger.info(f"Content expanded: {original_word_count} → {result.expanded_word_count} words, sections: {sections_added}")
+            else:
+                result.expanded_word_count = original_word_count
+                result.content_explanation = "Content already meets requirements or couldn't be expanded"
+
+        # ===========================================
+        # CONTENT IMPROVEMENT (EXISTING - HUMANIZE)
+        # ===========================================
+        elif request.optimize_content:
+            logger.info(f"Starting content humanization for {request.slug}")
             try:
                 content_result = await optimizer.improve_content(
                     content=content,
@@ -838,12 +941,15 @@ async def optimize_post(
                 result.suggested_content = content_result.optimized
                 result.content_explanation = content_result.explanation
                 result.confidence_scores['content'] = content_result.confidence
-                logger.info(f"Content optimization completed for {request.slug}, result length: {len(content_result.optimized) if content_result.optimized else 0}")
+                result.expanded_word_count = len(re.findall(r'\b\w+\b', content_result.optimized))
+                logger.info(f"Content humanization completed for {request.slug}")
             except Exception as content_error:
                 logger.error(f"Content optimization failed for {request.slug}: {str(content_error)}")
                 raise
 
-        # Suggest internal links
+        # ===========================================
+        # INTERNAL LINKS SUGGESTION
+        # ===========================================
         if request.suggest_links:
             # Get existing internal links
             links_result = seo_table(supabase, 'internal_links').select(
@@ -868,18 +974,9 @@ async def optimize_post(
                 for s in link_suggestions
             ]
 
-        # Suggest target keyword
-        if request.suggest_keyword:
-            keyword_result = await optimizer.suggest_target_keyword(
-                title=post_data['title'],
-                content=content,
-                current_keyword=target_keyword
-            )
-            result.suggested_keyword = keyword_result.optimized
-            result.keyword_explanation = keyword_result.explanation
-            result.confidence_scores['keyword'] = keyword_result.confidence
-
-        # Suggest single category
+        # ===========================================
+        # CATEGORY SUGGESTION
+        # ===========================================
         if request.suggest_category:
             category_result = await optimizer.suggest_category(
                 title=post_data['title'],

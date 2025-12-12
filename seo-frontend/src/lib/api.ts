@@ -209,13 +209,21 @@ export interface OptimizationPreview {
     relevance_score: number
   }>
   confidence_scores: Record<string, number>
-  // New fields for keyword and category
+  // Keyword and category fields
   original_keyword: string | null
   suggested_keyword: string | null
   keyword_explanation: string | null
   original_categories: string[]
   suggested_category: string | null
   category_explanation: string | null
+  // NEW: Unified SEO alignment indicators
+  keyword_in_title: boolean
+  keyword_in_description: boolean
+  unified_seo_used: boolean
+  // NEW: Content expansion info
+  original_word_count: number
+  expanded_word_count: number
+  sections_added: string[]
 }
 
 export interface ApplyOptimizationRequest {
@@ -248,6 +256,8 @@ export const aiApi = {
     suggest_links?: boolean
     suggest_keyword?: boolean
     suggest_category?: boolean
+    use_unified_seo?: boolean  // NEW: Use coordinated keyword+title+description
+    expand_content?: boolean   // NEW: Iteratively expand to 800+ words
   }) => fetchAPI<OptimizationPreview>('/seo/ai/optimize', {
     method: 'POST',
     body: JSON.stringify(params)

@@ -37,6 +37,20 @@ class OptimizationResult:
 
 
 @dataclass
+class UnifiedSEOResult:
+    """Result of unified SEO optimization - coordinated keyword, title, description"""
+    keyword: str
+    title: str
+    description: str
+    keyword_explanation: str
+    title_explanation: str
+    description_explanation: str
+    keyword_in_title: bool
+    keyword_in_description: bool
+    confidence: float
+
+
+@dataclass
 class InternalLinkSuggestion:
     """Suggested internal link"""
     anchor_text: str
@@ -560,6 +574,301 @@ Respond in JSON format:
             explanation=explanation,
             confidence=0.9
         )
+
+    async def generate_unified_seo(
+        self,
+        content: str,
+        current_title: str,
+        current_description: str = "",
+        current_keyword: str = "",
+        category: str = ""
+    ) -> UnifiedSEOResult:
+        """
+        Generate coordinated SEO elements in ONE call to guarantee alignment.
+
+        The keyword will appear EXACTLY in both title and description.
+        This solves the problem of separate AI calls generating mismatched elements.
+        """
+
+        prompt = f"""You are an expert SEO strategist for Grand Prix Realty, a Las Vegas real estate company.
+
+TASK: Generate COORDINATED SEO elements where the keyword appears in BOTH the title and description.
+
+CURRENT VALUES:
+- Title: {current_title}
+- Description: {current_description or "None"}
+- Keyword: {current_keyword or "None"}
+- Category/Silo: {category or "Not specified"}
+
+CONTENT TO ANALYZE:
+{content[:3500]}
+
+CRITICAL RULES:
+1. First, identify the BEST target keyword (2-4 words)
+2. The title MUST contain the EXACT keyword phrase (not variations)
+3. The meta description MUST contain the EXACT keyword phrase
+4. Keyword should reflect the primary entity (e.g., "home loans" not just "loans")
+5. Focus on Las Vegas real estate - NEVER mention other cities
+
+REQUIREMENTS:
+- Keyword: 2-4 words, specific, searchable (e.g., "1099 home loans las vegas")
+- Title: 50-60 characters, contains EXACT keyword, compelling
+- Description: 120-155 characters, contains EXACT keyword, has call-to-action
+
+EXAMPLES OF COORDINATED OUTPUT:
+Example 1:
+- Keyword: "las vegas first time homebuyer"
+- Title: "Las Vegas First Time Homebuyer Guide: Your Path to Ownership"
+- Description: "Ready to become a las vegas first time homebuyer? Our expert guide covers financing, neighborhoods, and tips to find your dream home."
+
+Example 2:
+- Keyword: "sell house fast las vegas"
+- Title: "Sell House Fast Las Vegas: Get Top Dollar in 30 Days"
+- Description: "Need to sell house fast las vegas? Learn proven strategies to attract buyers quickly while maximizing your home's value in today's market."
+
+Respond in this EXACT JSON format:
+{{
+    "keyword": "your 2-4 word keyword",
+    "title": "Title containing the EXACT keyword (50-60 chars)",
+    "description": "Description containing the EXACT keyword (120-155 chars)",
+    "keyword_explanation": "Why this keyword is optimal",
+    "title_explanation": "How title incorporates keyword naturally",
+    "description_explanation": "How description uses keyword with CTA"
+}}"""
+
+        response = self.client.messages.create(
+            model=HAIKU_MODEL,
+            max_tokens=800,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        try:
+            response_text = response.content[0].text.strip()
+            # Try to extract JSON
+            json_match = re.search(r'\{[\s\S]*\}', response_text)
+            if json_match:
+                result = json.loads(json_match.group())
+            else:
+                result = json.loads(response_text)
+
+            keyword = result.get('keyword', current_keyword or '')
+            title = result.get('title', current_title)
+            description = result.get('description', current_description or '')
+            keyword_explanation = result.get('keyword_explanation', 'Keyword optimized for search intent')
+            title_explanation = result.get('title_explanation', 'Title optimized with keyword')
+            description_explanation = result.get('description_explanation', 'Description optimized with keyword')
+
+        except (json.JSONDecodeError, AttributeError) as e:
+            # Fallback to current values
+            keyword = current_keyword or ''
+            title = current_title
+            description = current_description or ''
+            keyword_explanation = f'Could not parse AI response: {str(e)}'
+            title_explanation = 'Using original title'
+            description_explanation = 'Using original description'
+
+        # Verify keyword alignment
+        keyword_lower = keyword.lower()
+        keyword_in_title = keyword_lower in title.lower() if keyword else False
+        keyword_in_description = keyword_lower in description.lower() if keyword else False
+
+        # Calculate confidence based on alignment
+        if keyword_in_title and keyword_in_description:
+            confidence = 0.95
+        elif keyword_in_title or keyword_in_description:
+            confidence = 0.7
+        else:
+            confidence = 0.4
+
+        # Validate lengths
+        if len(title) > 65:
+            title = title[:62] + "..."
+        if len(description) > 160:
+            description = description[:157] + "..."
+        elif len(description) < 100 and description:
+            confidence -= 0.1
+
+        return UnifiedSEOResult(
+            keyword=keyword,
+            title=title,
+            description=description,
+            keyword_explanation=keyword_explanation,
+            title_explanation=title_explanation,
+            description_explanation=description_explanation,
+            keyword_in_title=keyword_in_title,
+            keyword_in_description=keyword_in_description,
+            confidence=max(0, confidence)
+        )
+
+    async def expand_content_iteratively(
+        self,
+        content: str,
+        keyword: str,
+        title: str,
+        min_words: int = 800
+    ) -> tuple[str, list[str]]:
+        """
+        Expand content to meet minimum word count using structured additions.
+
+        Returns: (expanded_content, list_of_sections_added)
+
+        Process:
+        1. Count current words
+        2. If below minimum, identify what's missing
+        3. Ask AI to add ONE specific section
+        4. Count again, repeat if needed
+        5. Maximum 3 iterations to prevent over-expansion
+        """
+
+        current_words = len(content.split())
+        iterations = 0
+        max_iterations = 3
+        sections_added = []
+
+        while current_words < min_words and iterations < max_iterations:
+            # Determine what type of content to add
+            expansion_type = self._determine_expansion_type(content, current_words, min_words)
+
+            if expansion_type is None:
+                break  # No more expansion types available
+
+            # Ask AI to add specific section
+            expanded, section_name = await self._add_section(content, keyword, title, expansion_type)
+
+            if expanded and expanded != content:
+                content = expanded
+                sections_added.append(section_name)
+                current_words = len(content.split())
+            else:
+                break  # AI couldn't expand further
+
+            iterations += 1
+
+        return content, sections_added
+
+    def _determine_expansion_type(self, content: str, current_words: int, min_words: int) -> str | None:
+        """Decide what type of content to add based on what's missing."""
+
+        content_lower = content.lower()
+
+        # Priority 1: Key Takeaways (always valuable, appears at top)
+        if "key takeaway" not in content_lower and "takeaway" not in content_lower:
+            return "key_takeaways"
+
+        # Priority 2: FAQ Section (great for SEO, appears at bottom)
+        if "faq" not in content_lower and "frequently asked" not in content_lower and "common question" not in content_lower:
+            return "faq_section"
+
+        # Priority 3: Local Las Vegas context
+        vegas_mentions = content_lower.count("las vegas") + content_lower.count("vegas")
+        if vegas_mentions < 3:
+            return "local_context"
+
+        # Priority 4: Expand existing content (if still below minimum)
+        if current_words < min_words - 100:
+            return "expand_sections"
+
+        return None
+
+    async def _add_section(
+        self,
+        content: str,
+        keyword: str,
+        title: str,
+        expansion_type: str
+    ) -> tuple[str, str]:
+        """Add a specific section type to the content."""
+
+        section_prompts = {
+            "key_takeaways": f"""Add a "Key Takeaways" section at the VERY BEGINNING of this article (after any intro paragraph).
+
+REQUIREMENTS:
+- Use heading: ## Key Takeaways
+- Include 4-5 bullet points summarizing the most important information
+- Keep each bullet to 1-2 sentences
+- Include the keyword "{keyword}" naturally in at least one bullet
+- Make bullets actionable and specific to Las Vegas
+
+Article Title: {title}
+Current Content:
+{content}
+
+Return the COMPLETE article with the Key Takeaways section added at the beginning.""",
+
+            "faq_section": f"""Add a "Frequently Asked Questions" section at the END of this article (before any conclusion).
+
+REQUIREMENTS:
+- Use heading: ## Frequently Asked Questions
+- Include 4-5 Q&A pairs that readers would commonly ask
+- Questions should be specific and searchable
+- Include the keyword "{keyword}" naturally in at least one Q&A
+- Focus on Las Vegas-specific questions where relevant
+- Format: **Q: Question?** followed by answer paragraph
+
+Article Title: {title}
+Target Keyword: {keyword}
+Current Content:
+{content}
+
+Return the COMPLETE article with the FAQ section added near the end.""",
+
+            "local_context": f"""Enhance this article with more Las Vegas-specific information.
+
+REQUIREMENTS:
+- Add a section about Las Vegas market specifics OR expand existing sections
+- Include Las Vegas neighborhoods (Summerlin, Henderson, North Las Vegas, etc.)
+- Add local market conditions or Nevada-specific regulations if relevant
+- Naturally incorporate "{keyword}" where appropriate
+- Add 100-150 words of Las Vegas-focused content
+
+Article Title: {title}
+Target Keyword: {keyword}
+Current Content:
+{content}
+
+Return the COMPLETE article with enhanced Las Vegas content.""",
+
+            "expand_sections": f"""Expand the shortest or thinnest sections of this article.
+
+REQUIREMENTS:
+- Find sections that are underdeveloped (< 100 words)
+- Add more detail, examples, or practical tips
+- Add 150-200 words total across expansions
+- Maintain focus on "{keyword}" and Las Vegas context
+- Don't add new sections, just expand existing ones
+
+Article Title: {title}
+Target Keyword: {keyword}
+Current Content:
+{content}
+
+Return the COMPLETE expanded article."""
+        }
+
+        section_names = {
+            "key_takeaways": "Key Takeaways",
+            "faq_section": "FAQ Section",
+            "local_context": "Las Vegas Context",
+            "expand_sections": "Expanded Sections"
+        }
+
+        prompt = section_prompts.get(expansion_type)
+        if not prompt:
+            return content, ""
+
+        response = self.client.messages.create(
+            model=SONNET_MODEL,  # Use Sonnet for content expansion (better quality)
+            max_tokens=8000,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        expanded = response.content[0].text.strip()
+
+        # Validate expansion actually added content
+        if len(expanded.split()) <= len(content.split()):
+            return content, ""
+
+        return expanded, section_names.get(expansion_type, expansion_type)
 
     def apply_internal_link(
         self,

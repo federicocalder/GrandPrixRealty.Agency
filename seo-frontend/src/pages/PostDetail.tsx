@@ -25,8 +25,9 @@ export default function PostDetail() {
   const [applyContent, setApplyContent] = useState(false)
   const [selectedLinks, setSelectedLinks] = useState<Set<number>>(new Set())
 
-  // Content optimization toggle
+  // Content optimization toggles
   const [includeContent, setIncludeContent] = useState(false)
+  const [expandContent, setExpandContent] = useState(false)
 
   useEffect(() => {
     if (slug) loadPost()
@@ -92,10 +93,24 @@ Please fix these SEO issues.`
         optimize_content: includeContent,
         suggest_links: true,
         suggest_keyword: true,
-        suggest_category: true
+        suggest_category: true,
+        use_unified_seo: true,  // Always use unified SEO for better keyword alignment
+        expand_content: expandContent
       })
       setPreview(result)
-      setOptimizerMessage('AI optimization complete! Review suggestions below.')
+      // Show alignment status in message
+      if (result.unified_seo_used) {
+        const alignStatus = result.keyword_in_title && result.keyword_in_description
+          ? 'Keyword aligned in title & description'
+          : result.keyword_in_title
+          ? 'Keyword in title (missing from description)'
+          : result.keyword_in_description
+          ? 'Keyword in description (missing from title)'
+          : 'Keyword alignment needs review'
+        setOptimizerMessage(`AI optimization complete! ${alignStatus}`)
+      } else {
+        setOptimizerMessage('AI optimization complete! Review suggestions below.')
+      }
     } catch (err: any) {
       setOptimizerMessage(`Error: ${err.message || 'Failed to optimize'}`)
     } finally {
@@ -298,7 +313,16 @@ Please fix these SEO issues.`
           </div>
 
           {/* Optimizer Controls */}
-          <div className="flex items-center gap-4 mb-4">
+          <div className="flex flex-wrap items-center gap-4 mb-4">
+            <label className="flex items-center gap-2 text-grand-silver text-sm">
+              <input
+                type="checkbox"
+                checked={expandContent}
+                onChange={(e) => setExpandContent(e.target.checked)}
+                className="rounded"
+              />
+              Expand content (add FAQ, Key Takeaways)
+            </label>
             <label className="flex items-center gap-2 text-grand-silver text-sm">
               <input
                 type="checkbox"
@@ -306,7 +330,7 @@ Please fix these SEO issues.`
                 onChange={(e) => setIncludeContent(e.target.checked)}
                 className="rounded"
               />
-              Include content optimization (slower)
+              Humanize content (slower)
             </label>
             <button
               onClick={runOptimize}
@@ -329,6 +353,39 @@ Please fix these SEO issues.`
           {/* Optimization Preview */}
           {preview && (
             <div className="space-y-4">
+              {/* Unified SEO Alignment Indicators */}
+              {preview.unified_seo_used && (
+                <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/30">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-semibold text-white">Unified SEO Optimization</span>
+                    <span className="text-xs text-grand-silver">
+                      Confidence: {Math.round((preview.confidence_scores?.unified || 0) * 100)}%
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    <span className={preview.keyword_in_title ? 'text-green-400' : 'text-red-400'}>
+                      {preview.keyword_in_title ? '✓' : '✗'} Keyword in Title
+                    </span>
+                    <span className={preview.keyword_in_description ? 'text-green-400' : 'text-red-400'}>
+                      {preview.keyword_in_description ? '✓' : '✗'} Keyword in Description
+                    </span>
+                    {preview.original_word_count > 0 && (
+                      <span className="text-grand-silver">
+                        Words: {preview.original_word_count}
+                        {preview.expanded_word_count > preview.original_word_count && (
+                          <span className="text-green-400"> → {preview.expanded_word_count}</span>
+                        )}
+                      </span>
+                    )}
+                  </div>
+                  {preview.sections_added && preview.sections_added.length > 0 && (
+                    <div className="mt-2 text-sm text-green-400">
+                      Sections added: {preview.sections_added.join(', ')}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Title Suggestion */}
               {preview.suggested_title && preview.suggested_title !== preview.original_title && (
                 <SuggestionCard
