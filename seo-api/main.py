@@ -606,9 +606,27 @@ class BatchOptimizeRequest(BaseModel):
     suggest_links: bool = True
 
 
+def slugify(text: str) -> str:
+    """Convert text to URL-friendly slug (mimics Hugo's slugify behavior)."""
+    import re
+    if not text:
+        return ""
+    slug = text.lower()
+    slug = re.sub(r'[\s_]+', '-', slug)
+    slug = re.sub(r'[^a-z0-9\-]', '', slug)
+    slug = re.sub(r'-+', '-', slug)
+    slug = slug.strip('-')
+    return slug
+
+
 def find_post_file(slug: str) -> Path:
-    """Find a blog post markdown file in any silo directory."""
-    # Check all silo directories
+    """Find a blog post markdown file in any silo directory.
+
+    Searches by:
+    1. Direct filename match (slug.md)
+    2. Title-based match (slugify the title from frontmatter)
+    """
+    # First try direct filename match in all silo directories
     for section in SILO_SECTIONS:
         file_path = CONTENT_BASE / section / f"{slug}.md"
         if file_path.exists():
@@ -618,6 +636,23 @@ def find_post_file(slug: str) -> Path:
     legacy_path = CONTENT_PATH / f"{slug}.md"
     if legacy_path.exists():
         return legacy_path
+
+    # If not found by filename, search by title match
+    # This handles the case where slug is title-based but filename is different
+    for section in SILO_SECTIONS:
+        section_path = CONTENT_BASE / section
+        if section_path.exists():
+            for file_path in section_path.glob("*.md"):
+                if file_path.name == "_index.md":
+                    continue
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        post = frontmatter.load(f)
+                    title = post.metadata.get('title', '')
+                    if slugify(title) == slug:
+                        return file_path
+                except Exception:
+                    continue
 
     raise HTTPException(status_code=404, detail=f"Post file not found: {slug}")
 
