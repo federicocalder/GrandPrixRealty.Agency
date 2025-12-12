@@ -684,28 +684,13 @@ class BatchOptimizeRequest(BaseModel):
     suggest_links: bool = True
 
 
-def slugify(text: str) -> str:
-    """Convert text to URL-friendly slug (mimics Hugo's slugify behavior)."""
-    import re
-    if not text:
-        return ""
-    slug = text.lower()
-    slug = re.sub(r'[\s_]+', '-', slug)
-    slug = re.sub(r'[^a-z0-9\-]', '', slug)
-    slug = re.sub(r'-+', '-', slug)
-    slug = slug.strip('-')
-    return slug
-
-
-def find_post_file(slug: str, supabase: Client = None) -> Path:
+def find_post_file(slug: str) -> Path:
     """Find a blog post markdown file in any silo directory.
 
-    Searches by:
-    1. Direct filename match (slug.md)
-    2. Database filename lookup (when slug != filename)
-    3. Title-based match (slugify the title from frontmatter)
+    Since slug = filename (stable identifier), we simply search for {slug}.md
+    in all silo directories and legacy blog directory.
     """
-    # First try direct filename match in all silo directories
+    # Check all silo directories
     for section in SILO_SECTIONS:
         file_path = CONTENT_BASE / section / f"{slug}.md"
         if file_path.exists():
@@ -715,46 +700,6 @@ def find_post_file(slug: str, supabase: Client = None) -> Path:
     legacy_path = CONTENT_PATH / f"{slug}.md"
     if legacy_path.exists():
         return legacy_path
-
-    # Try looking up the filename from database (handles title changes)
-    if supabase is None:
-        try:
-            supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
-        except Exception:
-            pass
-
-    if supabase:
-        try:
-            result = seo_table(supabase, 'posts').select('filename').eq('slug', slug).execute()
-            if result.data and result.data[0].get('filename'):
-                filename = result.data[0]['filename']
-                for section in SILO_SECTIONS:
-                    file_path = CONTENT_BASE / section / f"{filename}.md"
-                    if file_path.exists():
-                        return file_path
-                # Also check legacy
-                legacy_path = CONTENT_PATH / f"{filename}.md"
-                if legacy_path.exists():
-                    return legacy_path
-        except Exception:
-            pass
-
-    # If not found by filename, search by title match
-    # This handles the case where slug is title-based but filename is different
-    for section in SILO_SECTIONS:
-        section_path = CONTENT_BASE / section
-        if section_path.exists():
-            for file_path in section_path.glob("*.md"):
-                if file_path.name == "_index.md":
-                    continue
-                try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        post = frontmatter.load(f)
-                    title = post.metadata.get('title', '')
-                    if slugify(title) == slug:
-                        return file_path
-                except Exception:
-                    continue
 
     raise HTTPException(status_code=404, detail=f"Post file not found: {slug}")
 

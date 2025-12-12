@@ -75,7 +75,7 @@ Add AI optimization controls directly to the single post detail page (`/posts/:s
 4. ✅ API: Update apply endpoint for keyword/category
 5. ✅ Frontend: Add optimizer section to PostDetail
 6. ✅ Deploy to Hetzner
-7. ⚠️ **BUG: Title changes create new slug, orphaning old DB entry**
+7. ✅ **FIXED: Slug stability** - slug now equals filename (never changes)
 
 ## Category to Silo Mapping
 
@@ -91,36 +91,18 @@ Add AI optimization controls directly to the single post detail page (`/posts/:s
 
 ## Known Issues / TODO
 
-### 🔴 CRITICAL: Slug Changes When Title Changes
+### ✅ FIXED: Slug Stability
 
-**Problem:** When a title is changed via AI optimizer:
-1. The markdown file is updated with the new title
-2. When re-analyzed, the slug is recalculated from the NEW title
-3. This creates a NEW database entry with the new slug
-4. The OLD entry becomes orphaned (old issues reference it, causing FK errors)
-5. The SEO Lab URL changes, breaking bookmarks
+**Solution implemented:** `slug = filename` (not slugify(title))
 
-**Current Behavior:**
-- `slug` = `slugify(title)` - changes every time title changes
-- `filename` = original filename (stable, never changes)
+- Slug is now derived from the markdown filename, which never changes
+- Title can be edited freely without affecting database identity or URLs
+- Hugo already uses filename for `:slug` in permalinks, so this is consistent
+- No more orphaned entries when title changes
 
-**Recommended Fix:**
-Use `filename` as the stable identifier, NOT title-based slug:
-1. Change analyzer to use `filename` as slug (not `slugify(title)`)
-2. Update `apply` endpoint to NOT change slug when title changes
-3. Add cleanup to delete orphaned entries when title changes
-4. Store both `slug` (stable, filename-based) and `display_title` (can change)
-
-**Files to Modify:**
-- `seo-api/analyzer.py` - Change slug generation to use filename
-- `seo-api/main.py` - Update apply endpoint to preserve slug
-- Database migration may be needed to fix existing entries
-
-### 🟡 MEDIUM: Re-analyze returns wrong data after title change
-
-After applying a title change, the `reanalyze` endpoint tries to query by the OLD slug but the analyzer creates a NEW slug. Need to:
-1. Return the new slug in the apply response
-2. Frontend should navigate to new URL after title change
+**Files modified:**
+- `seo-api/analyzer.py` - Changed `slug = slugify(title)` to `slug = filepath.stem`
+- `seo-api/main.py` - Simplified `find_post_file()` to search by filename only
 
 ### 🟡 MEDIUM: Category change doesn't move file
 
@@ -130,3 +112,8 @@ When category changes (e.g., from "Property Management" to "Buyers"):
 - Hugo URL will still be `/propertymanagement/...`
 
 **Fix:** Add file move logic when category changes, or warn user that manual move is needed.
+
+### 🟡 LOW: Cleanup orphaned entries from before the fix
+
+Some old database entries may exist with title-based slugs from before this fix.
+Run a cleanup script to remove entries that don't match any current filename.

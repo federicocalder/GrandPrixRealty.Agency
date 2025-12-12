@@ -78,8 +78,7 @@ class SEOIssue:
 @dataclass
 class PostAnalysis:
     """Complete analysis result for a post"""
-    filename: str  # Stable identifier (markdown filename without extension)
-    slug: str
+    slug: str  # Stable identifier = filename (without extension)
     url: str
     title: str
     seo_title: Optional[str]
@@ -656,8 +655,10 @@ def analyze_post(filepath: Path, section: str = None) -> Optional[PostAnalysis]:
 
     # Extract basic info
     title = front_matter.get('title', '')
-    # Use title-based slug to match Hugo's URL generation behavior
-    slug = slugify(title) if title else filepath.stem
+    # Use filename as slug (stable identifier)
+    # Hugo's :slug in permalinks defaults to filename, not title
+    # This ensures slug never changes when title is edited
+    slug = filepath.stem
     description = front_matter.get('description')
     target_keyword = front_matter.get('target_keyword')
     categories = front_matter.get('categories', [])
@@ -745,8 +746,7 @@ def analyze_post(filepath: Path, section: str = None) -> Optional[PostAnalysis]:
         url = f"/blog/{slug}/"  # Legacy fallback
 
     return PostAnalysis(
-        filename=filepath.stem,  # Stable identifier
-        slug=slug,
+        slug=slug,  # slug = filename (stable identifier)
         url=url,
         title=title,
         seo_title=front_matter.get('seo_title'),
@@ -783,8 +783,8 @@ def save_to_supabase(
 
     try:
         # Prepare post data
+        # slug = filename (stable identifier that never changes)
         post_data = {
-            'filename': analysis.filename,  # Stable identifier
             'slug': analysis.slug,
             'url': analysis.url,
             'title': analysis.title,
@@ -818,11 +818,11 @@ def save_to_supabase(
         # Use schema('seo') to access tables in the seo schema
         seo = supabase.schema('seo')
 
-        # Upsert post using filename as stable identifier
-        # This ensures title/slug changes UPDATE existing rows instead of creating duplicates
+        # Upsert post using slug as primary key
+        # slug = filename, so it's stable and never changes when title is edited
         seo.table('posts').upsert(
             post_data,
-            on_conflict='filename'
+            on_conflict='slug'
         ).execute()
 
         # Delete old links for this post
