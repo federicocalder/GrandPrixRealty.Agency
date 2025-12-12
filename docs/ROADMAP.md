@@ -1,6 +1,33 @@
 # Grand Prix Realty - Project Roadmap
 
-Last updated: 2025-12-08
+Last updated: 2025-12-12
+
+---
+
+## Quick Status Overview
+
+| Phase | Name | Status |
+|-------|------|--------|
+| P1 | Core Search Engine | ✅ Complete (90%) |
+| P2 | Seller Portal & AVM | ✅ Complete |
+| P3 | Listing Pages System | 🟡 In Progress (80%) |
+| P4 | Buyer Portal MVP | ⬜ Not Started |
+| P5 | Social Layer | ⬜ Not Started |
+| P6 | Mortgage Integration | ⬜ Not Started |
+| P7 | AI Experience Layer | 🟡 In Progress (60%) |
+| P8 | Pro Marketplace | ⬜ Not Started |
+
+### Recent Completions (Dec 2025)
+- ✅ Blog Silo Architecture - 243 posts migrated to SEO-optimized URL structure
+- ✅ SEO Lab updated for silo directories
+- ✅ Cloudflare cache purge for all silo prefixes
+
+### Next Priorities
+1. **P3**: Add PITI mortgage calculator to listing pages
+2. **P4**: User authentication & saved properties
+3. **P7**: Automated blog generation pipeline
+
+---
 
 ## Brand Experience Goals
 - Modern & minimal like Airbnb
@@ -126,6 +153,16 @@ Last updated: 2025-12-08
 - [x] Batch optimization for multiple posts
 - [x] AI Fixer UI in SEO Lab dashboard
 
+### Blog Silo Architecture (Complete) ✅
+- [x] Migrated 243 blog posts from `/blog/` to silo directories
+- [x] Created 5 silo categories: `/homebuyer/`, `/homeseller/`, `/propertymanagement/`, `/realtors/`, `/lasvegas/`
+- [x] Hugo permalinks configured for silo URL structure
+- [x] Category-to-silo mapping (remap_categories.py script)
+- [x] SEO Lab analyzer updated for silo directory scanning
+- [x] SEO API updated with silo volume mounts (Docker)
+- [x] Cloudflare cache purge updated for all silo prefixes
+- [x] Internal links updated to new silo URLs
+
 ### Automated Blog Generation (In Progress)
 - [ ] Perplexity API integration for topic research
 - [ ] Claude API for content generation
@@ -171,8 +208,9 @@ Last updated: 2025-12-08
 - [x] GitHub Actions CI/CD pipeline
 - [x] Docker Compose deployment
 - [x] SSH key authentication for GitHub on Hetzner
-- [x] Under Construction mode with cookie bypass
+- [x] Under Construction mode with cookie bypass (`?access=gpr2025`)
 - [x] Environment variable update helper script
+- [x] Cloudflare CDN with cache purge automation
 - [ ] Logging & performance monitoring
 
 ---
