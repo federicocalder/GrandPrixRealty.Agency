@@ -24,6 +24,7 @@ export default function AIFixer() {
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set())
   const [applying, setApplying] = useState<string | null>(null)
   const [lastAppliedSlug, setLastAppliedSlug] = useState<string | null>(null)
+  const [lastAppliedUrl, setLastAppliedUrl] = useState<string | null>(null)
 
   // Selection state for approvals
   const [approvals, setApprovals] = useState<Record<string, {
@@ -186,6 +187,9 @@ export default function AIFixer() {
       })
 
       setLastAppliedSlug(slug)
+      // Get the URL from the posts array
+      const post = posts.find(p => p.slug === slug)
+      setLastAppliedUrl(post?.url || null)
       setSuccessMessage(`Changes applied to "${slug}"! The SEO Lab post page is updated. Click "Deploy Changes" to publish to the live blog.`)
 
       // Track pending changes for deployment
@@ -216,7 +220,7 @@ export default function AIFixer() {
       if (result.status === 'success') {
         setPendingChanges(0)
         setSuccessMessage(`Site deployed successfully in ${result.build_time_seconds}s`)
-        setTimeout(() => setSuccessMessage(''), 5000)
+        // Don't auto-dismiss - let user see the success message and click X when ready
       } else {
         setError(result.error || result.message)
       }
@@ -308,21 +312,24 @@ export default function AIFixer() {
                     <Eye size={14} />
                     View in SEO Lab
                   </Link>
-                  <a
-                    href={`https://grandprixrealty.agency/blog/${lastAppliedSlug}/`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-grand-gold hover:text-grand-gold/80 flex items-center gap-1 text-sm"
-                  >
-                    <ExternalLink size={14} />
-                    View Live (after deploy)
-                  </a>
+                  {lastAppliedUrl && (
+                    <a
+                      href={`https://grandprixrealty.agency${lastAppliedUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-grand-gold hover:text-grand-gold/80 flex items-center gap-1 text-sm"
+                    >
+                      <ExternalLink size={14} />
+                      View Live (after deploy)
+                    </a>
+                  )}
                 </>
               )}
               <button
                 onClick={() => {
                   setSuccessMessage('')
                   setLastAppliedSlug(null)
+                  setLastAppliedUrl(null)
                 }}
                 className="text-green-400/60 hover:text-green-400"
               >
@@ -465,7 +472,7 @@ export default function AIFixer() {
                 <div className="flex items-center gap-3">
                   <span className="text-white font-medium">{preview.title}</span>
                   <a
-                    href={`https://grandprixrealty.agency/blog/${slug}/`}
+                    href={`https://grandprixrealty.agency${posts.find(p => p.slug === slug)?.url || `/blog/${slug}/`}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
@@ -648,7 +655,7 @@ export default function AIFixer() {
                   {/* Action Buttons */}
                   <div className="flex items-center justify-between gap-3 pt-4 border-t border-grand-steel/30">
                     <a
-                      href={`https://grandprixrealty.agency/blog/${slug}/`}
+                      href={`https://grandprixrealty.agency${posts.find(p => p.slug === slug)?.url || `/blog/${slug}/`}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-4 py-2 text-grand-gold hover:text-grand-gold/80 transition-colors flex items-center gap-2"
