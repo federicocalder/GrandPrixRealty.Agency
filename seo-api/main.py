@@ -902,6 +902,7 @@ async def optimize_post(
         # ===========================================
         # CONTENT EXPANSION (NEW)
         # ===========================================
+        content_was_expanded = False
         if request.expand_content:
             logger.info(f"Starting content expansion for {request.slug}, current words: {original_word_count}")
 
@@ -922,15 +923,19 @@ async def optimize_post(
                 result.expanded_word_count = len(re.findall(r'\b\w+\b', expanded_content))
                 result.content_explanation = f"Added {', '.join(sections_added)}. Words: {original_word_count} → {result.expanded_word_count}"
                 result.confidence_scores['content'] = 0.9
+                content_was_expanded = True
                 logger.info(f"Content expanded: {original_word_count} → {result.expanded_word_count} words, sections: {sections_added}")
             else:
                 result.expanded_word_count = original_word_count
-                result.content_explanation = "Content already meets requirements or couldn't be expanded"
+                # Don't set content_explanation here if humanize will run
+                if not request.optimize_content:
+                    result.content_explanation = "Content already meets requirements or couldn't be expanded"
 
         # ===========================================
         # CONTENT IMPROVEMENT (EXISTING - HUMANIZE)
         # ===========================================
-        elif request.optimize_content:
+        # Run humanization if requested AND (expansion wasn't requested OR expansion didn't add anything)
+        if request.optimize_content and not content_was_expanded:
             logger.info(f"Starting content humanization for {request.slug}")
             try:
                 content_result = await optimizer.improve_content(
