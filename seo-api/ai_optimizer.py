@@ -708,78 +708,81 @@ Respond in this EXACT JSON format:
         min_words: int = 800
     ) -> tuple[str, list[str]]:
         """
-        Expand content to meet minimum word count using structured additions.
+        Expand and enhance content with structured sections.
 
-        Returns: (expanded_content, list_of_sections_added)
+        Returns: (expanded_content, list_of_sections_added_or_improved)
 
         Process:
-        1. Count current words
-        2. If below minimum, identify what's missing
-        3. Ask AI to add ONE specific section
-        4. Count again, repeat if needed
-        5. Maximum 3 iterations to prevent over-expansion
+        1. ALWAYS add Key Takeaways (or improve if exists)
+        2. ALWAYS add FAQ Section (or improve if exists)
+        3. Add local Las Vegas context if needed
+        4. Expand thin sections if still below minimum word count
         """
 
-        current_words = len(content.split())
-        iterations = 0
-        max_iterations = 3
         sections_added = []
 
-        while current_words < min_words and iterations < max_iterations:
-            # Determine what type of content to add
-            expansion_type = self._determine_expansion_type(content, current_words, min_words)
+        # Get list of sections to process (add or improve)
+        sections_to_process = self._determine_sections_to_process(content)
 
-            if expansion_type is None:
-                break  # No more expansion types available
-
-            # Ask AI to add specific section
-            expanded, section_name = await self._add_section(content, keyword, title, expansion_type)
+        for section_type, action in sections_to_process:
+            # Ask AI to add or improve the section
+            expanded, section_name = await self._add_or_improve_section(
+                content, keyword, title, section_type, action
+            )
 
             if expanded and expanded != content:
                 content = expanded
                 sections_added.append(section_name)
-                current_words = len(content.split())
-            else:
-                break  # AI couldn't expand further
 
-            iterations += 1
+        # Check if we still need more words
+        current_words = len(content.split())
+        if current_words < min_words - 100:
+            expanded, section_name = await self._add_or_improve_section(
+                content, keyword, title, "expand_sections", "expand"
+            )
+            if expanded and expanded != content:
+                content = expanded
+                sections_added.append(section_name)
 
         return content, sections_added
 
-    def _determine_expansion_type(self, content: str, current_words: int, min_words: int) -> str | None:
-        """Decide what type of content to add based on what's missing."""
+    def _determine_sections_to_process(self, content: str) -> list[tuple[str, str]]:
+        """Determine which sections to add or improve."""
 
         content_lower = content.lower()
+        sections = []
 
-        # Priority 1: Key Takeaways (always valuable, appears at top)
+        # Key Takeaways - add or improve
         if "key takeaway" not in content_lower and "takeaway" not in content_lower:
-            return "key_takeaways"
+            sections.append(("key_takeaways", "add"))
+        else:
+            sections.append(("key_takeaways", "improve"))
 
-        # Priority 2: FAQ Section (great for SEO, appears at bottom)
+        # FAQ Section - add or improve
         if "faq" not in content_lower and "frequently asked" not in content_lower and "common question" not in content_lower:
-            return "faq_section"
+            sections.append(("faq_section", "add"))
+        else:
+            sections.append(("faq_section", "improve"))
 
-        # Priority 3: Local Las Vegas context
+        # Local Las Vegas context - add if not enough mentions
         vegas_mentions = content_lower.count("las vegas") + content_lower.count("vegas")
         if vegas_mentions < 3:
-            return "local_context"
+            sections.append(("local_context", "add"))
 
-        # Priority 4: Expand existing content (if still below minimum)
-        if current_words < min_words - 100:
-            return "expand_sections"
+        return sections
 
-        return None
-
-    async def _add_section(
+    async def _add_or_improve_section(
         self,
         content: str,
         keyword: str,
         title: str,
-        expansion_type: str
+        section_type: str,
+        action: str  # "add" or "improve"
     ) -> tuple[str, str]:
-        """Add a specific section type to the content."""
+        """Add a new section or improve an existing one."""
 
-        section_prompts = {
+        # Prompts for ADDING new sections
+        add_prompts = {
             "key_takeaways": f"""Add a "Key Takeaways" section at the VERY BEGINNING of this article (after any intro paragraph).
 
 REQUIREMENTS:
@@ -845,14 +848,90 @@ Current Content:
 Return the COMPLETE expanded article."""
         }
 
+        # Prompts for IMPROVING existing sections
+        improve_prompts = {
+            "key_takeaways": f"""IMPROVE the existing "Key Takeaways" section in this article.
+
+REQUIREMENTS:
+- Find the existing Key Takeaways section
+- Make the bullet points MORE specific and actionable
+- Ensure each bullet provides REAL VALUE to the reader
+- Include the keyword "{keyword}" naturally in at least one bullet
+- Make bullets specific to Las Vegas real estate
+- Expand from 4-5 bullets to 5-6 if there are fewer
+- Each bullet should be a concrete, actionable insight
+
+Article Title: {title}
+Target Keyword: {keyword}
+Current Content:
+{content}
+
+Return the COMPLETE article with the IMPROVED Key Takeaways section.""",
+
+            "faq_section": f"""IMPROVE the existing FAQ section in this article.
+
+REQUIREMENTS:
+- Find the existing FAQ/Questions section
+- Make questions MORE specific and searchable (what people actually Google)
+- Expand answers to be more comprehensive (2-3 sentences each)
+- Add 1-2 NEW questions if there are fewer than 5
+- Include the keyword "{keyword}" naturally in at least one Q&A
+- Focus on Las Vegas-specific questions where relevant
+- Ensure questions reflect real user search intent
+
+Article Title: {title}
+Target Keyword: {keyword}
+Current Content:
+{content}
+
+Return the COMPLETE article with the IMPROVED FAQ section.""",
+
+            "local_context": f"""Enhance this article with more Las Vegas-specific information.
+
+REQUIREMENTS:
+- Add a section about Las Vegas market specifics OR expand existing sections
+- Include Las Vegas neighborhoods (Summerlin, Henderson, North Las Vegas, etc.)
+- Add local market conditions or Nevada-specific regulations if relevant
+- Naturally incorporate "{keyword}" where appropriate
+- Add 100-150 words of Las Vegas-focused content
+
+Article Title: {title}
+Target Keyword: {keyword}
+Current Content:
+{content}
+
+Return the COMPLETE article with enhanced Las Vegas content.""",
+
+            "expand_sections": f"""Expand the shortest or thinnest sections of this article.
+
+REQUIREMENTS:
+- Find sections that are underdeveloped (< 100 words)
+- Add more detail, examples, or practical tips
+- Add 150-200 words total across expansions
+- Maintain focus on "{keyword}" and Las Vegas context
+- Don't add new sections, just expand existing ones
+
+Article Title: {title}
+Target Keyword: {keyword}
+Current Content:
+{content}
+
+Return the COMPLETE expanded article."""
+        }
+
         section_names = {
-            "key_takeaways": "Key Takeaways",
-            "faq_section": "FAQ Section",
+            "key_takeaways": "Key Takeaways" + (" (improved)" if action == "improve" else ""),
+            "faq_section": "FAQ Section" + (" (improved)" if action == "improve" else ""),
             "local_context": "Las Vegas Context",
             "expand_sections": "Expanded Sections"
         }
 
-        prompt = section_prompts.get(expansion_type)
+        # Select the appropriate prompt based on action
+        if action == "improve":
+            prompt = improve_prompts.get(section_type)
+        else:
+            prompt = add_prompts.get(section_type)
+
         if not prompt:
             return content, ""
 
@@ -864,11 +943,17 @@ Return the COMPLETE expanded article."""
 
         expanded = response.content[0].text.strip()
 
-        # Validate expansion actually added content
-        if len(expanded.split()) <= len(content.split()):
-            return content, ""
+        # For improvements, we allow same or slightly fewer words (rewriting)
+        # For additions, we require more words
+        if action == "add":
+            if len(expanded.split()) <= len(content.split()):
+                return content, ""
+        else:
+            # For improvements, just check it's not drastically shorter (allow 10% reduction for better writing)
+            if len(expanded.split()) < len(content.split()) * 0.9:
+                return content, ""
 
-        return expanded, section_names.get(expansion_type, expansion_type)
+        return expanded, section_names.get(section_type, section_type)
 
     def apply_internal_link(
         self,
